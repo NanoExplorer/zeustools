@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from zeustools import rooneystools as rt
+import zeustools as zt
 import scipy.optimize as opt
 
 import traceback
@@ -49,7 +49,7 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
 
     try:
         #Run the fitting routine!
-        popt, pcov = opt.curve_fit(rt.twoD_Gaussian, 
+        popt, pcov = opt.curve_fit(zt.twoD_Gaussian, 
                                    (x, y), 
                                    data, 
                                    p0=initial_guess,
@@ -77,7 +77,7 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
         fy = np.linspace(-box, box, 50)
         fx, fy = np.meshgrid(fx, fy)
 
-        data_fitted = rt.twoD_Gaussian((fx, fy), *popt)
+        data_fitted = zt.twoD_Gaussian((fx, fy), *popt)
         fig, ax = plt.subplots(1, 1)
         #pxcorr = stepsize/2
         ax.imshow(arr, origin='bottom',
@@ -127,7 +127,7 @@ def raster_load(filestem,firstnum,sidesize,pixels, existing_data=[]):
                 totalsig+=sig
         else:
             try:
-                chop_on,ts_on,chop_off,ts_off=rt.processChop(f"{filestem}{filenum}")
+                chop_on,ts_on,chop_off,ts_off=zt.processChop(f"{filestem}{filenum}")
                 existing_data.append((chop_on,ts_on,chop_off,ts_off))
                 for row,col in pixels:
                     sig=np.median(chop_on[row,col])-np.median(chop_off[row,col])
@@ -217,7 +217,7 @@ def pfRaster(filestem,firstnum,sidesize):
     going=+1
     for filenumber in range(firstnum,firstnum+sidesize**2):
         filenum=f"{filenumber:04d}"
-        good_data=rt.readPf(f"{filestem}{filenum}.pf")
+        good_data=zt.readPf(f"{filestem}{filenum}.pf")
         #print(f"{np.mean(good_data):.1f}")
         altaz[alt,az]=np.mean(good_data)
         if az==sidesize-1 and going==1:
@@ -232,10 +232,10 @@ def pfRaster(filestem,firstnum,sidesize):
 
 
 def make_spectral_pointing_plots(date,fstem,fnums,specs,spats,array='a'):
-    am=rt.ArrayMapper()
+    am=zt.ArrayMapper()
     for i in fnums:
-        fname=rt.makeFileName(date, fstem, i)
-        values3=rt.processChopBetter(fname)
+        fname=zt.makeFileName(date, fstem, i)
+        values3=zt.processChopBetter(fname)
 
         for spat_pos in spats:
             pixels=[(x, spat_pos, array) for x in specs]
@@ -252,10 +252,10 @@ def make_spectral_pointing_plots(date,fstem,fnums,specs,spats,array='a'):
 
 
 def make_added_pointing_plots(date,fstem,fnums,specs,spats):
-    am=rt.ArrayMapper()
+    am=zt.ArrayMapper()
     for i in fnums:
-        fname = rt.makeFileName(date,fstem,i)
-        values3 = rt.processChopBetter(fname)
+        fname = zt.makeFileName(date,fstem,i)
+        values3 = zt.processChopBetter(fname)
 
         for spat_pos in spats:
             pixels = [(x,spat_pos,'a') for x in specs]
