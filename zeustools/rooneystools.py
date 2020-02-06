@@ -166,6 +166,15 @@ def readPf(filename):
 
 
 def processChop(filename):
+    """ Loads in MCE data file, chop file, and TS file.
+
+    Returns a tuple containing:
+        0: data points where chop is on
+        1: ts for chop on
+        2: data for chop off
+        3: ts for chop off
+
+    """
     chopfile = mce_data.SmallMCEFile(filename)
     chopdata = chopfile.Read(row_col=True).data
     chopchop = readChopFile(filename)[1]
@@ -213,6 +222,12 @@ class ArrayMapper:
 
 
 def processChopBetter(fname):
+    """Loads in MCE data file and chop file.
+
+    returns an array with the medians of each chop cycle for all pixels. 
+
+    TODO: needs a better name   
+    """
     index,chop = readChopFile(fname)
     chopstarts = 1+np.where(chop[:-1]!=chop[1:])[0]
     chopstarts = np.append([0],chopstarts)
