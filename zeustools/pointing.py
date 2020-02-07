@@ -7,22 +7,18 @@ import traceback
 
 def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, bounds=None):
     """Calculate the pointing offset to apply to center the source.
+    Prints the pointing correction command that you should send to APECS.
     This does a nicer job plotting the raster than the other functions.
 
-    Parameters:
-    arr: a numpy array containing the values of each position
-    stepsize: arcseconds offset between raster positions
-    initial_guess: the initial guess for the 2d gaussian fit.
+    :param arr: a numpy array containing the values of each position
+    :param stepsize: arcseconds offset between raster positions
+    :param initial_guess: the initial guess for the 2d gaussian fit.
         It's a tuple of (amplitude, x position, y position, sigma, baseline)
-    do_plot: whether or not to make a plot of the raster and gaussian fit. (default: True)
-    bounds: same as initial guess, except 2 tuples for max and min bounds for each parameters
+    :param do_plot: whether or not to make a plot of the raster and gaussian fit. (default: True)
+    :param bounds: same as initial guess, except 2 tuples for max and min bounds for each parameters
 
-    Returns:
-    best-fit paramteters
-
-    Side-Effects:
-    prints fit data and the pcorr function you should run at APEX
-    makes a plot if do_plot is True
+    :return: best-fit paramteters
+    :rtype: numpy.array
     """
     # Determine number of beams on a side
     num_steps=arr.shape[0]
@@ -88,25 +84,20 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
 
 
 def raster_load(filestem,firstnum,sidesize,pixels, existing_data=[]):
-    """Load in and plot a pointing raster scan.
+    """Load in and plot a pointing raster scan. 
+    Modifies the existing_data array to contain newly-loaded information.
 
-    Parameters:
-    filestem: All of the filename except the number. 
-        e.g.: /data/cryo/current_data/saturn_191202_
-    firstnum: The first number that was part of the raster
-    sidesize: The number of raster pointings on a side
+    :param filestem: All of the filename except the number. 
+        e.g.: ``/data/cryo/current_data/saturn_191202_``
+    :param firstnum: The first number that was part of the raster
+    :param sidesize: The number of raster pointings on a side
         e.g.: For a 3x3 raster would be 3.
-    pixels: array of (mce_row,mce_col) for pixels to sum to make the raster plot
+    :param pixels: array of (mce_row,mce_col) for pixels to sum to make the raster plot
         tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily
-    do_plot: Set this to False if you want to just load in the data and not make a plot
-    existing_data: Used by the Caching Raster to speed up the loading process
+    :param existing_data: Used by the Caching Raster to speed up the loading process
 
-    Returns: 
-    np array of amplitudes of signal at each pointing position
-    
-    Side-Effects:
-    makes a plot if do_plot = True
-    modifies the existing_data array
+    :return: amplitudes of signal at each pointing position
+    :rtype: numpy.array
     """
     altaz = np.zeros((sidesize,sidesize))
     alt=0
@@ -161,22 +152,21 @@ class CachingRaster:
         self.cached_data=[]
     
     def go(self,filestem,start_filename,num_beams,pixels):
-        """Load in pointing raster scan. NOW WITH CACHING! FOR ALL YOUR LOW-LATENCY PLOTTING NEEDS
-        This is a wrapper around raster_load, so has the same paramters except existing_data
+        """Load in pointing raster scan. NOW WITH CACHING! FOR ALL YOUR LOW-LATENCY PLOTTING NEEDS.
+        This is a wrapper around raster_load, and has the same paramters except existing_data.
 
-        Parameters:
-        filestem: The folder that contains date folders. 
+        :param filestem: The folder that contains date folders. 
             e.g.: /data/cryo/current_data/
-        start_filename: The first number that was part of the raster
-        num_beams: The number of raster pointings on a side
+        :param start_filename: The first number that was part of the raster
+        :param num_beams: The number of raster pointings on a side
             e.g.: For a 3x3 raster would be 3.
-        pixels: array of (mce_row,mce_col) for pixels to sum to make the raster plot
+        :param pixels: array of (mce_row,mce_col) for pixels to sum to make the raster plot
             tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily
-        do_plot: Set this to False if you want to just load in the data and not make a plot
-        existing_data: Used by the Caching Raster to speed up the loading process
+        :param do_plot: Set this to False if you want to just load in the data and not make a plot
+        :param existing_data: Used by the Caching Raster to speed up the loading process
 
-        Returns: 
-        np array of amplitudes of signal at each pointing position
+        :return: amplitudes of signal at each pointing position
+        :rtype: numpy.array
         """
 
         #make a unique name for the scan
@@ -200,15 +190,14 @@ class CachingRaster:
 def pfRaster(filestem,firstnum,sidesize):
     """ Uses the .pf files generated by the acquisition software to make a raster
     
-    Parameters:
-    filestem: The folder that contains date folders. 
+    :param filestem: The folder that contains date folders. 
         e.g.: /data/cryo/current_data/
-    firstnum: The first number that was part of the raster
-    sidesize: The number of raster pointings on a side
+    :param firstnum: The first number that was part of the raster
+    :param sidesize: The number of raster pointings on a side
         e.g.: For a 3x3 raster would be 3.
 
-    Returns: 
-    np array of amplitudes of signal at each pointing position
+    :return: amplitudes of signal at each pointing position
+    :rtype: numpy.array
     """
     altaz = np.zeros((sidesize,sidesize))
     alt=0

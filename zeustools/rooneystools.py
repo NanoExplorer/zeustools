@@ -117,11 +117,12 @@ def parseCmdArgs(argumentList,helpList,typeList):
     Each element in the second list is the help string for that argument,
     The last list contains the type.
 
-    example:
-    common.parseCmdArgs([['settings'],
-                         ['-o','--override']],
-                        ['Settings json file','array indices in the format a:b to extract from infile list'],
-                        [str,str])
+    Usage::
+    
+        common.parseCmdArgs([['settings'],
+                             ['-o','--override']],
+                            ['Settings json file','array indices in the format a:b to extract from infile list'],
+                            [str,str])
 
     """
     parser = argparse.ArgumentParser()
