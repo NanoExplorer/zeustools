@@ -136,7 +136,6 @@ def parseCmdArgs(argumentList,helpList,typeList):
     The last list contains the type.
 
     Usage::
-
         common.parseCmdArgs([['settings'],
                              ['-o','--override']],
                             ['Settings json file','array indices in the format a:b to extract from infile list'],
