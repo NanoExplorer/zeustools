@@ -136,11 +136,11 @@ def parseCmdArgs(argumentList,helpList,typeList):
     The last list contains the type.
 
     Usage::
-        common.parseCmdArgs([['settings'],
-                             ['-o','--override']],
-                            ['Settings json file','array indices in the format a:b to extract from infile list'],
-                            [str,str])
 
+        common.parseCmdArgs([['settings'],
+                             ['-v','--verbose']],
+                            ['Path to settings file','flag to print extra info'],
+                            [str,'bool'])
     """
     parser = argparse.ArgumentParser()
     for argument,theHelp,theType in zip(argumentList,helpList,typeList):
@@ -176,6 +176,19 @@ def histGaussian(something,nbins=50):
 
 
 def readPf(filename):
+    """ Loads in a .pf file. Those contain the exact data that was
+    sent to the APEX servers for pointing and/or focus calibration.
+    We send lots of 1s to APEX because they do on-off/off and we 
+    think we know better than them so we do all kinds of acrobatics.
+
+    This script undoes the acrobatics so you see exactly what APEX
+    would see.
+
+    :param filename: The filename you want to load (INCLUDE the .pf extension)
+
+    :return: 1-D array of data points (usually a time series)
+    :rtype: numpy.array
+    """
     data = np.loadtxt(filename,dtype=str)
     phase= data[:,3].astype(int)
     ampl = data[:,4].astype(float)
@@ -183,22 +196,42 @@ def readPf(filename):
     return(good_data)
 
 
+def load_data_raw(filename):
+    """ Loads an MCE data file, chop file and TS file, returning
+    the raw data for each of them.
+
+    :param filename: the file name that you want to load.
+
+    :return: A tuple containing 3 numpy arrays:
+
+        0. Chop phase
+        1. Time stamp
+        2. Time series data cube as usual from mce_data (use :class:`.ArrayMapper` to index it)
+
+    :rtype: 3-Tuple of numpy.array
+    """
+    mcefile = mce_data.SmallMCEFile(filename)
+    mcedata = mcefile.Read(row_col=True).data
+    chop = readChopFile(filename)[1]
+    ts = np.loadtxt(f"{filename}.ts")
+    tstimes = ts[0:len(chop),1]  # This is necessary because sometimes the 
+    # ts file has an extra data point for some reason (off by 1 error in 
+    # arduino code?)
+    return (chop,tstimes,mcedata)
+
+
 def processChop(filename):
     """ Loads in MCE data file, chop file, and TS file.
 
-    Returns a tuple containing:
-        0: data points where chop is on
-        1: ts for chop on
-        2: data for chop off
-        3: ts for chop off
+    :return:  a tuple containing:
+
+        0. data points where chop is on
+        1. ts for chop on
+        2. data for chop off
+        3. ts for chop off
 
     """
-    chopfile = mce_data.SmallMCEFile(filename)
-    chopdata = chopfile.Read(row_col=True).data
-    chopchop = readChopFile(filename)[1]
-    ts = np.loadtxt(f"{filename}.ts")
-    tstimes = ts[0:len(chopchop),1]
-    # tsindex = ts[0:len(chopchop),0].astype(int)
+    chopchop,tstimes,chopdata = load_data_raw(filename)
     chop_on = chopdata[:, :, chopchop==1]
     chop_off= chopdata[:, :, chopchop==0]
     ts_on = tstimes[chopchop==1]
@@ -207,15 +240,46 @@ def processChop(filename):
 
 
 class ArrayMapper:
-    def __init__(self):
-        self.arrays = {'a':np.loadtxt("config/arrayA_map.dat",usecols=range(0,4),dtype=int),
-                       'b':np.loadtxt("config/arrayB_map.dat",usecols=range(0,4),dtype=int),
-                       'c':np.loadtxt("config/arrayC_map.dat",usecols=range(0,4),dtype=int)}
-        #these arrays have columns:
+    """ This class makes it easy to address mce data.
+
+    The phys_to_mce function in this class will return an index you can pass directly to 
+    an mce_data datacube in order to address a pixel by its physical location.
+
+    This class needs to be able to access the ``arrayA_map.dat``, ``arrayB_map.dat``, and ``arrayC_map.dat`` files that specify the mapping
+    between pixel locations physically on the array and pixel positions within the MCE data 
+    datacube, so when you initialize it either make sure they are present in a folder called 
+    ``config/`` or specify the path to wherever you're storing them.
+
+    :param path: path to a folder containing the three ``arrayX_map.dat`` files.
+        As noted above, this defaults to ``config/``.   
+    """
+    def __init__(self,path="config/"):
+        self.arrays = {'a':np.loadtxt(f"{path}/arrayA_map.dat",usecols=range(0,4),dtype=int),
+                       'b':np.loadtxt(f"{path}/arrayB_map.dat",usecols=range(0,4),dtype=int),
+                       'c':np.loadtxt(f"{path}/arrayC_map.dat",usecols=range(0,4),dtype=int)}
+        #these arrays have the following 4columns:
         # spatial, spectral, mcerow, mcecol
     
     def array_name(self,name):
-        """Converts various names for the arrays into the internal scheme used by this class"""
+        """"A rose by any other name would smell as sweet"
+
+        Converts various names for the 3 different physical arrays into the 
+        internal scheme used by this class (which is the same as the letter used by 
+        ``arrayX_map.dat``, much to Thomas's dismay. At least this is an easy way to convert
+        to that scheme.)
+
+        That scheme is follows:
+
+        * array "A" is the 400 um array (350/450)
+        * array "B" is the 200 um array
+        * array "C" is the 600 um array. 
+        
+        simply pass any name (e.g. ``"400"``, ``400``, ``350``, ``"200"``) and 
+        this will return the correct letter to use in ``arrayX_map.dat`` 
+    
+        :param name: Human readable name for the array. Should be a string or number.
+        :return: one of 'a', 'b', or 'c'.
+        """
         name=str(name)
         if name=='400' or name=='350' or name=='450' or name=='A':
             name = 'a'
@@ -228,8 +292,30 @@ class ArrayMapper:
         return name
     
     def phys_to_mce(self,spec,spat,array):
-        """Given a physical position of a pixel (spectral position, spatial position, array name)
-        returns the mce_row,mce_col of that pixel"""
+        """Given the physical position of a pixel (spectral position, spatial position, array name)
+        returns the mce_row and mce_col of that pixel. That can be used to directly address
+        the pixel from the mce datacube.
+
+        :param spec: The spectral position of the pixel to index.
+        :param spat: The spatial position of the pixel to index.
+        :param array: The array the pixel is on. Should be a number or string, like "400" for the 400 micron array.
+
+        :return: Tuple of (mce_row, mce_col) of the pixel.
+
+        :Example: 
+            To load a data file and get the time series for spectral pixel 7 on spatial position 1
+            of the 400 micron array::
+
+                chop, ts, datacube = load_data_raw(...)
+                am = ArrayMapper()
+                idx = am.phys_to_mce(7,1,400)
+                time_series = datacube[idx]
+
+            It is recommended that you initialize ``am = ArrayMapper()`` once and 
+            reuse the ``am`` object over the lifetime of your code.
+
+        TODO: better way to index multiple pixels. 
+        """
         
         array_to_use = self.arrays[self.array_name(array)]
         is_correct_spatialpos = array_to_use[:,0] == spat
@@ -244,7 +330,7 @@ def processChopBetter(fname):
 
     returns an array with the medians of each chop cycle for all pixels. 
 
-    TODO: needs a better name   
+    TODO: needs a *better* name   
     """
     index,chop = readChopFile(fname)
     chopstarts = 1+np.where(chop[:-1]!=chop[1:])[0]
@@ -267,9 +353,42 @@ def processChopBetter(fname):
 
 
 def makeFileName(date,name,number):
+    """ Simple routine to convert a date, filename, and file index into a real
+    data file.
+
+    :Example: Say you have a data file in /data/cryo/20191130/saturn_191130_0023.
+        Calling::
+
+            makeFileName('20191130','saturn',23)
+
+        will return::
+
+            '20191130/saturn_191130_0023`
+
+        which you can easily append to the parent folder name.
+
+    :param date: String date in ``yyyymmdd`` format
+    :param name: source name 
+    :param number: integer of file number
+    :return: folder and file path relative to the data folder (e.g. /data/cryo)
+
+    TODO: it would be nice if this didn't depend so much on data types and such
+
+    """
     return f"{date}/{name}_{date[2:]}_{number:04d}"
 
 
 def loadts(filename):
+    """ Really simple wrapper function to load a ``.ts`` file.
+
+    Does literally the following::
+
+        times=np.loadtxt(f"{filename}.ts")[:,1]
+
+    :param filename: the location of the data file to read the time stamps for. Don't include the ``.ts`` extension
+    :return: 1-D numpy array of timestamps 
+
+    """
+
     times=np.loadtxt(f"{filename}.ts")[:,1]
     return times
