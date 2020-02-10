@@ -1,5 +1,6 @@
-from rooneystools import *
+from zeustools.rooneystools import nd_mad
 import numpy as np
+
 def test_nd_mad():
     assert nd_mad(np.array([1,8000,1,2]),0)==0.5
     assert nd_mad(np.array([1,1,1,387]),0)==0.0

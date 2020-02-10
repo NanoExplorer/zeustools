@@ -8,11 +8,16 @@ from matplotlib import pyplot as plt
 
 
 def gaussian(x,sigma,mu,a):
+    """I never understood why numpy or scipy don't have their own gaussian function.
+    """
     return a*np.exp(-1/2*((x-mu)/(sigma))**2)
 # From https://stackoverflow.com/questions/21566379/fitting-a-2d-gaussian-function-using-scipy-optimize-curve-fit-valueerror-and-m
 
 
 def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
+    """Good for doing pointing. Doesn't have too many parameters,
+    for example we set sigma_x = sigma_y and we don't have a theta.
+    """
     sigma_y = sigma_x
     theta=0
     x,y=pos
@@ -27,6 +32,9 @@ def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
 
 
 class chi_sq_solver:
+    """A chi squared analysis tool I built. I don't know 
+    whether it's still useful. Kept around just in case.
+    """
     def __init__(self,
                  bins,
                  ys,
@@ -70,6 +78,16 @@ class chi_sq_solver:
 
 
 def nd_mad(nparray,axis,extrainfo=False):
+    """This is the backend for :func:`nd_mads_from_median`. 
+    Given a numpy ndarray, we calculate the median absolute deviation
+
+    NOTE! in scipy version 1.3 they added a median absolute deviation method!
+    you might consider using that instead in some cases.
+
+    However this function gives you the option of returning the distance
+    from the median for every point on the array.
+    """
+
     med = np.nanmedian(nparray,axis=axis)
     expand_slicing= tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))
     dist_from_med = np.abs(nparray-med[expand_slicing])
@@ -117,11 +135,12 @@ def parseCmdArgs(argumentList,helpList,typeList):
     Each element in the second list is the help string for that argument,
     The last list contains the type.
 
-    example:
-    common.parseCmdArgs([['settings'],
-                         ['-o','--override']],
-                        ['Settings json file','array indices in the format a:b to extract from infile list'],
-                        [str,str])
+    Usage::
+
+        common.parseCmdArgs([['settings'],
+                             ['-o','--override']],
+                            ['Settings json file','array indices in the format a:b to extract from infile list'],
+                            [str,str])
 
     """
     parser = argparse.ArgumentParser()
