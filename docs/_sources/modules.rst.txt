@@ -1,7 +1,0 @@
-zeustools
-=========
-
-.. toctree::
-   :maxdepth: 4
-
-   zeustools
