@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mce_data submodule" href="mce_data.html" />
     <link rel="prev" title="The ZEUS-2 Calibration Pipeline" href="calibpipeline.html" /> 
 </head>
 
@@ -93,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="mce_data.html">mce_data submodule</a></li>
 </ul>
 
             
@@ -167,17 +169,75 @@
 <dl class="function">
 <dt id="zeustools.bpio.extract_from_beamfile">
 <code class="descclassname">zeustools.bpio.</code><code class="descname">extract_from_beamfile</code><span class="sig-paren">(</span><em>fname</em>, <em>beam</em>, <em>spat</em>, <em>arrnums</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_from_beamfile" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sometimes you want to read out the reduced data for individual 
+beams from Bo’s reduction script. This is the function that handles that.
+Given a filename, this will grab one spatial position from that beam.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> – the file name of the beamfile that you want to load</li>
+<li><strong>beam</strong> – the beam number that you want to extract</li>
+<li><strong>spat</strong> – the spatial position you want</li>
+<li><strong>arrnums</strong> – determines whether you get the data before or after the dead pixel
+subtraction, clean routine, independent component analysis, etc. Ask Bo what number you should input.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
+weight.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="zeustools.bpio.extract_one_spatial_position">
 <code class="descclassname">zeustools.bpio.</code><code class="descname">extract_one_spatial_position</code><span class="sig-paren">(</span><em>a</em>, <em>spat</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_one_spatial_position" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Takes the numpy z file from Bo’s script and return a 1-d spectrum
+of a single spatial position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> – this is the npz load object, loaded from Bo’s reduction script</li>
+<li><strong>spat</strong> – This is the spatial position you would like to extract.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
+weight.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="zeustools.bpio.load_data_and_extract">
 <code class="descclassname">zeustools.bpio.</code><code class="descname">load_data_and_extract</code><span class="sig-paren">(</span><em>fname</em>, <em>spat</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.load_data_and_extract" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Automatically loads an npz file from Bo’s reduction script
+and returns a 1-d spectrum of a single spatial position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> – this is the filename of the .npz file from Bo’s script</li>
+<li><strong>spat</strong> – This is the spatial position you would like to extract.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
+weight.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-zeustools.calibration">
@@ -524,6 +584,14 @@ this will return the correct letter to use in <code class="docutils literal notr
 </dd></dl>
 
 <dl class="method">
+<dt id="zeustools.rooneystools.ArrayMapper.grid_map">
+<code class="descname">grid_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.grid_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a grid of spectral positions and spatial positions for each mce_row and mce_column</p>
+<p>Note that for ease of use the 400 array has 10 added to all its spatial positions, 
+and the 200 array has 20 added to its spectral positions</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="zeustools.rooneystools.ArrayMapper.phys_to_mce">
 <code class="descname">phys_to_mce</code><span class="sig-paren">(</span><em>spec</em>, <em>spat</em>, <em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.phys_to_mce" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the physical position of a pixel (spectral position, spatial position, array name)
@@ -596,6 +664,10 @@ whether it’s still useful. Kept around just in case.</p>
 <code class="descclassname">zeustools.rooneystools.</code><code class="descname">load_data_raw</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_raw" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads an MCE data file, chop file and TS file, returning
 the raw data for each of them.</p>
+<p>Note that if this turns out to be a “stare” dataset,
+there won’t be chop or TS files. So we make some surrogate
+chop and ts data sets. The chop will be all 0s and the ts
+will be a monotonicall increasing array.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -669,6 +741,33 @@ Calling:</p>
 </tbody>
 </table>
 <p>TODO: it would be nice if this didn’t depend so much on data types and such</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="zeustools.rooneystools.nan_helper">
+<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nan_helper</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nan_helper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to handle indices and logical indices of NaNs.</p>
+<dl class="docutils">
+<dt>Input:</dt>
+<dd><ul class="first last simple">
+<li>y, 1d numpy array with possible NaNs</li>
+</ul>
+</dd>
+<dt>Output:</dt>
+<dd><ul class="first last simple">
+<li>nans, logical indices of NaNs</li>
+<li>index, a function, with signature indices= index(logical_indices),
+to convert logical indices of NaNs to ‘equivalent’ indices</li>
+</ul>
+</dd>
+<dt>Example:</dt>
+<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># linear interpolation of NaNs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nans</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span> <span class="n">nan_helper</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">[</span><span class="n">nans</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">nans</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="o">~</span><span class="n">nans</span><span class="p">),</span> <span class="n">y</span><span class="p">[</span><span class="o">~</span><span class="n">nans</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -794,6 +893,8 @@ for example we set sigma_x = sigma_y and we don’t have a theta.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mce_data.html" class="btn btn-neutral float-right" title="mce_data submodule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="calibpipeline.html" class="btn btn-neutral float-left" title="The ZEUS-2 Calibration Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

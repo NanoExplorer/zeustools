@@ -165,14 +165,14 @@ class SmallMCEFile:
         Create SmallMCEFile object and load description of the data
         from runfile and header.
 
-        filename: path to MCE flatfile 
+        :param filename: path to MCE flatfile 
 
-        runfile: if True (default), filename.run is used.  If False,
-          no runfile is used.  Pass a string here to override the
-          runfile filename.
+        :param runfile: if True (default), filename.run is used.  If False,
+            no runfile is used.  Pass a string here to override the
+            runfile filename.
 
-        basic_info: if True (default), basic file information is
-          loaded from runfile and frame header.
+        :param basic_info: if True (default), basic file information is
+            loaded from runfile and frame header.
         """
         # Initialize basic parameters
         self.Reset()        
@@ -523,26 +523,26 @@ class SmallMCEFile:
         """
         Read MCE data, and optionally extract the MCE signals.
 
-        dets        Pass a list of (row,col) tuples of detectors to extract (None=All)
-        count       Number of samples to read per channel (default=None,
+        :param dets:        Pass a list of (row,col) tuples of detectors to extract (None=All)
+        :param count:       Number of samples to read per channel (default=None,
                     which means all of them).  Negative numbers are taken
                     relative to the end of the file.
-        start       Index of first sample to read (default=0).
-        do_extract  If True, extract signal bit-fields using data_mode from runfile
-        do_scale    If True, rescale the extracted bit-fields to match a reference
+        :param start:       Index of first sample to read (default=0).
+        :param do_extract:  If True, extract signal bit-fields using data_mode from runfile
+        :param do_scale:    If True, rescale the extracted bit-fields to match a reference
                     data mode.
-        data_mode   Overrides data_mode from runfile, or can provide data_mode if no
+        :param data_mode:   Overrides data_mode from runfile, or can provide data_mode if no
                     runfile is used.
-        field       A single field to extract.  The output data will contain an array
+        :param field:       A single field to extract.  The output data will contain an array
                     containing the extracted field.  (If None, the default field is used.)
-        fields      A list of fields of interest to extract, or 'all' to get all fields.
+        :param fields:      A list of fields of interest to extract, or 'all' to get all fields.
                     This overrides the value of field, and the output data will contain
                     a dictionary with the extracted field data.
-        row_col     If True, detector data is returned as a 3-D array with indices (row,
+        :param row_col:     If True, detector data is returned as a 3-D array with indices (row,
                     column, frame).
-        raw_frames  If True, return a 2d array containing raw data (including header
+        :param raw_frames:  If True, return a 2d array containing raw data (including header
                     and checksum), with indices (frame, index_in_frame).
-        cc_indices  If True, count and start are interpreted as readout frame indices and
+        :param cc_indices:  If True, count and start are interpreted as readout frame indices and
                     not sample indices.  Default is False.
         """
         if n_frames != None:

@@ -87,11 +87,13 @@ def nd_mad(nparray,axis,extrainfo=False):
     However this function gives you the option of returning the distance
     from the median for every point on the array.
     """
-
-    med = np.nanmedian(nparray,axis=axis)
+    hasnan = np.isnan(nparray)
+    if np.any(hasnan):
+        nparray=ma.array(nparray,mask=hasnan)
+    med = ma.median(nparray,axis=axis)
     expand_slicing= tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))
-    dist_from_med = np.abs(nparray-med[expand_slicing])
-    mdev=np.median(dist_from_med,axis=axis)
+    dist_from_med = ma.abs(nparray-med[expand_slicing])
+    mdev=ma.median(dist_from_med,axis=axis)
     if extrainfo:
         return mdev,dist_from_med
     else:
@@ -105,7 +107,8 @@ def nd_mads_from_median(nparray,axis,zero_padding_factor=0.0001):
     #slice(None) is equivalent to ':'
     expand_slicing= tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))
     mdev,dist_from_med = nd_mad(nparray,axis,extrainfo=True)
-    if type(mdev) is np.ndarray:
+    #print(type(mdev))
+    if type(mdev) is np.ndarray or type(mdev) is ma.core.MaskedArray:
         mdev[mdev==0] = zero_padding_factor
         mdev = mdev[expand_slicing]
     else:
@@ -200,6 +203,11 @@ def load_data_raw(filename):
     """ Loads an MCE data file, chop file and TS file, returning
     the raw data for each of them.
 
+    Note that if this turns out to be a "stare" dataset,
+    there won't be chop or TS files. So we make some surrogate
+    chop and ts data sets. The chop will be all 0s and the ts
+    will be a monotonicall increasing array.
+
     :param filename: the file name that you want to load.
 
     :return: A tuple containing 3 numpy arrays:
@@ -213,10 +221,18 @@ def load_data_raw(filename):
     mcefile = mce_data.SmallMCEFile(filename)
     mcedata = mcefile.Read(row_col=True).data
     chop = readChopFile(filename)[1]
-    ts = np.loadtxt(f"{filename}.ts")
-    tstimes = ts[0:len(chop),1]  # This is necessary because sometimes the 
-    # ts file has an extra data point for some reason (off by 1 error in 
-    # arduino code?)
+    try:
+        ts = np.loadtxt(f"{filename}.ts")
+
+        tstimes = ts[0:len(chop),1]  # This is necessary because sometimes the 
+        # ts file has an extra data point for some reason (off by 1 error in 
+        # arduino code?)
+
+    except OSError:
+        print("No TS found. Assuming un-chopped data...")
+        chop = np.zeros_like(mcedata[0,0])
+        tstimes = np.arange(len(mcedata[0,0]))
+
     return (chop,tstimes,mcedata)
 
 
@@ -324,6 +340,28 @@ class ArrayMapper:
         px = np.where(is_correct_px)[0][0]
         return(array_to_use[px, 2], array_to_use[px, 3])
 
+    def grid_map(self):
+        """Return a grid of spectral positions and spatial positions for each mce_row and mce_column
+        
+        Note that for ease of use the 400 array has 10 added to all its spatial positions, 
+        and the 200 array has 20 added to its spectral positions
+        """
+        #remember spat spec row col
+        spatial_offset_400 = np.zeros_like(self.arrays['a'])
+        spatial_offset_400[:,0] = 10
+
+        spectral_offset_200 = np.zeros_like(self.arrays['b'])
+        spectral_offset_200[:,1] = 20
+
+        amap = self.arrays['a'] + spatial_offset_400
+        bmap = self.arrays['b'] + spectral_offset_200
+        cmap = self.arrays['c']
+        full_map = np.concatenate((amap,bmap,cmap))
+        mce_grid = np.zeros((33,24,2),dtype=int)
+        mce_grid[full_map[:,2],full_map[:,3]] = full_map[:,0:2]
+
+        return mce_grid
+
 
 def processChopBetter(fname):
     """Loads in MCE data file and chop file.
@@ -392,3 +430,22 @@ def loadts(filename):
 
     times=np.loadtxt(f"{filename}.ts")[:,1]
     return times
+
+
+#https://stackoverflow.com/questions/6518811/interpolate-nan-values-in-a-numpy-array#6520696
+def nan_helper(y):
+    """Helper to handle indices and logical indices of NaNs.
+
+    Input:
+        - y, 1d numpy array with possible NaNs
+    Output:
+        - nans, logical indices of NaNs
+        - index, a function, with signature indices= index(logical_indices),
+          to convert logical indices of NaNs to 'equivalent' indices
+    Example:
+        >>> # linear interpolation of NaNs
+        >>> nans, x= nan_helper(y)
+        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+    """
+
+    return np.logical_or(np.isnan(y),y.mask), lambda z: z.nonzero()[0]
