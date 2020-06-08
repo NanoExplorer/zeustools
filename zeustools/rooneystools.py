@@ -258,8 +258,22 @@ def processChop(filename):
 class ArrayMapper:
     """ This class makes it easy to address mce data.
 
-    The phys_to_mce function in this class will return an index you can pass directly to 
-    an mce_data datacube in order to address a pixel by its physical location.
+    MCE data is stored in "Row,Col" format, where the rows and columns correspond to how
+    the pixels are wired to the electronics. This format is useful when debugging electronics
+    issues but not so much for viewing data. So, to index raw MCE data you usually call ::
+
+        mcefile = mce_data.SmallMCEFile(filename)
+        mcedata = mcefile.Read(row_col=True).data
+
+    Then, ``mcedata`` will be a 3-dimensional datacube. You index this cube with ``mcedata[row, col, time]``
+
+    The physical layout of the detector has a spatial direction and a spectral direction. To 
+    index a pixel using spatial position and spectral position, you either need to reformat
+    the ``mcedata`` object or convert the spatial position and spectral position to a row and column.
+    This does the latter.
+
+    The phys_to_mce function in this class will return an index you can use immediately 
+    to index an mce_data datacube in order to address a pixel by its physical location.
 
     This class needs to be able to access the ``arrayA_map.dat``, ``arrayB_map.dat``, and ``arrayC_map.dat`` files that specify the mapping
     between pixel locations physically on the array and pixel positions within the MCE data 

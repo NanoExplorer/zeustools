@@ -540,8 +540,20 @@ tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily</li>
 <em class="property">class </em><code class="descclassname">zeustools.rooneystools.</code><code class="descname">ArrayMapper</code><span class="sig-paren">(</span><em>path='config/'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class makes it easy to address mce data.</p>
-<p>The phys_to_mce function in this class will return an index you can pass directly to 
-an mce_data datacube in order to address a pixel by its physical location.</p>
+<p>MCE data is stored in “Row,Col” format, where the rows and columns correspond to how
+the pixels are wired to the electronics. This format is useful when debugging electronics
+issues but not so much for viewing data. So, to index raw MCE data you usually call</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mcefile</span> <span class="o">=</span> <span class="n">mce_data</span><span class="o">.</span><span class="n">SmallMCEFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="n">mcedata</span> <span class="o">=</span> <span class="n">mcefile</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">row_col</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Then, <code class="docutils literal notranslate"><span class="pre">mcedata</span></code> will be a 3-dimensional datacube. You index this cube with <code class="docutils literal notranslate"><span class="pre">mcedata[row,</span> <span class="pre">col,</span> <span class="pre">time]</span></code></p>
+<p>The physical layout of the detector has a spatial direction and a spectral direction. To 
+index a pixel using spatial position and spectral position, you either need to reformat
+the <code class="docutils literal notranslate"><span class="pre">mcedata</span></code> object or convert the spatial position and spectral position to a row and column.
+This does the latter.</p>
+<p>The phys_to_mce function in this class will return an index you can use immediately 
+to index an mce_data datacube in order to address a pixel by its physical location.</p>
 <p>This class needs to be able to access the <code class="docutils literal notranslate"><span class="pre">arrayA_map.dat</span></code>, <code class="docutils literal notranslate"><span class="pre">arrayB_map.dat</span></code>, and <code class="docutils literal notranslate"><span class="pre">arrayC_map.dat</span></code> files that specify the mapping
 between pixel locations physically on the array and pixel positions within the MCE data 
 datacube, so when you initialize it either make sure they are present in a folder called 
