@@ -11,9 +11,14 @@ def gaussian(x,sigma,mu,a):
     """I never understood why numpy or scipy don't have their own gaussian function.
     """
     return a*np.exp(-1/2*((x-mu)/(sigma))**2)
+    # e^-a(x+b)^2 -> e^(1/2((x-mu)/sigma)**2) -> e^( 1/(2*sigma^2) (x-mu)^2) their a = my 1/(2sigma^2)
+
+def gaussian_integral(sigma,mu,a):
+    """Same parameter order as my "gaussian" function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx
+    """
+    return a*np.sqrt(np.pi*2)*sigma
+
 # From https://stackoverflow.com/questions/21566379/fitting-a-2d-gaussian-function-using-scipy-optimize-curve-fit-valueerror-and-m
-
-
 def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
     """Good for doing pointing. Doesn't have too many parameters,
     for example we set sigma_x = sigma_y and we don't have a theta.
@@ -34,6 +39,8 @@ def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
 class chi_sq_solver:
     """A chi squared analysis tool I built. I don't know 
     whether it's still useful. Kept around just in case.
+    It might also assume your data is Poisson...
+    Or I've just forgotten how chi squared works?
     """
     def __init__(self,
                  bins,
@@ -212,7 +219,7 @@ def load_data_raw(filename):
 
     :return: A tuple containing 3 numpy arrays:
 
-        0. Chop phase
+        0. Chop phase (whether we're looking at the source or the sky)
         1. Time stamp
         2. Time series data cube as usual from mce_data (use :class:`.ArrayMapper` to index it)
 
@@ -226,7 +233,7 @@ def load_data_raw(filename):
 
         tstimes = ts[0:len(chop),1]  # This is necessary because sometimes the 
         # ts file has an extra data point for some reason (off by 1 error in 
-        # arduino code?)
+        # arduino code or timing error?)
 
     except OSError:
         print("No TS found. Assuming un-chopped data...")
@@ -234,6 +241,16 @@ def load_data_raw(filename):
         tstimes = np.arange(len(mcedata[0,0]))
 
     return (chop,tstimes,mcedata)
+
+def load_data_handle_outliers(filename,mode="labchop"):
+    data = load_data_raw(filename)
+    if mode == "sky":
+        return (data[0],data[1],nd_reject_outliers(data[2]))
+    elif mode == "labchop":
+        chop,ts,datacube = data
+        datacube[:,:,chop==1] = nd_reject_outliers(datacube[:,:,chop==1])
+        datacube[:,:,chop==0] = nd_reject_outliers(datacube[:,:,chop==0])
+        return (chop,ts,datacube)
 
 
 def processChop(filename):
@@ -358,7 +375,14 @@ class ArrayMapper:
         """Return a grid of spectral positions and spatial positions for each mce_row and mce_column
         
         Note that for ease of use the 400 array has 10 added to all its spatial positions, 
-        and the 200 array has 20 added to its spectral positions
+        and the 200 array has 20 added to its spectral positions. If the entries are masked, there
+        is nothing wired to that MCE location (usually indicates broken wires that have been routed
+        around).
+
+        :return: Numpy array of shape (33,24,2). The first two axes match the MCE; axis 0 selects an MCE 
+            row, while axis 1 selects an MCE column. This way if you take 
+            ``np.grid_map()[mce_row,mce_col]`` you get back ``[spatial_position,spectral_position]``
+
         """
         #remember spat spec row col
         spatial_offset_400 = np.zeros_like(self.arrays['a'])
@@ -371,7 +395,9 @@ class ArrayMapper:
         bmap = self.arrays['b'] + spectral_offset_200
         cmap = self.arrays['c']
         full_map = np.concatenate((amap,bmap,cmap))
-        mce_grid = np.zeros((33,24,2),dtype=int)
+        mce_grid = ma.zeros((33,24,2),dtype=int) 
+        mce_grid[:] = ma.masked
+        # print(mce_grid)
         mce_grid[full_map[:,2],full_map[:,3]] = full_map[:,0:2]
 
         return mce_grid
@@ -463,3 +489,6 @@ def nan_helper(y):
     """
 
     return np.logical_or(np.isnan(y),y.mask), lambda z: z.nonzero()[0]
+
+
+
