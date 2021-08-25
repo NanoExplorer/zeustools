@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>zeustools package &mdash; zeustools 0.0.2 documentation</title>
+  <title>zeustools package &mdash; zeustools 0.0.3 documentation</title>
   
 
   
@@ -89,6 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.calibration">zeustools.calibration module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.calibration_pipeline">zeustools.calibration_pipeline module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.codystools">zeustools.codystools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.plotting">zeustools.plotting module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.pointing">zeustools.pointing module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.rooneystools">zeustools.rooneystools module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
@@ -393,6 +394,108 @@ to convert logical indices of NaNs to ‘equivalent’ indices</li>
 </dd></dl>
 
 </div>
+<div class="section" id="module-zeustools.plotting">
+<span id="zeustools-plotting-module"></span><h2>zeustools.plotting module<a class="headerlink" href="#module-zeustools.plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="zeustools.plotting.FakeEvent">
+<em class="property">class </em><code class="descclassname">zeustools.plotting.</code><code class="descname">FakeEvent</code><span class="sig-paren">(</span><em>key</em>, <em>xdata</em>, <em>ydata</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.FakeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Used internally in case you want to manually trigger one of the event handlers</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="zeustools.plotting.ZeusInteractivePlotter">
+<em class="property">class </em><code class="descclassname">zeustools.plotting.</code><code class="descname">ZeusInteractivePlotter</code><span class="sig-paren">(</span><em>data</em>, <em>cube</em>, <em>ts=None</em>, <em>flat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is an awesome object that gives you some of the features of the zalpha script!</p>
+<p>Tested in ipython notebooks, you first need to initialize such that you are plotting interactively.
+This is accomplished by running something like</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">matplotlib</span> <span class="n">notebook</span>
+</pre></div>
+</div>
+<p>Then, you can pass in a data array in mce/flux format (like you would get out of the super naive
+data reduction <code class="docutils literal notranslate"><span class="pre">np.median(-cube[:,:,chop==1],axis=2)+np.median(cube[:,:,chop==0],axis=2)</span></code> or use 
+in <code class="docutils literal notranslate"><span class="pre">plot_array()</span></code> above) and a data cube (raw mce format), call <code class="docutils literal notranslate"><span class="pre">interactive_plot()</span></code> and TA DAH!
+You can now click on any pixel on the array and immediately view its time series. You have a few 
+additional options too:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>Click on a pixel to view its time series</li>
+<li>Right click to view a pixel’s time series and flat time series (if the flat cube is provided)</li>
+</ol>
+<p>3. Middle click (or if that doesn’t work press ‘a’ while hovering) to add a time series without clearing
+the previous one
+4. Press ‘f’ while hovering to add a time series+flat series without clearing
+5. Press ‘c’ while hovering to mask that pixel, removing it from the colorbar calculation and array plot.</p>
+</div></blockquote>
+<p>This is a work in progress, and is not very robust. If you suspect something is wrong, try accessing
+<code class="docutils literal notranslate"><span class="pre">error</span></code> member variable. If it exists it contains the most recent error that occurred. You can also:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">traceback</span>
+<span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span><span class="n">z2ip</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+<span class="n">z2ip</span><span class="o">.</span><span class="n">error</span>
+</pre></div>
+</div>
+<p>that blurb will print the error type and also its traceback. Usually exceptions are thrown
+into Ginnungagap by Trickster God Loki on behalf of the matplotlib event system, so they don’t 
+appear immediately.</p>
+<dl class="method">
+<dt id="zeustools.plotting.ZeusInteractivePlotter.interactive_plot">
+<code class="descname">interactive_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.interactive_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="zeustools.plotting.ZeusInteractivePlotter.onclick">
+<code class="descname">onclick</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onclick" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="zeustools.plotting.ZeusInteractivePlotter.onkey">
+<code class="descname">onkey</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onkey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="zeustools.plotting.get_physical_location">
+<code class="descclassname">zeustools.plotting.</code><code class="descname">get_physical_location</code><span class="sig-paren">(</span><em>xdata</em>, <em>ydata</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.get_physical_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used internally. The center of each pixel is at integer values, so the pixel extends
+from value - 0.5 to value+0.5. Here we correct for that and also tell you which array 
+your pixel is on. Usable with the plot_array and ZeusInteractivePlotter.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="zeustools.plotting.plot_array">
+<code class="descclassname">zeustools.plotting.</code><code class="descname">plot_array</code><span class="sig-paren">(</span><em>somedata</em>, <em>ax=None</em>, <em>s=60</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.plot_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots mce data nicely but in a less advanced way than Bo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>somedata</strong> – this should be an array of size (33,24), i.e., mce data format.
+Each element is the ‘flux’ value of that pixel. This routine will colorize based on flux.</li>
+<li><strong>ax</strong> – a pyplot axis object in case you want to use yours instead of generating a new one.</li>
+<li><strong>s</strong> – size value for the squares representing pixels. Tweak this to your liking.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A tuple containing 3 mpl objects:</p>
+<ol class="arabic simple" start="0">
+<li>scatter plot object</li>
+<li>color bar object</li>
+<li>axis that the plots were added to</li>
+</ol>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">3-Tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <div class="section" id="module-zeustools.pointing">
 <span id="zeustools-pointing-module"></span><h2>zeustools.pointing module<a class="headerlink" href="#module-zeustools.pointing" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -600,7 +703,19 @@ this will return the correct letter to use in <code class="docutils literal notr
 <code class="descname">grid_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.grid_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a grid of spectral positions and spatial positions for each mce_row and mce_column</p>
 <p>Note that for ease of use the 400 array has 10 added to all its spatial positions, 
-and the 200 array has 20 added to its spectral positions</p>
+and the 200 array has 20 added to its spectral positions. If the entries are masked, there
+is nothing wired to that MCE location (usually indicates broken wires that have been routed
+around).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Numpy array of shape (33,24,2). The first two axes match the MCE; axis 0 selects an MCE 
+row, while axis 1 selects an MCE column. This way if you take 
+<code class="docutils literal notranslate"><span class="pre">np.grid_map()[mce_row,mce_col]</span></code> you get back <code class="docutils literal notranslate"><span class="pre">[spatial_position,spectral_position]</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -647,7 +762,9 @@ reuse the <code class="docutils literal notranslate"><span class="pre">am</span>
 <em class="property">class </em><code class="descclassname">zeustools.rooneystools.</code><code class="descname">chi_sq_solver</code><span class="sig-paren">(</span><em>bins</em>, <em>ys</em>, <em>function</em>, <em>guesses</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A chi squared analysis tool I built. I don’t know 
-whether it’s still useful. Kept around just in case.</p>
+whether it’s still useful. Kept around just in case.
+It might also assume your data is Poisson…
+Or I’ve just forgotten how chi squared works?</p>
 <dl class="method">
 <dt id="zeustools.rooneystools.chi_sq_solver.centers">
 <code class="descname">centers</code><span class="sig-paren">(</span><em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.centers" title="Permalink to this definition">¶</a></dt>
@@ -667,8 +784,19 @@ whether it’s still useful. Kept around just in case.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="zeustools.rooneystools.gaussian_integral">
+<code class="descclassname">zeustools.rooneystools.</code><code class="descname">gaussian_integral</code><span class="sig-paren">(</span><em>sigma</em>, <em>mu</em>, <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian_integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same parameter order as my “gaussian” function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="zeustools.rooneystools.histGaussian">
 <code class="descclassname">zeustools.rooneystools.</code><code class="descname">histGaussian</code><span class="sig-paren">(</span><em>something</em>, <em>nbins=50</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.histGaussian" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="zeustools.rooneystools.load_data_handle_outliers">
+<code class="descclassname">zeustools.rooneystools.</code><code class="descname">load_data_handle_outliers</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='labchop'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_handle_outliers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -687,7 +815,7 @@ will be a monotonicall increasing array.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the file name that you want to load.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple containing 3 numpy arrays:<ol class="arabic simple" start="0">
-<li>Chop phase</li>
+<li>Chop phase (whether we’re looking at the source or the sky)</li>
 <li>Time stamp</li>
 <li>Time series data cube as usual from mce_data (use <a class="reference internal" href="#zeustools.rooneystools.ArrayMapper" title="zeustools.rooneystools.ArrayMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayMapper</span></code></a> to index it)</li>
 </ol>

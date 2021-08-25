@@ -24,7 +24,7 @@ copyright = '2020, Christopher Rooney, Bo Peng, Cody Lamarche'
 author = 'Christopher Rooney, Bo Peng, Cody Lamarche'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.2'
+release = '0.0.3'
 
 
 # -- General configuration ---------------------------------------------------

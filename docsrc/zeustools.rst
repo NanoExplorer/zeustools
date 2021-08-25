@@ -36,6 +36,13 @@ zeustools.codystools module
    :undoc-members:
    :show-inheritance:
 
+zeustools.plotting module
+-----------------------------
+
+.. automodule:: zeustools.plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 zeustools.pointing module
 -------------------------
