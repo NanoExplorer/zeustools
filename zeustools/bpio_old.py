@@ -1,9 +1,8 @@
 import numpy as np
-import pandas
+
 
 def extract_one_spatial_position(a, spat):
-    """ DEPRECATED, since Bo's script now uses different formatting
-    Takes the numpy z file from Bo's script and return a 1-d spectrum
+    """ Takes the numpy z file from Bo's script and return a 1-d spectrum
     of a single spatial position.
 
     :param a: this is the npz load object, loaded from Bo's reduction script
@@ -25,27 +24,20 @@ def extract_one_spatial_position(a, spat):
 
 
 def load_data_and_extract(fname, spat):
-    """ Automatically loads an csv file from Bo's reduction script
+    """ Automatically loads an npz file from Bo's reduction script
     and returns a 1-d spectrum of a single spatial position.
 
     :param fname: this is the filename of the .npz file from Bo's script
     :param spat: This is the spatial position you would like to extract.
-    :return: tuple of: 1d array of spatial position, 1d array of spectrum, 
-        spatial position, and 1d array of noise. Both sig and noise arrays are masked
-        arrays, where the mask has been set to True for nans
+    :return: a 4xn array, where return[0:4] are spatial position, signal, noise, and
+        weight.
     """
-    signal = ma.array(pandas.read_csv(fname).iloc[spat,4:])
-    noise = ma.array(pandas.read_csv(fname.replace("flux","err")).iloc[spat,4:])
-    nan_idx = np.logical_or(np.isnan(signal),np.isnan(noise))
-    signal[nan_idx] = ma.masked
-    noise[nan_idx] = ma.masked
-    spatial_position = np.arange(len(signal))
-    return spatial_position,signal,noise
+    a = np.load(fname)
+    return extract_one_spatial_position(a, spat)
 
 
 def extract_from_beamfile(fname, beam, spat, arrnums):
-    """  DEPRECATED, since Bo's script now uses different formatting
-    Sometimes you want to read out the reduced data for individual 
+    """ Sometimes you want to read out the reduced data for individual 
     beams from Bo's reduction script. This is the function that handles that.
     Given a filename, this will grab one spatial position from that beam.
 

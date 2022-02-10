@@ -1,115 +1,22 @@
 import numpy as np
-from astropy import units
-from astropy import constants as const
-import configparser
-import matplotlib
-from matplotlib import pyplot as plt 
-import sys
-from zeustools.bpio import load_data_and_extract, extract_from_beamfile
-from zeustools.calibration import flat_to_wm2
+from astropy import units as units
+from astropy import constants as consts
+import scipy.interpolate as interp
+import pandas
 
+class TransmissionHelper:
+    def __init__(self,file):
+        table=pandas.read_csv(file)
+        self.freqs = table.iloc[:,0]
+        self.transmissions = table.iloc[:,1:]
+        self.pwvs = np.array(table.columns[1:],dtype=float)
 
-font = {'size': 18}
-matplotlib.rc('figure', figsize=(8, 6))
-matplotlib.rc('font', **font)
+    def interp(self,freq,pwv):
+        return interp.interpn((self.freqs,self.pwvs),self.transmissions,(freq,pwv))
 
-
-def flux_calibration(data,
-                     flat_flux_density,  # W/m^2/bin
-                     ):
-    spec_pos,sig,noise = data
-    
-    scaled_signal = sig * flat_flux_density 
-    
-    scaled_err = noise * flat_flux_density
-    return (spec_pos, scaled_signal, scaled_err)
-
-
-def wavelength_calibration(data,
-                           position_of_line,
-                           bin_width  # km/s
-                           ):
-    spec_pos, _, _ = data
-    velocity = (spec_pos - position_of_line) * bin_width
-    return (velocity, data[1], data[2])
-
-
-def cut(data, min_px, max_px):
-    out = []
-    for i in data:
-        out.append(i[min_px:max_px])
-    return out
-
-
-def shift_and_add(data1, data2, px1, px2):
-    """
-    takes in two spectra. Shifts the second one spectrally by px_offset
-    to align the line pixel between the two runs. Weights the spectra appropriately
-    TODO: use np.average to clean up this mess.
-    """
-    spec,sig,noise = data1
-    spec2,sig2,noise2 = data2
-
-    nan_idxs = np.isnan(sig)
-    nan_idx2 = np.isnan(sig2)
-
-    sig[nan_idxs] = 0
-    sig2[nan_idx2] = 0
-    noise[nan_idxs] = 10e10
-    noise2[nan_idx2] = 10e10
-    spec -= px1
-    spec2 -= px2 
-    #That shifts the spectral pixel number so that the line is on position "0" 
-
-    allspecs = np.append(spec, spec2)
-    minspec = np.min(allspecs)
-    maxspec = np.max(allspecs)
-    outspec = np.arange(minspec, maxspec+1, dtype=int)
-    outsig = np.zeros_like(outspec, dtype=float)
-    outnoise= np.zeros_like(outspec, dtype=float)
-    idx = (np.isin(outspec, spec)).nonzero()[0]
-    idx2 = np.isin(outspec, spec2).nonzero()[0]
-    outsig[idx] += sig/noise**2
-    outsig[idx2] += sig2/noise2**2
-    outnoise[idx] += 1/noise**2
-    outnoise[idx2] += 1/noise2**2
-    outnoise = 1/outnoise
-    outsig = outsig*outnoise
-    outnoise = np.sqrt(outnoise)
-    outsig[nan_idxs] = np.nan
-    return(outspec, outsig, outnoise)
-
-
-def get_drop_indices(spec_pos,px_to_drop):
-    line_px =np.array(px_to_drop)[:,None]
-    boolarray = np.all(spec_pos != line_px,axis=0)
-    return boolarray.nonzero()[0]
-
-
-def contsub(data,line_px):
-    spec_pos, sig, err = data 
-    idxs = get_drop_indices(spec_pos, line_px)
-    #print(sig)
-    #print(idxs)
-    continuum = np.average(sig[idxs], weights=1/err[idxs]**2)
-    #print(idxs)
-    return (spec_pos,sig-continuum, err)
-
-
-def getcsvspec(label,spec):
-    stringout = label+', '
-    for i in spec:
-        stringout += str(i)+", "
-    return stringout
-
-
-def plot_spec(spec,saveas):
-    line = plt.step(spec[0], spec[1], where='mid')
-    lncolor = line[0].get_c()
-    plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
-    plt.savefig(saveas, dpi=300)
-    plt.close()
-
+def airmass_factor(elev):
+    elev = elev*pi/180
+    return(np.sin(elev))
 
 def run_pipeline():
     #Load in configuration values, and parse them into correct data types

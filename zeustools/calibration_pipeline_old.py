@@ -17,21 +17,21 @@ matplotlib.rc('font', **font)
 def flux_calibration(data,
                      flat_flux_density,  # W/m^2/bin
                      ):
-    spec_pos,sig,noise = data
+    spec_pos,sig,noise,wt = data
     
     scaled_signal = sig * flat_flux_density 
     
     scaled_err = noise * flat_flux_density
-    return (spec_pos, scaled_signal, scaled_err)
+    return (spec_pos, scaled_signal, scaled_err,wt)
 
 
 def wavelength_calibration(data,
                            position_of_line,
                            bin_width  # km/s
                            ):
-    spec_pos, _, _ = data
+    spec_pos, _, _, _ = data
     velocity = (spec_pos - position_of_line) * bin_width
-    return (velocity, data[1], data[2])
+    return (velocity, data[1], data[2], data[3])
 
 
 def cut(data, min_px, max_px):
@@ -47,8 +47,8 @@ def shift_and_add(data1, data2, px1, px2):
     to align the line pixel between the two runs. Weights the spectra appropriately
     TODO: use np.average to clean up this mess.
     """
-    spec,sig,noise = data1
-    spec2,sig2,noise2 = data2
+    spec,sig,noise,wt = data1
+    spec2,sig2,noise2,wt2 = data2
 
     nan_idxs = np.isnan(sig)
     nan_idx2 = np.isnan(sig2)
@@ -77,7 +77,7 @@ def shift_and_add(data1, data2, px1, px2):
     outsig = outsig*outnoise
     outnoise = np.sqrt(outnoise)
     outsig[nan_idxs] = np.nan
-    return(outspec, outsig, outnoise)
+    return(outspec, outsig, outnoise, None)
 
 
 def get_drop_indices(spec_pos,px_to_drop):
@@ -87,13 +87,13 @@ def get_drop_indices(spec_pos,px_to_drop):
 
 
 def contsub(data,line_px):
-    spec_pos, sig, err = data 
+    spec_pos, sig, err, wt = data 
     idxs = get_drop_indices(spec_pos, line_px)
     #print(sig)
     #print(idxs)
     continuum = np.average(sig[idxs], weights=1/err[idxs]**2)
     #print(idxs)
-    return (spec_pos,sig-continuum, err)
+    return (spec_pos,sig-continuum, err, wt)
 
 
 def getcsvspec(label,spec):
@@ -154,6 +154,10 @@ def run_pipeline():
         #not defined it just returns none.
         #I dont know how I feel 
         #about that
+        usebeamspec = rsett.getboolean("use_beamspec")
+        if usebeamspec:
+            beamnum = rsett.getint('beam_number')
+            bs_arrnum=rsett.getint('beamspec_array_number')
 
         #Get the per-data-chunk values
         sky_transp = rsett.getfloat("atm_transmission")
@@ -162,8 +166,15 @@ def run_pipeline():
         maxpx = rsett.getint("max_spec_px")
 
         #load this data chunk, and chop off pixels we don't like
-
-        data = load_data_and_extract(rsett["path"], spatial_position)
+        if usebeamspec:
+            data = extract_from_beamfile(rsett['path'],beamnum*2,spatial_position,bs_arrnum)
+            data2 = extract_from_beamfile(rsett['path'],beamnum*2+1,spatial_position,bs_arrnum)
+            addedsig = -data[1]+data2[1]
+            addednoise = np.sqrt(data[2]**2+data2[2]**2)
+            addedwt = data[3]+data2[3]
+            data = np.array([data[0],addedsig,addednoise,addedwt])
+        else:
+            data = load_data_and_extract(rsett["path"], spatial_position)
         data = cut(data,minpx,maxpx)
 
         if docalib:
@@ -179,7 +190,15 @@ def run_pipeline():
             flat_flux_value = flat_flux_value/sky_transp/ptcoup/teleff
             #Apply that scaling to the data
             data = flux_calibration(data,flat_flux_value)
-
+        if unflatten:
+            #load in the flat file
+            flatpath = rsett['path'].replace("final_spec","flat")
+            if usebeamspec:
+                raise RuntimeError("beamspec not yet implemented with unflattening")
+            flat = load_data_and_extract(flatpath,spatial_position)
+            flatcut = cut(flat,minpx,maxpx)
+            #multiply the flattened data by the flat to get back the original data
+            data = data * flatcut
         plot_spec((data[0]-spec_pos,data[1],data[2],data[3]),f"{outputfile}_{rsett.name}.png")
         reductions.append((data,spec_pos))
 
