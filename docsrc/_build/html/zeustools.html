@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>zeustools package &mdash; zeustools 0.0.2 documentation</title>
+  <title>zeustools package &mdash; zeustools 0.0.3 documentation</title>
   
 
   
@@ -600,7 +600,19 @@ this will return the correct letter to use in <code class="docutils literal notr
 <code class="descname">grid_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.grid_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a grid of spectral positions and spatial positions for each mce_row and mce_column</p>
 <p>Note that for ease of use the 400 array has 10 added to all its spatial positions, 
-and the 200 array has 20 added to its spectral positions</p>
+and the 200 array has 20 added to its spectral positions. If the entries are masked, there
+is nothing wired to that MCE location (usually indicates broken wires that have been routed
+around).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Numpy array of shape (33,24,2). The first two axes match the MCE; axis 0 selects an MCE 
+row, while axis 1 selects an MCE column. This way if you take 
+<code class="docutils literal notranslate"><span class="pre">np.grid_map()[mce_row,mce_col]</span></code> you get back <code class="docutils literal notranslate"><span class="pre">[spatial_position,spectral_position]</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -647,7 +659,9 @@ reuse the <code class="docutils literal notranslate"><span class="pre">am</span>
 <em class="property">class </em><code class="descclassname">zeustools.rooneystools.</code><code class="descname">chi_sq_solver</code><span class="sig-paren">(</span><em>bins</em>, <em>ys</em>, <em>function</em>, <em>guesses</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A chi squared analysis tool I built. I don’t know 
-whether it’s still useful. Kept around just in case.</p>
+whether it’s still useful. Kept around just in case.
+It might also assume your data is Poisson…
+Or I’ve just forgotten how chi squared works?</p>
 <dl class="method">
 <dt id="zeustools.rooneystools.chi_sq_solver.centers">
 <code class="descname">centers</code><span class="sig-paren">(</span><em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.centers" title="Permalink to this definition">¶</a></dt>
@@ -667,8 +681,19 @@ whether it’s still useful. Kept around just in case.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="zeustools.rooneystools.gaussian_integral">
+<code class="descclassname">zeustools.rooneystools.</code><code class="descname">gaussian_integral</code><span class="sig-paren">(</span><em>sigma</em>, <em>mu</em>, <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian_integral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same parameter order as my “gaussian” function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="zeustools.rooneystools.histGaussian">
 <code class="descclassname">zeustools.rooneystools.</code><code class="descname">histGaussian</code><span class="sig-paren">(</span><em>something</em>, <em>nbins=50</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.histGaussian" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="zeustools.rooneystools.load_data_handle_outliers">
+<code class="descclassname">zeustools.rooneystools.</code><code class="descname">load_data_handle_outliers</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='labchop'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_handle_outliers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -687,7 +712,7 @@ will be a monotonicall increasing array.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the file name that you want to load.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple containing 3 numpy arrays:<ol class="arabic simple" start="0">
-<li>Chop phase</li>
+<li>Chop phase (whether we’re looking at the source or the sky)</li>
 <li>Time stamp</li>
 <li>Time series data cube as usual from mce_data (use <a class="reference internal" href="#zeustools.rooneystools.ArrayMapper" title="zeustools.rooneystools.ArrayMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayMapper</span></code></a> to index it)</li>
 </ol>

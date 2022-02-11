@@ -242,15 +242,47 @@ def load_data_raw(filename):
 
     return (chop,tstimes,mcedata)
 
+
 def load_data_handle_outliers(filename,mode="labchop"):
     data = load_data_raw(filename)
     if mode == "sky":
         return (data[0],data[1],nd_reject_outliers(data[2]))
     elif mode == "labchop":
         chop,ts,datacube = data
+        datacube = ma.array(datacube)  # assigning ma.masked to a normal array does nothing...
         datacube[:,:,chop==1] = nd_reject_outliers(datacube[:,:,chop==1])
         datacube[:,:,chop==0] = nd_reject_outliers(datacube[:,:,chop==0])
         return (chop,ts,datacube)
+
+
+def get_ts_time_offset(filename):
+    """ Turns out that it's not straightforward what's going on between
+    the gps card (and therefore the info in the .ts file) and the time
+    on the pc (ie, what you get when you call datetime.now() or CTIME).
+
+    I thought it could be like the TAI/GPS/leap second stuff, but that isn't 
+    really it either. (unless the MCE PC clock is set to TAI somehow.)
+    
+    Anyway, this method returns gps_card_time - pc_time by looking
+    at the run file and the ts file. The run file contains the pc_time
+    that mce_run was launched, and the ts file contains the gps_card_time
+    of the first data point.
+
+    Note, I do not do this here, but you could also check date modified
+    for the data file and the run file---the runfile is written before data
+    collection is commenced, and obviously the data file has to be modified
+    after the last data point is collected. or the last entry in the ts file
+
+    returns t_GPS - t_PC = t_offset
+    so 
+    t_GPS = t_offset + t_PC (i.e. add return value to PC time to convert so 
+    it matches GPS time)
+    """
+
+    mcefile = mce_data.SmallMCEFile(filename)
+    pc_time = int(mcefile.runfile.data['FRAMEACQ']['CTIME'].strip())
+    gps_times = np.loadtxt(f"{filename}.ts")
+    return gps_times[0][1]-pc_time
 
 
 def processChop(filename):
@@ -488,7 +520,40 @@ def nan_helper(y):
         >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
     """
 
-    return np.logical_or(np.isnan(y),y.mask), lambda z: z.nonzero()[0]
+    return np.isnan(y), lambda z: z.nonzero()[0]
 
+
+def cube_nan_interpolator(cube):
+    #despite its name, this function will also interp over masked values
+    
+    rows,cols,times = cube.shape
+    #flatcube = cube.reshape(rows*cols,times)
+    cube.fill_value=np.nan
+    filledcube = cube.filled()
+    for i in range(rows):
+        for j in range(cols):
+            nans,x = nan_helper(filledcube[i,j])
+            filledcube[i,j,nans] = np.interp(x(nans),x(~nans),filledcube[i,j,~nans])
+            
+    return filledcube
+    
+
+def big_signal_bad_px_finder(chop,cube,corrthresh=0.5):
+    # uses correlation coefficients to attempt to detect good pixels.
+    # Correlates the cube against the chop signal, so only expect this to work
+    # on sources with big signals.
+    #Note that this returns a FLAG array. So true means bad pixel.
+    rows,cols,times = cube.shape
+    
+    interpedcube = cube_nan_interpolator(cube)
+    
+    flatcube = interpedcube.reshape(rows*cols,times)
+
+    corrcoeff = np.corrcoef(chop,flatcube)[0][1:].reshape(rows,cols)
+    #we did some fancy index magic there. The corrcoef is a matrix of size rows*cols x rows*cols
+    #and it's symmetrical. We only want the correlation with the chop signal (hence the [0]).
+    #And we don't need to know that chop-chop correlation === 1 (hence the [1:].
+    
+    return np.abs(corrcoeff) < corrthresh
 
 

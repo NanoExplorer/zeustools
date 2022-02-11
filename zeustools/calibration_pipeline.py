@@ -47,8 +47,8 @@ def shift_and_add(data1, data2, px1, px2):
     to align the line pixel between the two runs. Weights the spectra appropriately
     TODO: use np.average to clean up this mess.
     """
-    spec,sig,noise,wt = data1
-    spec2,sig2,noise2,wt2 = data2
+    spec, sig, noise, wt = data1
+    spec2, sig2, noise2, wt2 = data2
 
     nan_idxs = np.isnan(sig)
     nan_idx2 = np.isnan(sig2)
@@ -59,14 +59,14 @@ def shift_and_add(data1, data2, px1, px2):
     noise2[nan_idx2] = 10e10
     spec -= px1
     spec2 -= px2 
-    #That shifts the spectral pixel number so that the line is on position "0" 
+    # That shifts the spectral pixel number so that the line is on position "0" 
 
     allspecs = np.append(spec, spec2)
     minspec = np.min(allspecs)
     maxspec = np.max(allspecs)
     outspec = np.arange(minspec, maxspec+1, dtype=int)
     outsig = np.zeros_like(outspec, dtype=float)
-    outnoise= np.zeros_like(outspec, dtype=float)
+    outnoise = np.zeros_like(outspec, dtype=float)
     idx = (np.isin(outspec, spec)).nonzero()[0]
     idx2 = np.isin(outspec, spec2).nonzero()[0]
     outsig[idx] += sig/noise**2
@@ -80,23 +80,23 @@ def shift_and_add(data1, data2, px1, px2):
     return(outspec, outsig, outnoise, None)
 
 
-def get_drop_indices(spec_pos,px_to_drop):
-    line_px =np.array(px_to_drop)[:,None]
-    boolarray = np.all(spec_pos != line_px,axis=0)
+def get_drop_indices(spec_pos, px_to_drop):
+    line_px = np.array(px_to_drop)[:, None]
+    boolarray = np.all(spec_pos != line_px, axis=0)
     return boolarray.nonzero()[0]
 
 
-def contsub(data,line_px):
+def contsub(data, line_px):
     spec_pos, sig, err, wt = data 
     idxs = get_drop_indices(spec_pos, line_px)
-    #print(sig)
-    #print(idxs)
+    # print(sig)
+    # print(idxs)
     continuum = np.average(sig[idxs], weights=1/err[idxs]**2)
-    #print(idxs)
-    return (spec_pos,sig-continuum, err, wt)
+    # print(idxs)
+    return (spec_pos, sig-continuum, err, wt)
 
 
-def getcsvspec(label,spec):
+def getcsvspec(label, spec):
     stringout = label+', '
     for i in spec:
         stringout += str(i)+", "

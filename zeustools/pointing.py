@@ -21,7 +21,7 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
     :rtype: numpy.array
     """
     # Determine number of beams on a side
-    num_steps=arr.shape[0]
+    num_steps = arr.shape[0]
         
     # Determine distance from left beam to right beam in arcsec
     boxsize = (num_steps-1)*stepsize
@@ -31,42 +31,42 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
 
     # Create default bounding box (I felt like this was too complicated to put directly into the call signature)
     if bounds is None:
-        bounds= ((-np.inf,-boxbound*1.5,-boxbound*1.5,stepsize,-np.inf),
-                 (np.inf,boxbound*1.5,boxbound*1.5,boxsize*1.5,np.inf))
+        bounds = ((-np.inf, -boxbound*1.5, -boxbound*1.5, stepsize, -np.inf),
+                  (np.inf, boxbound*1.5, boxbound*1.5, boxsize*1.5, np.inf))
 
     # Need a 1d array for fitting...
     data = arr.ravel()
 
     # generate a grid of coordinates in arcset offset to feed to the fitting routine
-    x = np.linspace(-boxbound,boxbound,num_steps)
-    y = np.linspace(-boxbound,boxbound,num_steps)
+    x = np.linspace(-boxbound, boxbound, num_steps)
+    y = np.linspace(-boxbound, boxbound, num_steps)
     x, y = np.meshgrid(x, y)
 
     try:
-        #Run the fitting routine!
+        # Run the fitting routine!
         popt, pcov = opt.curve_fit(zt.twoD_Gaussian, 
                                    (x, y), 
                                    data, 
                                    p0=initial_guess,
                                    bounds=bounds)
-        #Use the result to print the offset command needed for input into APECS
+        # Use the result to print the offset command needed for input into APECS
         print(f"apply pcorr {popt[1]:.1f}, {popt[2]:.1f}")
 
-        #Everyone wants to see the FWHM not the gaussian sigma, so do that conversion
+        # Everyone wants to see the FWHM not the gaussian sigma, so do that conversion
         fwhm = 2*np.sqrt(2*np.log(2))*popt[3]
         print(f"source amplitude: {popt[0]:.0f}, source fwhm: {fwhm:.2f}")
         print(f"baseline: {popt[4]:.0f}")
     except RuntimeError:
-        #Whoops, the fit routine failed. 
-        #ones we want to worry about!!
+        # Whoops, the fit routine failed. 
+        # ones we want to worry about!!
         print("Could not find source. Consider passing in your own initial_guess")
         print("initial_guess=(amplitude, az offset, alt offset, size, baseline)")
-        popt=(1,0,0,1,0)
+        popt = (1, 0, 0, 1, 0)
         traceback.print_exc()
 
     if do_plot:
-        #Create a new grid for the plotting routine
-        #This goes to the EDGES of each square instead of the centers.
+        # Create a new grid for the plotting routine
+        # This goes to the EDGES of each square instead of the centers.
         box = num_steps*stepsize/2
         fx = np.linspace(-box, box, 50)
         fy = np.linspace(-box, box, 50)
@@ -74,7 +74,7 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
 
         data_fitted = zt.twoD_Gaussian((fx, fy), *popt)
         fig, ax = plt.subplots(1, 1)
-        #pxcorr = stepsize/2
+        # pxcorr = stepsize/2
         ax.imshow(arr, origin='bottom',
                   extent=(fx.min(), fx.max(), fy.min(), fy.max()))
         ax.contour(fx, fy, data_fitted.reshape(50, 50), 4, colors='w')
@@ -83,7 +83,7 @@ def raster_calc(arr, stepsize, initial_guess=(1000, 0, 0, 8, 0), do_plot=True, b
     return popt
 
 
-def raster_load(filestem,firstnum,sidesize,pixels, existing_data=[]):
+def raster_load(filestem, firstnum, sidesize, pixels, existing_data=[]):
     """Load in and plot a pointing raster scan. 
     Modifies the existing_data array to contain newly-loaded information.
 
@@ -99,48 +99,48 @@ def raster_load(filestem,firstnum,sidesize,pixels, existing_data=[]):
     :return: amplitudes of signal at each pointing position
     :rtype: numpy.array
     """
-    altaz = np.zeros((sidesize,sidesize))
-    alt=0
-    az=0
-    going=+1
-    pixels=np.array(pixels)
-    for filenumber in range(firstnum,firstnum+sidesize**2):
+    altaz = np.zeros((sidesize, sidesize))
+    alt = 0
+    az = 0
+    going = +1
+    pixels = np.array(pixels)
+    for filenumber in range(firstnum, firstnum+sidesize**2):
         # make the file name formatted properly
-        filenum=f"{filenumber:04d}"
-        totalsig=0
+        filenum = f"{filenumber:04d}"
+        totalsig = 0
         # if there are existing data, use them instead:
         # TODO: could do snake subtraction and other post-processing
-        if filenumber-firstnum<len(existing_data):
-            chop_on,ts_on,chop_off,ts_off=existing_data[filenumber-firstnum]
-            for row,col in pixels:
-                sig=np.median(chop_on[row,col])-np.median(chop_off[row,col])
-                totalsig+=sig
+        if filenumber-firstnum < len(existing_data):
+            chop_on, ts_on, chop_off, ts_off = existing_data[filenumber-firstnum]
+            for row, col in pixels:
+                sig = np.median(chop_on[row, col])-np.median(chop_off[row, col])
+                totalsig += sig
         else:
             try:
-                chop_on,ts_on,chop_off,ts_off=zt.processChop(f"{filestem}{filenum}")
-                existing_data.append((chop_on,ts_on,chop_off,ts_off))
-                for row,col in pixels:
-                    sig=np.median(chop_on[row,col])-np.median(chop_off[row,col])
-                    totalsig+=sig
+                chop_on, ts_on, chop_off, ts_off = zt.processChop(f"{filestem}{filenum}")
+                existing_data.append((chop_on, ts_on, chop_off, ts_off))
+                for row, col in pixels:
+                    sig = np.median(chop_on[row, col])-np.median(chop_off[row, col])
+                    totalsig += sig
             except FileNotFoundError:
                 pass
 
-        #Each row of the raster goes in a different direction.
-        #making a zigzag pattern:
+        # Each row of the raster goes in a different direction.
+        # making a zigzag pattern:
         # ----->
         # ^
         # <-----
         #      ^
         # ----->
-        altaz[alt,az]=totalsig
-        if az==sidesize-1 and going==1:
-            alt+=1
+        altaz[alt, az] = totalsig
+        if az == sidesize-1 and going == 1:
+            alt += 1
             going = -going
-        elif az==0 and going==-1:
-            alt+=1
+        elif az == 0 and going == -1:
+            alt += 1
             going = -going
         else:
-            az+= going
+            az += going
     return(altaz)
 
 
@@ -148,10 +148,10 @@ class CachingRaster:
     """Reduces latency on the raster_plot function by only loading in each mce datafile once"""
 
     def __init__(self):
-        self.known_rasters=[]
-        self.cached_data=[]
+        self.known_rasters = []
+        self.cached_data = []
     
-    def go(self,filestem,start_filename,num_beams,pixels):
+    def go(self, filestem, start_filename, num_beams, pixels):
         """Load in pointing raster scan. NOW WITH CACHING! FOR ALL YOUR LOW-LATENCY PLOTTING NEEDS.
         This is a wrapper around raster_load, and has the same paramters except existing_data.
 
@@ -169,25 +169,25 @@ class CachingRaster:
         :rtype: numpy.array
         """
 
-        #make a unique name for the scan
-        #TODO: why am I not using a dictionary?
-        raster_name=(filestem,start_filename,num_beams)
+        # make a unique name for the scan
+        # TODO: why am I not using a dictionary?
+        raster_name = (filestem, start_filename, num_beams)
         if raster_name in self.known_rasters:
             i = self.known_rasters.index(raster_name)
-            dat=raster_load(*raster_name,
-                            pixels,
-                            existing_data=self.cached_data[i])
+            dat = raster_load(*raster_name,
+                              pixels,
+                              existing_data=self.cached_data[i])
         else:
             self.known_rasters.append(raster_name)
-            new_cached_data=[]
-            dat=raster_load(*raster_name,
-                            pixels,
-                            existing_data=new_cached_data)
+            new_cached_data = []
+            dat = raster_load(*raster_name,
+                              pixels,
+                              existing_data=new_cached_data)
             self.cached_data.append(new_cached_data)          
         return dat 
 
 
-def pfRaster(filestem,firstnum,sidesize):
+def pfRaster(filestem, firstnum, sidesize):
     """ Uses the .pf files generated by the acquisition software to make a raster
     
     :param filestem: The folder that contains date folders. 
@@ -199,61 +199,61 @@ def pfRaster(filestem,firstnum,sidesize):
     :return: amplitudes of signal at each pointing position
     :rtype: numpy.array
     """
-    altaz = np.zeros((sidesize,sidesize))
-    alt=0
-    az=0
-    going=+1
-    for filenumber in range(firstnum,firstnum+sidesize**2):
-        filenum=f"{filenumber:04d}"
-        good_data=zt.readPf(f"{filestem}{filenum}.pf")
-        #print(f"{np.mean(good_data):.1f}")
-        altaz[alt,az]=np.mean(good_data)
-        if az==sidesize-1 and going==1:
-            alt+=1
+    altaz = np.zeros((sidesize, sidesize))
+    alt = 0
+    az = 0
+    going = +1
+    for filenumber in range(firstnum, firstnum+sidesize**2):
+        filenum = f"{filenumber:04d}"
+        good_data = zt.readPf(f"{filestem}{filenum}.pf")
+        # print(f"{np.mean(good_data):.1f}")
+        altaz[alt, az] = np.mean(good_data)
+        if az == sidesize-1 and going == 1:
+            alt += 1
             going = -going
-        elif az==0 and going==-1:
-            alt+=1
+        elif az == 0 and going == -1:
+            alt += 1
             going = -going
         else:
-            az+= going
+            az += going
     return(altaz)
 
 
-def make_spectral_pointing_plots(date,fstem,fnums,specs,spats,array='a'):
-    am=zt.ArrayMapper()
+def make_spectral_pointing_plots(date, fstem, fnums, specs, spats, array='a'):
+    am = zt.ArrayMapper()
     for i in fnums:
-        fname=zt.makeFileName(date, fstem, i)
-        values3=zt.processChopBetter(fname)
+        fname = zt.makeFileName(date, fstem, i)
+        values3 = zt.processChopBetter(fname)
 
         for spat_pos in spats:
-            pixels=[(x, spat_pos, array) for x in specs]
+            pixels = [(x, spat_pos, array) for x in specs]
             for p in pixels:
-                mce_loc2=am.phys_to_mce(*p)
-                pxwant=values3[mce_loc2]
+                mce_loc2 = am.phys_to_mce(*p)
+                pxwant = values3[mce_loc2]
                 plt.plot(pxwant[:-1:2]-pxwant[1::2], label=f"spec {p[0]}")
             plt.legend()
             plt.title(f"spatial position {spat_pos} of file {fname}")
             plt.show()
-            #plt.close()
+            # plt.close()
 
 # stuff
 
 
-def make_added_pointing_plots(date,fstem,fnums,specs,spats):
-    am=zt.ArrayMapper()
+def make_added_pointing_plots(date, fstem, fnums, specs, spats):
+    am = zt.ArrayMapper()
     for i in fnums:
-        fname = zt.makeFileName(date,fstem,i)
+        fname = zt.makeFileName(date, fstem, i)
         values3 = zt.processChopBetter(fname)
 
         for spat_pos in spats:
-            pixels = [(x,spat_pos,'a') for x in specs]
+            pixels = [(x, spat_pos, 'a') for x in specs]
             addedsig = np.zeros(values3.shape[2]//2)
             for p in pixels:
-                mce_loc2=am.phys_to_mce(*p)
-                pxwant=values3[mce_loc2]
-                addedsig+=pxwant[:-1:2]-pxwant[1::2]
-            plt.plot(addedsig,label=f"spec {p[0]}")
+                mce_loc2 = am.phys_to_mce(*p)
+                pxwant = values3[mce_loc2]
+                addedsig += pxwant[:-1:2]-pxwant[1::2]
+            plt.plot(addedsig, label=f"spec {p[0]}")
             plt.legend()
             plt.title(f"spatial position {spat_pos} of file {fname}")
             plt.show()
-            #plt.close()
+            # plt.close() 
