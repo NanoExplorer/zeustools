@@ -79,6 +79,23 @@ def shift_and_add(data1, data2, px1, px2):
     outsig[nan_idxs] = np.nan
     return(outspec, outsig, outnoise)
 
+# def shift_add(data,line_px):
+# 	"""
+# 	takes in a bunch of spectra, then aligns them and does a weighted average
+# 	params: list of data spectra
+# 	line_px: list of the spectral positions with lines 
+#   In-progress improvement to shift_and_add
+# 	"""
+
+# 	# create an array to hold the result
+# 	specs = np.array([spec - i for (spec,_,_),i in zip(data,line_pix)])
+# 	final_spec = np.arange(np.min(specs.flatten()),np.max(specs.flatten()))
+
+
+
+
+
+
 
 def get_drop_indices(spec_pos,px_to_drop):
     line_px =np.array(px_to_drop)[:,None]
