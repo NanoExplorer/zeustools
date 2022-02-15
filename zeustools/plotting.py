@@ -2,13 +2,18 @@ import numpy as np
 from matplotlib import pyplot as plt
 import zeustools as zt
 from numpy import ma
+from matplotlib.colors import ListedColormap
+from enum import Enum
 
 am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
-#When you import plotting.py you'd better have a 'config' directory in your working directory or else.
-# TODO: fix this
+#Whenever you import plotting.py you'd better have a 'config' directory in your working directory or else.
+#HAHA THAT INLCUDES BUILDING THE DOCS 
+# TODO: fix this. I think the arraymapper should have a default config somehow
+
+BAD_DATA_CMAP = ListedColormap(["tab:orange","deeppink"])
 
 
-def plot_array(somedata,ax=None,s=60):
+def plot_array(somedata,ax=None,s=60,bad_px=False):
     """ Plots mce data nicely but in a less advanced way than Bo.
 
     :param somedata: this should be an array of size (33,24), i.e., mce data format.
@@ -38,8 +43,14 @@ def plot_array(somedata,ax=None,s=60):
         
     #This makes a scatter plot. A square shaped marker is placed at every spectral and spatial
     #position, colored according to the flux value of that pixel.
-    stuff= ax.scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=somedata,s=s,marker='s')
+    stuff= ax.scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=somedata.filled(),s=s,marker='s')
     cb = plt.colorbar(stuff,orientation='horizontal',ax=ax,aspect=50,fraction=0.05,shrink=0.9,pad=0.07)
+    
+    if bad_px:
+        baddata = somedata.copy()
+        baddata.mask = np.logical_not(somedata.mask)
+        ax.scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=baddata.filled(),s=s,marker='s',cmap=BAD_DATA_CMAP)
+
     #The sizing of the colorbar is really fineagely. Might need to work on that TODO: sometime.
     return stuff,cb,ax
 
@@ -51,7 +62,7 @@ class FakeEvent:
         self.xdata=xdata
         self.ydata=ydata
         self.button=key
-        
+
 
 def get_physical_location(xdata,ydata):
     """ Used internally. The center of each pixel is at integer values, so the pixel extends
@@ -109,9 +120,9 @@ class ZeusInteractivePlotter():
     that blurb will print the error type and also its traceback. Usually exceptions are thrown
     into Ginnungagap by Trickster God Loki on behalf of the matplotlib event system, so they don't 
     appear immediately.
-
     """
-    def __init__(self,data,cube,ts=None,flat=None):
+    def __init__(self,data,cube,ts=None,flat=None,chop=None):
+
         self.data=data
         self.data.fill_value=np.nan
         self.cube=cube
@@ -124,14 +135,16 @@ class ZeusInteractivePlotter():
         self.ax = None
         self.ax2 = None
         self.debug = False  # if true, prints status messages directly onto the plot.
-        
+        self.badpx = True  # whether to show bad pixels.
+        self.badpx_corr_thresh = 0.5
+        self.chop = chop
+
     def interactive_plot(self):
         self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
                                                    gridspec_kw={'height_ratios':self.heightratio},
                                                    figsize=self.figsize)
-        self.scatter,self.cb,_=plot_array(self.data.filled(),ax=self.ax,s=self.markersize) 
-        # _ above would be === self.ax already
-        
+        self.redraw_top_plot()
+
         self.fig.tight_layout()
 
         if self.debug: self.text=self.ax.text(0,5, "Information appears here", va="bottom", ha="left")
@@ -142,6 +155,51 @@ class ZeusInteractivePlotter():
             self.ts = np.arange(self.cube.shape[2])
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onkey)
+
+    def redraw_top_plot(self):
+        self.scatter,self.cb,_=plot_array(self.data,ax=self.ax,s=self.markersize,bad_px=self.badpx) 
+
+    def static_plot(self,px_for_btm_plot=None,btm_plot_type=None):
+        #btm plot type can be a ClickType enum
+
+        self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
+                                                   gridspec_kw={'height_ratios':self.heightratio},
+                                                   figsize=self.figsize)
+        self.redraw_top_plot()
+        # Ignore _ because we already have it, it's self.ax
+
+        self.fig.tight_layout()
+
+        if self.ts is None:
+            self.ts = np.arange(self.cube.shape[2])
+
+        if px_for_btm_plot is not None:
+            spectral,spatial,array = px_for_btm_plot
+            data_to_plot = self.cube[am.phys_to_mce(*px_for_btm_plot)]
+            data_to_plot = data_to_plot - min(data_to_plot)
+            self.ax2.plot(self.ts,data_to_plot,label=f"data({spectral},{spatial})")
+
+            if btm_plot_type == ClickType.TS_FLAT_ONLY and self.flat is not None:
+                flat_to_plot = self.flat[am.phys_to_mce(*px_for_btm_plot)]
+                flat_to_plot = flat_to_plot - min(flat_to_plot)
+
+                if len(flat_to_plot) > len(self.ts):
+                    ts_to_plot = self.ts
+                    flat_to_plot = flat_to_plot[0:len(self.ts)]
+                elif len(flat_to_plot) < len(self.ts):
+                    ts_to_plot = self.ts[0:len(flat_to_plot)]
+
+                self.ax2.plot(ts_to_plot,flat_to_plot,label=f"flat({spectral},{spatial}")
+            self.ax2.legend()
+
+    def run_signal_correlator(self):
+        #Runs the function big_signal_bad_px_finder(chop,cube,corrthresh=0.5) on the data in the object
+        #Requires self.chop to be set to the chop signal
+        mask_append = zt.big_signal_bad_px_finder(self.chop,self.cube,corrthresh=self.badpx_corr_thresh)
+        orig_mask = self.data.mask 
+        new_mask = np.logical_or(mask_append,orig_mask)
+        #print(new_mask)
+        self.data.mask = new_mask
 
     def onclick(self,event):
         # tx = 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (event.button, event.x, event.y, event.xdata, event.ydata)
@@ -159,30 +217,36 @@ class ZeusInteractivePlotter():
             if button==1 or button==3:
                 self.ax2.clear()
                 if self.debug: self.text.set_text(f"clicked{event.button}")
-                    # These are the only times an actual click occured
-
+                # These are the only times an actual click occured
             spectral,spatial,array = get_physical_location(event.xdata,event.ydata)
-
-            data_to_plot = self.cube[am.phys_to_mce(spectral,spatial,array)]
-            data_to_plot = data_to_plot - min(data_to_plot)
-            self.ax2.plot(self.ts,data_to_plot,label=f"data({spectral},{spatial})")
-
+            self.click_loc = (spectral,spatial,array)
+            self.bottom_plot()
+            
             #Plot the flat too if it was given.
             if self.flat is not None and (button==3 or button==4):
-                flat_to_plot = self.flat[am.phys_to_mce(spectral,spatial,array)]
-                flat_to_plot = flat_to_plot - min(flat_to_plot)
+                self.bottom_flat()
 
-                if len(flat_to_plot) > len(self.ts):
-                    ts_to_plot = self.ts
-                    flat_to_plot = flat_to_plot[0:len(self.ts)]
-                elif len(flat_to_plot) < len(self.ts):
-                    ts_to_plot = self.ts[0:len(flat_to_plot)]
-
-                self.ax2.plot(ts_to_plot,flat_to_plot,label=f"flat({spectral},{spatial}")
             self.ax2.legend()
         except Exception as e:
             self.error = e
             #raise
+
+    def bottom_plot(self):
+        data_to_plot = self.cube[am.phys_to_mce(*self.click_loc)]
+        data_to_plot = data_to_plot - min(data_to_plot)
+        self.ax2.plot(self.ts,data_to_plot,label=f"data({self.click_loc[0]},{self.click_loc[1]})")
+
+    def bottom_flat(self):
+        flat_to_plot = self.flat[am.phys_to_mce(*self.click_loc)]
+        flat_to_plot = flat_to_plot - min(flat_to_plot)
+
+        if len(flat_to_plot) > len(self.ts):
+            ts_to_plot = self.ts
+            flat_to_plot = flat_to_plot[0:len(self.ts)]
+        elif len(flat_to_plot) < len(self.ts):
+            ts_to_plot = self.ts[0:len(flat_to_plot)]
+
+        self.ax2.plot(ts_to_plot,flat_to_plot,label=f"flat({self.click_loc[0]},{self.click_loc[1]})")
 
         #fig.tight_layout()
     def onkey(self,event):
@@ -196,8 +260,10 @@ class ZeusInteractivePlotter():
                     #this if/else is so ugly, but I don't know how to do it better
                 self.ax.clear()
                 self.cb.remove()
-                self.scatter,self.cb,_=plot_array(self.data.filled(),ax=self.ax,s=127)
+                self.redraw_top_plot()
                 if self.debug: self.text = self.ax.text(0,5, f"min:{np.nanmin(self.data.filled())},max:{np.nanmax(self.data.filled())}", va="bottom", ha="left")
+                #Here we need to remake the text object because it was destroyed 
+                #when we cleared ax.
             elif event.key == 'a':
                 self.onclick(FakeEvent(2,event.xdata,event.ydata))
             elif event.key=='f':
@@ -206,6 +272,53 @@ class ZeusInteractivePlotter():
         except Exception as e:
             self.error = e
             #raise
+
+
+class MultiInteractivePlotter(ZeusInteractivePlotter):
+    def __init__(self,multi_data,multi_cube,ts=None,flat=None,chop=None):
+        """ All the 'multi' arguments should be lists. This lets you
+        not have to worry if one or more of your data files had different
+        lengths or whatever"""
+        self.multi_data = multi_data
+        self.multi_cube = multi_cube
+        self.multi_ts = ts
+        self.multi_flat = flat 
+        self.multi_chop = chop
+        self.ZeusInteractivePlotter.__init__(self,multi_data[0],self.multi_cube[0])
+
+    def set_index(self,i):
+        if i < 0:
+            i = len(self.multi_data)-1
+        if i >= len(self.multi_data):
+            i = 0
+
+        self.multi_index = i
+
+        self.data=self.multi_data[i]
+        self.data.fill_value=np.nan
+        self.cube=self.multi_cube[i]
+        self.ts=self.multi_ts[i]
+        self.flat=self.multi_flat[i]
+
+
+    def onkey(self,event):
+        try:
+            if event.key=='left':
+                self.set_index(self.multi_index - 1)
+            elif event.key == 'right':
+                self.set_index(self.multi_index+1)
+            else:
+                ZeusInteractivePlotter.onkey(self,event)
+        except Exception as e:
+            self.error=e
+
+
+class ClickType(Enum):
+    TS_ONLY = 1
+    TS_FLAT_ONLY = 3
+    TS_ADD = 2
+    TS_FLAT_ADD = 4
+
 
 
 # Here, have some dead code:
