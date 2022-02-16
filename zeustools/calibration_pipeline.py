@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt
 import sys
 from zeustools.bpio import load_data_and_extract
 from zeustools.calibration import flat_to_wm2
+from zeustools import atm_util
+from zeustools import plotting
 
 
 font = {'size': 18}
@@ -77,7 +79,7 @@ def shift_and_add(data1, data2, px1, px2):
     outnoise = 1/outnoise
     outsig = outsig*outnoise
     outnoise = np.sqrt(outnoise)
-    outsig[nan_idxs] = np.nan
+    outsig[outnoise>1e9] = np.nan
     return(outspec, outsig, outnoise)
 
 # def shift_add(data,line_px):
@@ -122,10 +124,16 @@ def getcsvspec(label, spec):
 
 
 def plot_spec(spec, saveas):
+    plt.figure(figsize=(8,6))
+    spec[1][spec[2]>1e-16] = np.nan
     line = plt.step(spec[0], spec[1], where='mid')
     lncolor = line[0].get_c()
     plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
+    plt.ylabel("Flux, W m$^{-2}$ bin$^{-1}$")
+    plt.xlabel("Velocity km s$^{-1}$")
+    plt.tight_layout()
     plt.savefig(saveas, dpi=300)
+
     plt.close()
 
 
@@ -155,6 +163,10 @@ def run_pipeline():
     ptcoup = globalvals.getfloat("pt_src_coupling")
     teleff = globalvals.getfloat("telescope_efficiency")
 
+    atm_trans_filename = globalvals["atm_trans_table"]
+    transmission_calculator = atm_util.TransmissionHelper(atm_trans_filename)
+    transmission_calculator.observing_freq = (const.c/(lambda_line*units.micron)).to("GHz").value
+
     # Use astropy's nice units converter to get bin width in km/s
     px_kms = (px_delta_lambda/lambda_line*const.c).to("km/s").value
 
@@ -165,7 +177,7 @@ def run_pipeline():
     # Convert the list of [REDUCTION*] sections in the settings.ini file to something more useful
     reductions_settings = [config[name] for name in config.sections() if name != "GLOBAL"]
     reductions = []
-
+    pwvs = []
     # Loop over those sections to load in and calibrate each data scan chunk
     for rsett in reductions_settings:
         # the configparser doesn't throw an exception if a thing is 
@@ -174,7 +186,13 @@ def run_pipeline():
         # about that
 
         # Get the per-data-chunk values
-        sky_transp = rsett.getfloat("atm_transmission")
+        pwv = rsett.getfloat("pwv")
+        pwvs.append(pwv)
+        alt = rsett.getfloat("alt")
+        pwv_corr = pwv / atm_util.airmass_factor(alt)
+        sky_transp = float(transmission_calculator.interp_internal_freq(pwv_corr))
+        
+        print(f"zpwv={pwv:.2f}, alt = {alt:.1f}, actual_pwv={pwv_corr:.2f}, transp = {sky_transp:.2f}")
         spec_pos = rsett.getint("spec_pos_of_line")
         minpx = rsett.getint("min_spec_px")
         maxpx = rsett.getint("max_spec_px")
@@ -198,7 +216,7 @@ def run_pipeline():
             # Apply that scaling to the data
             data = flux_calibration(data, flat_flux_value)
 
-        plot_spec((data[0]-spec_pos, data[1], data[2], data[3]), f"{outputfile}_{rsett.name}.png")
+        plot_spec((data[0]-spec_pos, data[1], data[2]), f"{outputfile}_{rsett.name}.png")
         reductions.append((data, spec_pos))
 
     # If we only have one reduction, shifting-and-adding can't happen
@@ -236,6 +254,13 @@ def run_pipeline():
         velspec = addedspec
 
     plot_spec(velspec, f"{outputfile}.png")
+    plotting.spectrum_atm_plotter(velspec[0],
+                                  velspec[1],
+                                  velspec[2],
+                                  outputfile,
+                                  transmission_calculator,
+                                  min(pwvs))
+    plt.savefig(f"{outputfile}_atmosphere.png")
     # Finally, output the csv for gordon.
     with open(outputfile+".csv", 'w') as csvf:
         if docalib:

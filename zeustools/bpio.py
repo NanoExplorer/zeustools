@@ -1,5 +1,6 @@
 import numpy as np
 import pandas
+from numpy import ma
 
 def extract_one_spatial_position(a, spat):
     """ DEPRECATED, since Bo's script now uses different formatting
@@ -34,8 +35,8 @@ def load_data_and_extract(fname, spat):
         spatial position, and 1d array of noise. Both sig and noise arrays are masked
         arrays, where the mask has been set to True for nans
     """
-    signal = ma.array(pandas.read_csv(fname).iloc[spat,4:])
-    noise = ma.array(pandas.read_csv(fname.replace("flux","err")).iloc[spat,4:])
+    signal = ma.array(pandas.read_csv(fname).iloc[spat,4:],dtype=float)
+    noise = ma.array(pandas.read_csv(fname.replace("flux","err")).iloc[spat,4:],dtype=float)
     nan_idx = np.logical_or(np.isnan(signal),np.isnan(noise))
     signal[nan_idx] = ma.masked
     noise[nan_idx] = ma.masked

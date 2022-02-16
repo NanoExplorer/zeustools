@@ -4,8 +4,10 @@ import zeustools as zt
 from numpy import ma
 from matplotlib.colors import ListedColormap
 from enum import Enum
-
-am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
+from astropy import constants as const
+from astropy import units
+import matplotlib
+#am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
 #Whenever you import plotting.py you'd better have a 'config' directory in your working directory or else.
 #HAHA THAT INLCUDES BUILDING THE DOCS 
 # TODO: fix this. I think the arraymapper should have a default config somehow
@@ -319,6 +321,36 @@ class ClickType(Enum):
     TS_ADD = 2
     TS_FLAT_ADD = 4
 
+
+
+
+def spectrum_atm_plotter(velocity,spectrum,errbars,title,atm_helper,pwv,y_scaling=1e-18):
+    """
+    Makes a 2-panel plot with atmospheric transmission on the bottom and the observed spectrum on top
+    """
+    fig=plt.figure(figsize=(10,8))
+    gs=matplotlib.gridspec.GridSpec(2,1,height_ratios=[3.5,1])
+    ax1 = plt.subplot(gs[0])
+    ax2 = plt.subplot(gs[1],sharex=ax1)
+    axs=(ax1,ax2)
+    number_appeared_on_plot = y_scaling
+    line=axs[0].step(velocity,spectrum/number_appeared_on_plot,where='mid')
+    axs[0].set_title(title)
+    axs[0].set_xlim(min(velocity)-200,max(velocity)+200)
+    lncolor=line[0].get_c()
+    axs[0].set_ylabel("Flux Density, 10$^{-17}$ W m$^{-2}$ bin$^{-1}$\n(preliminary calibration)")
+    axs[1].set_xlabel("Velocity offset, km s$^{-1}$")
+    axs[0].errorbar(velocity,spectrum/number_appeared_on_plot,errbars/number_appeared_on_plot,fmt='none',ecolor=lncolor)
+    axs[1].set_ylabel("Atmospheric\nTransmission")
+    atm_velocity = np.linspace(min(velocity)-200,max(velocity)+200,100)
+    atm_ghz_deltav = const.c/(atm_velocity*units.km/units.s)*atm_helper.observing_freq*units.GHz
+    atm_ghz = (atm_ghz_deltav.to("GHz") + atm_helper.observing_freq*units.GHz).value
+    atm_trans = atm_helper.interp(atm_ghz,pwv)
+    axs[1].plot(atm_velocity,atm_trans)
+    setp(ax1.get_xticklabels(),visible=False)
+    axs[0].plot([min(velocity)-200,max(velocity)+200],[0,0],'k',linewidth=0.5)
+    plt.subplots_adjust(hspace=0.05)
+    #savefig("ISTHATNGC4945.png",dpi=300)
 
 
 # Here, have some dead code:
