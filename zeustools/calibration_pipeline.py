@@ -125,7 +125,7 @@ def getcsvspec(label, spec):
 
 def plot_spec(spec, saveas):
     plt.figure(figsize=(8,6))
-    spec[1][spec[2]>1e-16] = np.nan
+    #spec[1][spec[2]>1e-16] = np.nan
     line = plt.step(spec[0], spec[1], where='mid')
     lncolor = line[0].get_c()
     plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
@@ -247,28 +247,31 @@ def run_pipeline():
         # "the line is at pixel 7" and "flux can be found on pixels 0 and 1."
         # Now that the line is at 0, the correct places to find flux is 0 and 1.
         # This almost makes sense to 1 AM me. TODO: clean up the explanation and make sure it's true
-    if docalib:
-        velspec = wavelength_calibration(addedspec, 0, px_kms)
-        # print(velspec)
-    else:
-        velspec = addedspec
+    velspec = wavelength_calibration(addedspec, 0, px_kms)
+
 
     plot_spec(velspec, f"{outputfile}.png")
+
+    if docalib:
+        y_ax = 1e-18
+    else:
+        y_ax = 1
+
     plotting.spectrum_atm_plotter(velspec[0],
                                   velspec[1],
                                   velspec[2],
                                   outputfile,
                                   transmission_calculator,
-                                  min(pwvs))
+                                  min(pwvs),
+                                  y_scaling = y_ax)
     plt.savefig(f"{outputfile}_atmosphere.png")
     # Finally, output the csv for gordon.
     with open(outputfile+".csv", 'w') as csvf:
         if docalib:
             labely = "signal W m^-2 bin^-1"
-            labelx = "velocity relative to galaxy redshift km/s"
         else:
-            labely = "raw data (fraction of flat probably)"
-            labelx = "shifted pixel number (0 is the line pixel)"
+            labely = "raw data (fraction of flat)"
+        labelx = "velocity relative to galaxy redshift km/s"
         csvf.write(getcsvspec(labely, velspec[1])+'\n')
         csvf.write(getcsvspec(labelx, velspec[0])+'\n')
         csvf.write(getcsvspec("error in signal same units as signal", velspec[2])+'\n')
