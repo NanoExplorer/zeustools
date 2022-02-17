@@ -7,16 +7,17 @@ from zeustools import mce_data
 from matplotlib import pyplot as plt
 
 
-def gaussian(x,sigma,mu,a):
+def gaussian(x, sigma, mu, a):
     """I never understood why numpy or scipy don't have their own gaussian function.
     """
     return a*np.exp(-1/2*((x-mu)/(sigma))**2)
     # e^-a(x+b)^2 -> e^(1/2((x-mu)/sigma)**2) -> e^( 1/(2*sigma^2) (x-mu)^2) their a = my 1/(2sigma^2)
 
-def gaussian_integral(sigma,mu,a):
+def gaussian_integral(sigma, mu, a):
     """Same parameter order as my "gaussian" function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx
     """
     return a*np.sqrt(np.pi*2)*sigma
+
 
 # From https://stackoverflow.com/questions/21566379/fitting-a-2d-gaussian-function-using-scipy-optimize-curve-fit-valueerror-and-m
 def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
@@ -24,8 +25,8 @@ def twoD_Gaussian(pos, amplitude, xo, yo, sigma_x, offset):
     for example we set sigma_x = sigma_y and we don't have a theta.
     """
     sigma_y = sigma_x
-    theta=0
-    x,y=pos
+    theta = 0
+    x, y = pos
     xo = float(xo)
     yo = float(yo)    
     a = (np.cos(theta)**2)/(2*sigma_x**2) + (np.sin(theta)**2)/(2*sigma_y**2)
@@ -49,16 +50,16 @@ class chi_sq_solver:
                  guesses,
                  bounds=None
                  ):
-        #Initialize object members
+        # Initialize object members
         self.bins = bins
         self.ys = ys
         self.centerbins = self.centers(self.bins)
         self.function = function
-        #Calculate minimum chi squared fit
-        self.result = optimize.minimize(self.chi_sq,guesses,bounds=bounds)
+        # Calculate minimum chi squared fit
+        self.result = optimize.minimize(self.chi_sq, guesses, bounds=bounds)
         
     def chi_sq(self, args):
-        #Return the chi_squared statistic for the binned data and the arguments for the function
+        # Return the chi_squared statistic for the binned data and the arguments for the function
         sum = 0
         for i in range(len(self.ys)-1):
             try:
@@ -67,24 +68,24 @@ class chi_sq_solver:
                     sum += (self.ys[i]-E)**2/self.ys[i]
             except FloatingPointError:
                 print("Oh no! There was a floating point error.")
-                #print(self.centerbins[i],*args)
-                #exit()
-            #print(self.ys[i],E,sum)
-        #print(args,sum)
+                # print(self.centerbins[i],*args)
+                # exit()
+            # print(self.ys[i],E,sum)
+        # print(args,sum)
         return sum
 
-    def centers(self,bins):
-        #Calculate the centers of the bins, or the average x value of each bin.
-        #Would be mathematically cool if we could average the x values of all the data points,
-        #but that probably shouldn't affect anything substantially.
+    def centers(self, bins):
+        # Calculate the centers of the bins, or the average x value of each bin.
+        # Would be mathematically cool if we could average the x values of all the data points,
+        # but that probably shouldn't affect anything substantially.
         centers = []
         for i in range(len(bins)-1):
             centers.append((bins[i+1]-bins[i])/2+bins[i])
-            #Take the average value of two bins and add it to the lower bin value
+            # Take the average value of two bins and add it to the lower bin value
         return centers
 
 
-def nd_mad(nparray,axis,extrainfo=False):
+def nd_mad(nparray, axis, extrainfo=False):
     """This is the backend for :func:`nd_mads_from_median`. 
     Given a numpy ndarray, we calculate the median absolute deviation
 
@@ -96,47 +97,47 @@ def nd_mad(nparray,axis,extrainfo=False):
     """
     hasnan = np.isnan(nparray)
     if np.any(hasnan):
-        nparray=ma.array(nparray,mask=hasnan)
-    med = ma.median(nparray,axis=axis)
-    expand_slicing= tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))
+        nparray = ma.array(nparray, mask=hasnan)
+    med = ma.median(nparray, axis=axis)
+    expand_slicing = tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))  # noqa: E225
     dist_from_med = ma.abs(nparray-med[expand_slicing])
-    mdev=ma.median(dist_from_med,axis=axis)
+    mdev = ma.median(dist_from_med, axis=axis)
     if extrainfo:
-        return mdev,dist_from_med
+        return mdev, dist_from_med
     else:
         return mdev
 
 
-def nd_mads_from_median(nparray,axis,zero_padding_factor=0.0001):
+def nd_mads_from_median(nparray, axis, zero_padding_factor=0.0001):
     """Returns the number of mads from the median for each data point, with median and mad computed over the specified axis
 
     """
-    #slice(None) is equivalent to ':'
-    expand_slicing= tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))
-    mdev,dist_from_med = nd_mad(nparray,axis,extrainfo=True)
-    #print(type(mdev))
+    # slice(None) is equivalent to ':'
+    expand_slicing = tuple((np.newaxis if x==axis else slice(None) for x in range(len(nparray.shape))))  # noqa: E225
+    mdev, dist_from_med = nd_mad(nparray, axis, extrainfo=True)
+    # print(type(mdev))
     if type(mdev) is np.ndarray or type(mdev) is ma.core.MaskedArray:
-        mdev[mdev==0] = zero_padding_factor
+        mdev[mdev==0] = zero_padding_factor  # noqa: E225
         mdev = mdev[expand_slicing]
     else:
-        if mdev==0:
-            mdev=zero_padding_factor
+        if mdev == 0:
+            mdev = zero_padding_factor
 
     s = dist_from_med/mdev
     return s
 
 
-def nd_reject_outliers(nparray,MAD_chop=5,axis=2):
+def nd_reject_outliers(nparray, MAD_chop=5, axis=2):
     """Returns a masked array masking outliers on a certain axis.
 
     The input array is examined using the median absolute deviation method
     and outliers greater than the MAD_chop number are masked. 
     """
-    s=nd_mads_from_median(nparray,axis)
-    return ma.masked_array(nparray,mask=s > MAD_chop)
+    s = nd_mads_from_median(nparray, axis)
+    return ma.masked_array(nparray, mask=s > MAD_chop)
 
 
-def parseCmdArgs(argumentList,helpList,typeList):
+def parseCmdArgs(argumentList, helpList, typeList):
     """Parses command-line arguments.
 
     arguments:
@@ -153,35 +154,35 @@ def parseCmdArgs(argumentList,helpList,typeList):
                             [str,'bool'])
     """
     parser = argparse.ArgumentParser()
-    for argument,theHelp,theType in zip(argumentList,helpList,typeList):
+    for argument, theHelp, theType in zip(argumentList, helpList, typeList):
         if theType == 'bool':
-            parser.add_argument(*argument,help=theHelp,action='store_true')
+            parser.add_argument(*argument, help=theHelp, action='store_true')
         else:
-            parser.add_argument(*argument,help=theHelp,type=theType)
+            parser.add_argument(*argument, help=theHelp, type=theType)
     return parser.parse_args()
 
 
-def nd_nan_outliers(nparray,MAD_chop=5,axis=2):
+def nd_nan_outliers(nparray, MAD_chop=5, axis=2):
     """Returns an array with nans instead of outliers on a certain axis
 
     The input array is examined using the median absolute deviation method
     and outliers greater than the MAD_chop number are changed to np.nan. 
     """
-    s=nd_mads_from_median(nparray,axis)
-    nparray[s>MAD_chop]=np.nan
+    s = nd_mads_from_median(nparray, axis)
+    nparray[s > MAD_chop] = np.nan
     return nparray
 
 
-def histGaussian(something,nbins=50):
-    n,bins,patches = plt.hist(something,nbins)
+def histGaussian(something, nbins=50):
+    n, bins, patches = plt.hist(something, nbins)
     guessavg = np.mean(something)
     guessstd = np.std(something)
     guessamp = len(something)/nbins
     robot = chi_sq_solver(bins, n, gaussian, np.array([guessstd, guessavg, guessamp]),
                           bounds=[(1, None), (None, None), (0, None)])
-    domain = np.arange(min(bins),max(bins),100)
-    model = gaussian(domain,*(robot.result.x))
-    plt.plot(domain,model)
+    domain = np.arange(min(bins), max(bins), 100)
+    model = gaussian(domain, *(robot.result.x))
+    plt.plot(domain, model)
     return robot.result
 
 
@@ -526,34 +527,43 @@ def nan_helper(y):
 def cube_nan_interpolator(cube):
     #despite its name, this function will also interp over masked values
     
-    rows,cols,times = cube.shape
-    #flatcube = cube.reshape(rows*cols,times)
-    cube.fill_value=np.nan
+    rows, cols, times = cube.shape
+    # flatcube = cube.reshape(rows*cols,times)
+    cube.fill_value = np.nan
     filledcube = cube.filled()
     for i in range(rows):
         for j in range(cols):
-            nans,x = nan_helper(filledcube[i,j])
-            filledcube[i,j,nans] = np.interp(x(nans),x(~nans),filledcube[i,j,~nans])
+            nans, x = nan_helper(filledcube[i,j])
+            filledcube[i, j, nans] = np.interp(x(nans), x(~nans), filledcube[i,j,~nans])
             
     return filledcube
     
 
-def big_signal_bad_px_finder(chop,cube,corrthresh=0.5):
+def big_signal_bad_px_finder(chop, cube, corrthresh=0.5):
     # uses correlation coefficients to attempt to detect good pixels.
     # Correlates the cube against the chop signal, so only expect this to work
     # on sources with big signals.
-    #Note that this returns a FLAG array. So true means bad pixel.
-    rows,cols,times = cube.shape
+    # Note that this returns a FLAG array. So true means bad pixel.
+    rows, cols, times = cube.shape
     
     interpedcube = cube_nan_interpolator(cube)
     
-    flatcube = interpedcube.reshape(rows*cols,times)
+    flatcube = interpedcube.reshape(rows*cols, times)
 
-    corrcoeff = np.corrcoef(chop,flatcube)[0][1:].reshape(rows,cols)
-    #we did some fancy index magic there. The corrcoef is a matrix of size rows*cols x rows*cols
-    #and it's symmetrical. We only want the correlation with the chop signal (hence the [0]).
-    #And we don't need to know that chop-chop correlation === 1 (hence the [1:].
+    corrcoeff = np.corrcoef(chop, flatcube)[0][1:].reshape(rows, cols)
+    # we did some fancy index magic there. The corrcoef is a matrix of size rows*cols x rows*cols
+    # and it's symmetrical. We only want the correlation with the chop signal (hence the [0]).
+    # And we don't need to know that chop-chop correlation === 1 (hence the [1:].
     
     return np.abs(corrcoeff) < corrthresh
 
 
+def bias_step_chop(mce):
+    hdr = mce.runfile.data["HEADER"]
+    data_rate = int(hdr["RB cc data_rate"])
+    step_rate = int(hdr["RB cc ramp_step_period"])
+    data_points_per_phase = step_rate//data_rate
+    npts = mce.Read(row_col=True).data.shape[2]
+    i = np.arange(npts)
+    chop = (i // data_points_per_phase) % 2
+    return chop

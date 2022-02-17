@@ -123,14 +123,17 @@ def getcsvspec(label, spec):
     return stringout
 
 
-def plot_spec(spec, saveas):
-    plt.figure(figsize=(8,6))
+def plot_spec(spec, saveas, bounds):
+    plt.figure(figsize=(8, 6))
     #spec[1][spec[2]>1e-16] = np.nan
     line = plt.step(spec[0], spec[1], where='mid')
     lncolor = line[0].get_c()
     plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
     plt.ylabel("Flux, W m$^{-2}$ bin$^{-1}$")
     plt.xlabel("Velocity km s$^{-1}$")
+    if None not in bounds:
+        plt.xlim(bounds[0:2])
+        plt.ylim(bounds[2:4])
     plt.tight_layout()
     plt.savefig(saveas, dpi=300)
 
@@ -162,7 +165,14 @@ def run_pipeline():
     line_positions = list(map(int, line_positions.split(',')))
     ptcoup = globalvals.getfloat("pt_src_coupling")
     teleff = globalvals.getfloat("telescope_efficiency")
+    do_indiv_plots = globalvals.getboolean("individual_reduction_plots")
+    plot_min_x = globalvals.getfloat("plot_min_x")
+    plot_max_x = globalvals.getfloat("plot_max_x")
+    plot_min_y = globalvals.getfloat("plot_min_y")
+    plot_max_y = globalvals.getfloat("plot_max_y")
 
+    plt_bounds = (plot_min_x, plot_max_x, plot_min_y, plot_max_y)
+    print(plt_bounds)
     atm_trans_filename = globalvals["atm_trans_table"]
     transmission_calculator = atm_util.TransmissionHelper(atm_trans_filename)
     transmission_calculator.observing_freq = (const.c/(lambda_line*units.micron)).to("GHz").value
@@ -215,8 +225,10 @@ def run_pipeline():
             flat_flux_value = flat_flux_value/sky_transp/ptcoup/teleff
             # Apply that scaling to the data
             data = flux_calibration(data, flat_flux_value)
-
-        plot_spec((data[0]-spec_pos, data[1], data[2]), f"{outputfile}_{rsett.name}.png")
+        if do_indiv_plots:
+            plot_spec((data[0]-spec_pos, data[1], data[2]), 
+                      f"{outputfile}_{rsett.name}.png", 
+                      plt_bounds)
         reductions.append((data, spec_pos))
 
     # If we only have one reduction, shifting-and-adding can't happen
@@ -249,9 +261,8 @@ def run_pipeline():
         # This almost makes sense to 1 AM me. TODO: clean up the explanation and make sure it's true
     velspec = wavelength_calibration(addedspec, 0, px_kms)
 
-
-    plot_spec(velspec, f"{outputfile}.png")
-
+    # plot_spec(velspec, f"{outputfile}.png", plt_bounds)
+    # That plot is pretty redundant now that we have the atm plotter
     if docalib:
         y_ax = 1e-18
     else:
@@ -263,7 +274,8 @@ def run_pipeline():
                                   outputfile,
                                   transmission_calculator,
                                   min(pwvs),
-                                  y_scaling = y_ax)
+                                  y_scaling = y_ax,
+                                  bounds = plt_bounds)
     plt.savefig(f"{outputfile}_atmosphere.png")
     # Finally, output the csv for gordon.
     with open(outputfile+".csv", 'w') as csvf:

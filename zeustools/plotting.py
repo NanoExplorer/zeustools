@@ -322,7 +322,14 @@ class ClickType(Enum):
     TS_FLAT_ADD = 4
 
 
-def spectrum_atm_plotter(velocity, spectrum, errbars, title, atm_helper, pwv, y_scaling=1e-18):
+def spectrum_atm_plotter(velocity, 
+                         spectrum, 
+                         errbars, 
+                         title, 
+                         atm_helper, 
+                         pwv, 
+                         y_scaling=1e-18,
+                         bounds=None):
     """
     Makes a 2-panel plot with atmospheric transmission on the bottom and the observed spectrum on top
     """
@@ -347,6 +354,10 @@ def spectrum_atm_plotter(velocity, spectrum, errbars, title, atm_helper, pwv, y_
     axs[1].plot(atm_velocity, atm_trans)
     plt.setp(ax1.get_xticklabels(), visible=False)
     axs[0].plot([min(velocity)-200, max(velocity)+200], [0, 0], 'k', linewidth=0.5)
+    print(bounds)
+    if bounds is not None and None not in bounds:
+        axs[0].set_xlim(bounds[0:2])
+        axs[0].set_ylim(bounds[2:4])
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.05)
     # savefig("ISTHATNGC4945.png",dpi=300)
