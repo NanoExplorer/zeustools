@@ -7,10 +7,14 @@ from enum import Enum
 from astropy import constants as const
 from astropy import units
 import matplotlib
-#am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
+try:
+    am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
+except:
+    print("FAILED TO CREATE ARRAY MAP")
 #Whenever you import plotting.py you'd better have a 'config' directory in your working directory or else.
 #HAHA THAT INLCUDES BUILDING THE DOCS 
 # TODO: fix this. I think the arraymapper should have a default config somehow
+# Still needs fixing, but at least it kinda works in most cases now!
 
 BAD_DATA_CMAP = ListedColormap(["tab:orange","deeppink"])
 
@@ -142,27 +146,44 @@ class ZeusInteractivePlotter():
         self.chop = chop
 
     def interactive_plot(self):
+
+        # Initialize subplots
         self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
                                                    gridspec_kw={'height_ratios':self.heightratio},
                                                    figsize=self.figsize)
+        # Perform initial draw of top plot (array map)
         self.redraw_top_plot()
 
+        # "Intelligently" optimize the layout
         self.fig.tight_layout()
 
-        if self.debug: self.text=self.ax.text(0,5, "Information appears here", va="bottom", ha="left")
-        #Crude messaging system. Like exceptions, print statements are piped to /dev/null by Linus Torvalds
+        # Set up the text messaging system
+        if self.debug:
+            self.text = self.ax.text(0, 5, "Information appears here", va="bottom", ha="left")
+        # Crude messaging system. Like exceptions, print statements are piped to /dev/null by Linus Torvalds
         # for some reason when inside a callback for matplotlib.
 
+        # Make a fake time series if needed
         if self.ts is None:
             self.ts = np.arange(self.cube.shape[2])
+
+        # Set up keybinds
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onkey)
 
     def redraw_top_plot(self):
-        self.scatter,self.cb,_=plot_array(self.data,ax=self.ax,s=self.markersize,bad_px=self.badpx) 
+        # Draw the array in the top panel, and store some objects
+        # in member variables
+        self.scatter, self.cb, _ = plot_array(self.data,
+                                              ax=self.ax,
+                                              s=self.markersize,
+                                              bad_px=self.badpx) 
 
-    def static_plot(self,px_for_btm_plot=None,btm_plot_type=None):
-        #btm plot type can be a ClickType enum
+    def static_plot(self, px_for_btm_plot=None, btm_plot_type=None):
+        # Use this in case you want to generate a plot
+        # showing all the same data but without interactivity
+        
+        # btm plot type can be a ClickType enum
 
         self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
                                                    gridspec_kw={'height_ratios':self.heightratio},
@@ -260,6 +281,7 @@ class ZeusInteractivePlotter():
                 else:
                     self.data[am.phys_to_mce(spectral,spatial,array)] = ma.masked
                     #this if/else is so ugly, but I don't know how to do it better
+                    # Could just do .mask = !.mask? test it out later
                 self.ax.clear()
                 self.cb.remove()
                 self.redraw_top_plot()
