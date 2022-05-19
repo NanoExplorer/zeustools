@@ -235,13 +235,15 @@ class ZeusInteractivePlotter():
         # button 2 can be supplied by fakeevent, and adds a time series without clearing
         # button 4 supplied by fakeevent; adds time series and flat without clearing
         button=event.button
+        if event.inaxes is not self.ax:
+            return
 
         try:
+            spectral,spatial,array = get_physical_location(event.xdata,event.ydata)
             if button==1 or button==3:
                 self.ax2.clear()
                 if self.debug: self.text.set_text(f"clicked{event.button}")
                 # These are the only times an actual click occured
-            spectral,spatial,array = get_physical_location(event.xdata,event.ydata)
             self.click_loc = (spectral,spatial,array)
             self.bottom_plot()
             
