@@ -19,7 +19,7 @@ except:
 BAD_DATA_CMAP = ListedColormap(["tab:orange","deeppink"])
 
 
-def plot_array(somedata,ax=None,s=60,bad_px=False):
+def plot_array(somedata, ax=None, s=60, bad_px=False):
     """ Plots mce data nicely but in a less advanced way than Bo.
 
     :param somedata: this should be an array of size (33,24), i.e., mce data format.
@@ -39,7 +39,7 @@ def plot_array(somedata,ax=None,s=60,bad_px=False):
     """
     mce_grid = am.grid_map()
     if ax is None:
-        #we need an axis to plot on, so if one wasn't supplied, make it.
+        # we need an axis to plot on, so if one wasn't supplied, make it.
         g=plt.figure(dpi=300)
         g.gca().set_aspect(1)
         ax=g.gca()
@@ -129,13 +129,13 @@ class ZeusInteractivePlotter():
     """
     def __init__(self,data,cube,ts=None,flat=None,chop=None):
 
-        self.data=data
-        self.data.fill_value=np.nan
-        self.cube=cube
-        self.ts=ts
-        self.flat=flat
-        self.heightratio=[2,1]
-        self.figsize = (10,10)
+        self.data = data
+        self.data.fill_value = np.nan
+        self.cube = cube
+        self.ts = ts
+        self.flat = flat
+        self.heightratio = [2, 1]
+        self.figsize = (10, 10)
         self.markersize = 127
         self.fig = None
         self.ax = None
@@ -148,9 +148,9 @@ class ZeusInteractivePlotter():
     def interactive_plot(self):
 
         # Initialize subplots
-        self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
-                                                   gridspec_kw={'height_ratios':self.heightratio},
-                                                   figsize=self.figsize)
+        self.fig, (self.ax, self.ax2) = plt.subplots(2, 1,
+                                                     gridspec_kw={'height_ratios': self.heightratio},
+                                                     figsize=self.figsize)
         # Perform initial draw of top plot (array map)
         self.redraw_top_plot()
 
@@ -185,11 +185,10 @@ class ZeusInteractivePlotter():
         
         # btm plot type can be a ClickType enum
 
-        self.fig,(self.ax,self.ax2) = plt.subplots(2,1,
-                                                   gridspec_kw={'height_ratios':self.heightratio},
-                                                   figsize=self.figsize)
+        self.fig, (self.ax, self.ax2) = plt.subplots(2, 1,
+                                                     gridspec_kw={'height_ratios': self.heightratio},
+                                                     figsize=self.figsize)
         self.redraw_top_plot()
-        # Ignore _ because we already have it, it's self.ax
 
         self.fig.tight_layout()
 
@@ -197,7 +196,7 @@ class ZeusInteractivePlotter():
             self.ts = np.arange(self.cube.shape[2])
 
         if px_for_btm_plot is not None:
-            spectral,spatial,array = px_for_btm_plot
+            spectral, spatial, array = px_for_btm_plot
             data_to_plot = self.cube[am.phys_to_mce(*px_for_btm_plot)]
             data_to_plot = data_to_plot - min(data_to_plot)
             self.ax2.plot(self.ts,data_to_plot,label=f"data({spectral},{spatial})")
@@ -224,42 +223,45 @@ class ZeusInteractivePlotter():
         #print(new_mask)
         self.data.mask = new_mask
 
-    def onclick(self,event):
+    def onclick(self, event):
         # tx = 'button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (event.button, event.x, event.y, event.xdata, event.ydata)
         # `event.xdata // 1` and `event.ydata // 1` will give you the pixel location that was clicked on. 
         # text.set_text(tx)
         
-        #modifies time series plot (ax2)
-        #button 1 clears plot and plots time series.
-        #button 3 is sadly both the middle mouse and right click, it clears, plots time series and flat series
+        # modifies time series plot (ax2)
+        # button 1 clears plot and plots time series.
+        # button 3 is sadly both the middle mouse and right click, it clears, plots time series and flat series
         # button 2 can be supplied by fakeevent, and adds a time series without clearing
         # button 4 supplied by fakeevent; adds time series and flat without clearing
-        button=event.button
+        button = event.button
         if event.inaxes is not self.ax:
             return
 
         try:
-            spectral,spatial,array = get_physical_location(event.xdata,event.ydata)
-            if button==1 or button==3:
+            spectral, spatial, array = get_physical_location(event.xdata, 
+                                                             event.ydata)
+            if button == 1 or button == 3:
                 self.ax2.clear()
                 if self.debug: self.text.set_text(f"clicked{event.button}")
                 # These are the only times an actual click occured
-            self.click_loc = (spectral,spatial,array)
+            self.click_loc = (spectral, spatial, array)
             self.bottom_plot()
             
-            #Plot the flat too if it was given.
-            if self.flat is not None and (button==3 or button==4):
+            # Plot the flat too if it was given.
+            if self.flat is not None and (button == 3 or button == 4):
                 self.bottom_flat()
 
             self.ax2.legend()
         except Exception as e:
             self.error = e
-            #raise
+            # raise
 
     def bottom_plot(self):
         data_to_plot = self.cube[am.phys_to_mce(*self.click_loc)]
         data_to_plot = data_to_plot - min(data_to_plot)
-        self.ax2.plot(self.ts,data_to_plot,label=f"data({self.click_loc[0]},{self.click_loc[1]})")
+        self.ax2.plot(self.ts, 
+                      data_to_plot, 
+                      label=f"data({self.click_loc[0]},{self.click_loc[1]})")
 
     def bottom_flat(self):
         flat_to_plot = self.flat[am.phys_to_mce(*self.click_loc)]

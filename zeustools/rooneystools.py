@@ -297,12 +297,46 @@ def processChop(filename):
         3. ts for chop off
 
     """
-    chopchop,tstimes,chopdata = load_data_raw(filename)
-    chop_on = chopdata[:, :, chopchop==1]
-    chop_off= chopdata[:, :, chopchop==0]
-    ts_on = tstimes[chopchop==1]
-    ts_off= tstimes[chopchop==0]
-    return(chop_on,ts_on,chop_off,ts_off)
+    chopchop, tstimes, chopdata = load_data_raw(filename)
+    chop_on = chopdata[:, :, chopchop == 1]
+    chop_off = chopdata[:, :, chopchop == 0]
+    ts_on = tstimes[chopchop == 1]
+    ts_off = tstimes[chopchop == 0]
+    return(chop_on, ts_on, chop_off, ts_off)
+
+
+def array_name(name):
+    """"A rose by any other name would smell as sweet"
+
+    Converts various names for the 3 different physical arrays into the 
+    internal scheme used by this class (which is the same as the letter used by 
+    ``arrayX_map.dat``, much to Thomas's dismay. At least this is an easy way to convert
+    to that scheme.)
+
+    That scheme is follows:
+
+    * array "A" is the 400 um array (350/450)
+    * array "B" is the 200 um array
+    * array "C" is the 600 um array. 
+    
+    simply pass any name (e.g. ``"400"``, ``400``, ``350``, ``"200"``) and 
+    this will return the correct letter to use in ``arrayX_map.dat`` 
+
+    :param name: Human readable name for the array. Should be a string or number.
+    :return: one of 'a', 'b', or 'c'.
+    """
+    name = str(name)
+    if name == '400' or name == '350' or name == '450' or name == 'A':
+        name = 'a'
+    elif name == '200' or name == 'B':
+        name = 'b'
+    elif name == '600' or name == 'C':
+        name = 'c'
+    elif name == "all":
+        pass
+    else:
+        raise ValueError("invalid array name")
+    return name
 
 
 class ArrayMapper:
@@ -340,37 +374,6 @@ class ArrayMapper:
         #these arrays have the following 4columns:
         # spatial, spectral, mcerow, mcecol
     
-    def array_name(self,name):
-        """"A rose by any other name would smell as sweet"
-
-        Converts various names for the 3 different physical arrays into the 
-        internal scheme used by this class (which is the same as the letter used by 
-        ``arrayX_map.dat``, much to Thomas's dismay. At least this is an easy way to convert
-        to that scheme.)
-
-        That scheme is follows:
-
-        * array "A" is the 400 um array (350/450)
-        * array "B" is the 200 um array
-        * array "C" is the 600 um array. 
-        
-        simply pass any name (e.g. ``"400"``, ``400``, ``350``, ``"200"``) and 
-        this will return the correct letter to use in ``arrayX_map.dat`` 
-    
-        :param name: Human readable name for the array. Should be a string or number.
-        :return: one of 'a', 'b', or 'c'.
-        """
-        name=str(name)
-        if name=='400' or name=='350' or name=='450' or name=='A':
-            name = 'a'
-        elif name=='200' or name=='B':
-            name = 'b'
-        elif name=='600' or name=='C':
-            name='c'
-        if not (name=='a' or name=='b' or name=='c'):
-            raise ValueError("invalid array name")
-        return name
-    
     def phys_to_mce(self,spec,spat,array):
         """Given the physical position of a pixel (spectral position, spatial position, array name)
         returns the mce_row and mce_col of that pixel. That can be used to directly address
@@ -397,7 +400,7 @@ class ArrayMapper:
         TODO: better way to index multiple pixels. 
         """
         
-        array_to_use = self.arrays[self.array_name(array)]
+        array_to_use = self.arrays[array_name(array)]
         is_correct_spatialpos = array_to_use[:,0] == spat
         is_correct_spectpos = array_to_use[:,1] == spec
         is_correct_px = np.logical_and(is_correct_spectpos, is_correct_spatialpos)
@@ -523,6 +526,9 @@ def nan_helper(y):
 
     return np.isnan(y), lambda z: z.nonzero()[0]
 
+def nan_interp(y):
+    nans, x= nan_helper(y)
+    y[nans]= np.interp(x(nans), x(~nans), y[~nans])
 
 def cube_nan_interpolator(cube):
     #despite its name, this function will also interp over masked values
