@@ -54,7 +54,7 @@ def find_transition(bias, data):
     return trans_guess
 
 
-def find_transition_index(bias, data, get_transition=False):
+def find_transition_index(bias, data):
     guess = find_transition(bias, data)
     orig_guess = guess
     # I don't really like this, but it's the best I've got right now.
@@ -70,28 +70,22 @@ def find_transition_index(bias, data, get_transition=False):
     # print(f"guess={guess:.2e}")
     # Find the closest index to the guess bias value
     idx = np.argmin(np.abs(bias-guess))
-    if get_transition:
-        t_idx = np.argmin(np.abs(bias-orig_guess))
-        return idx, t_idx
-    return idx
+    t_idx = np.argmin(np.abs(bias-orig_guess))
+    return idx, t_idx
 
 
-def linear_normal_fit(bias, data, get_transition=False):
-    end_idx = find_transition_index(bias, data, 
-                                    get_transition=get_transition)
-    if get_transition:
-        end_idx, trans_idx = end_idx
+def linear_normal_fit(bias, data):
+    end_idx, trans_idx = find_transition_index(bias, data)
+
     # print(end_idx)
     if end_idx == 0:
         end_idx = 10
     regression = stats.linregress(bias[0:end_idx], data[0:end_idx])
-    if get_transition:
-        return regression, trans_idx
-    return regression
+    return regression, trans_idx
 
 
 def fixed_slope_interceptor(bias, data, slope):
-    end_idx = find_transition_index(bias, data)
+    end_idx,_ = find_transition_index(bias, data)
     valid_bias = bias[0:end_idx]
     valid_data = data[0:end_idx]
     
@@ -181,6 +175,7 @@ class IVHelper:
                                            vmax=max(self.temperatures_int))
         return norm
 
+
     def get_corrected_ivs(self, col, row, clean_again=True):
         """Returns all iv curves for col,row,
         currected to have normal y-intercept 0 and normal slope fixed """
@@ -199,8 +194,7 @@ class IVHelper:
                 if not one_px.mask.all():
 
                     params, trans_idx = linear_normal_fit(self.bias[i][row, col], 
-                                                          one_px, 
-                                                          get_transition=True)
+                                                          one_px)
                     if clean_again:
                         self.data[i][row, col, trans_idx:] = np.ma.masked
                         # Be aware, although this will mask a ton of squid unlocks
@@ -437,3 +431,5 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.ax2.set_xlabel("bias voltage (V)")
         self.ax2.set_ylabel("feedback current (A)")
 
+if __name__ == "__main__":
+    iv_plotter = InteractiveIVPlotter("data/")
