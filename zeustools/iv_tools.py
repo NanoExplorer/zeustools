@@ -107,6 +107,51 @@ class IVHelper:
         self.bias = []  # List of bias arrays
         self.cache = {}
 
+    def __add__(self,other):
+        result = IVHelper()
+        assert self.is_real_units == other.is_real_units
+        result.filenames = self.filenames + other.filenames
+        result.temperatures = self.temperatures + other.temperatures
+        result.temperatures_int = self.temperatures_int + other.temperatures_int
+        result.mce_data = self.mce_data + other.mce_data
+        result.data = self.data + other.data
+        result.is_real_units = self.is_real_units
+        result.bias = self.bias + other.bias
+        # Could figure out how to add cache too :P
+        return result
+
+    def load_file(self, file, temp=None):
+        self.filenames.append(file)
+        if temp is None:
+            i = file.find("mK")
+            self.temperatures.append(file[i-3:i+2])
+            self.temperatures_int.append(int(file[i-3:i]))
+        else:
+            assert type(temp) is int
+            self.temperatures.append(temp)
+            self.temperatures_int.append(temp)
+
+        mcefile = mce_data.SmallMCEFile(file)
+        self.mce_data.append(mcefile)
+        mce_data_read = mcefile.Read(row_col=True).data
+        mce_data_masked = np.ma.array(mce_data_read)
+        # let's go ahead and clean up the data now
+        # we can always unmask it later if we need to
+
+        mce_data_cleaned = super_remover(mce_data_masked)
+        # This removes a lot of junk, but doesn't always get it all
+
+        self.data.append(mce_data_cleaned)
+        bias = np.loadtxt(file+".bias", dtype=int, skiprows=1)
+        tile_arg = list(mce_data_cleaned.shape)
+        tile_arg[2] = 1  # this is probably going to be [33,24,1] which is
+        # how we want to tile the bias array. Now the bias array will 
+        # match the data array in shape, which doesn't change anything
+        # until we switch to real units, where the bias voltage can be different
+        # at the same time for different pixels. 
+        bias = np.tile(bias, tile_arg)
+        self.bias.append(bias)
+
     def load_directory(self, directory):
         """
         Given a directory containing IV curve data, this function will load the IV 
@@ -125,32 +170,7 @@ class IVHelper:
         data_file_names = [x for x in all_files if x[-4:] != ".run" and x[-4:] != ".out" and x[-5:] != ".bias"]
         
         for file in data_file_names:
-            self.filenames.append(file)
-            i = file.find("mK")
-            self.temperatures.append(file[i-3:i+2])
-            self.temperatures_int.append(int(file[i-3:i]))
-
-            full_path = directory+file
-            mcefile = mce_data.SmallMCEFile(full_path)
-            self.mce_data.append(mcefile)
-            mce_data_read = mcefile.Read(row_col=True).data
-            mce_data_masked = np.ma.array(mce_data_read)
-            # let's go ahead and clean up the data now
-            # we can always unmask it later if we need to
-
-            mce_data_cleaned = super_remover(mce_data_masked)
-            # This removes a lot of junk, but doesn't always get it all
-
-            self.data.append(mce_data_cleaned)
-            bias = np.loadtxt(full_path+".bias", dtype=int, skiprows=1)
-            tile_arg = list(mce_data_cleaned.shape)
-            tile_arg[2] = 1  # this is probably going to be [33,24,1] which is
-            # how we want to tile the bias array. Now the bias array will 
-            # match the data array in shape, which doesn't change anything
-            # until we switch to real units, where the bias voltage can be different
-            # at the same time for different pixels. 
-            bias = np.tile(bias, tile_arg)
-            self.bias.append(bias)
+            self.load_file(directory + file)
 
     def switch_to_real_units(self):
         """ changes all internal data files from DAC units to real units
@@ -158,12 +178,13 @@ class IVHelper:
         to DAC units you'll have to reload the directory. But really, it should be easy
         since I keep the mce data array.
         """
-        # Clear cache, b/c if any IVs have been calculated, they're in wrong units now
-        self.cache = {}
+
         # Do nothing if we're already in real units
         if self.is_real_units:
             return
         else:
+            # Clear cache, b/c if any IVs have been calculated, they're in wrong units now
+            self.cache = {}
             self.is_real_units = True
             for i in range(len(self.bias)):
                 self.bias[i], self.data[i] = real_units(self.bias[i], 
@@ -174,7 +195,6 @@ class IVHelper:
         norm = matplotlib.colors.Normalize(vmin=min(self.temperatures_int),
                                            vmax=max(self.temperatures_int))
         return norm
-
 
     def get_corrected_ivs(self, col, row, clean_again=True):
         """Returns all iv curves for col,row,
@@ -213,7 +233,8 @@ class IVHelper:
                         all_slopes.append(params.slope)
                         good_data.append(i)
                     else:
-                        print(f"Rejecting IV curve with 'normal slope' {params.slope:.2e}")
+                        # print(f"Rejecting IV curve with 'normal slope' {params.slope:.2e}")
+                        pass
             avg_slope = np.ma.average(all_slopes)
             # print(f"average slope! {avg_slope:.2e}")
             new_data = []
@@ -323,17 +344,23 @@ def real_units(bias, fb, col=0, whole_array=False,
 
 class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def __init__(self, directory,
-                 power_temp=130):
+                 power_temp=130, file=False):
         # If Plot_power = True, the 2-d array plot/colorbar
         # will show the saturation powers at the temperature = power_temp
         # Otherwise (plot_power=False) it will show normal resistance
-        self.ivhelper = IVHelper()
-        self.ivhelper.load_directory(directory)
+        if type(directory) is IVHelper:
+            self.ivhelper = directory
+        elif not file:
+            self.ivhelper = IVHelper()
+            self.ivhelper.load_directory(directory)
+        else:
+            self.ivhelper = IVHelper()
+            self.ivhelper.load_file(directory)
         self.ivhelper.switch_to_real_units()
         self.last_colorbar = None
         # maybe get slopes for every px and use them as bitmaps?
         # ideally use sat power?
-        
+        self.power_temp = power_temp
         self.build_data()
 
         super().__init__(self.rn_data,
@@ -350,7 +377,16 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                          # on right click
                          )
     
-    def build_data(self, power_temp=130):
+    def __sub__(self, other):
+        # VERY SPECIFIC. BE CAREFUL
+        result = InteractiveIVPlotter(self.ivhelper, power_temp=self.power_temp)
+        assert self.power_temp == other.power_temp
+        result.ivhelper = self.ivhelper + other.ivhelper
+        result.power_data = self.power_data - other.power_data
+        # result.power_data[result.power_data < 0] = np.ma.masked
+        return result
+
+    def build_data(self):
         shape = self.ivhelper.data[0].shape
         slopes = np.ones((shape[0], shape[1]))
         powers = np.ma.ones((shape[0], shape[1]), fill_value=np.nan)
@@ -359,11 +395,11 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                 bias, data, temp, slope = self.ivhelper.get_corrected_ivs(j, i)
                 slopes[i, j] = slope
                 try:
-                    t_idx = temp.index(power_temp)
+                    t_idx = temp.index(self.power_temp)
                     power = bias[t_idx] * data[t_idx]
-                    powers[i, j] = min(power)
+                    powers[i, j] = np.ma.min(power)
                 except ValueError:
-                    print(f"power_temp={power_temp} was not found for px col,row={j},{i}")
+                    # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
                     powers[i, j] = np.ma.masked
 
         data = 1/slopes
@@ -430,6 +466,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.ax2.set_ylim(0, 7e-5)
         self.ax2.set_xlabel("bias voltage (V)")
         self.ax2.set_ylabel("feedback current (A)")
+
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
