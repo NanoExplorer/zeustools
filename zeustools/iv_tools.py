@@ -383,7 +383,8 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def __sub__(self, other):
         # VERY SPECIFIC. BE CAREFUL
         result = InteractiveIVPlotter(self.ivhelper, power_temp=self.power_temp)
-        assert self.power_temp == other.power_temp
+        if self.power_temp != other.power_temp:
+            print("warning, subtracting powers from different temperatures")
         result.ivhelper = self.ivhelper + other.ivhelper
         result.power_data = self.power_data - other.power_data
         # result.power_data[result.power_data < 0] = np.ma.masked
@@ -476,7 +477,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         n,b,p=plt.hist(iv_container.power_data[:,:5].flatten(),bins=30,label="350 $\mu$m")
         plt.hist(iv_container.power_data[:,5:12].flatten(),bins=b,alpha=0.8,label="450 $\mu$m")
 
-        title(title)
+        plt.title(title)
         ax.set_xlabel("power (W)")
         ax.set_ylabel("# detectors")
         ax.legend()
