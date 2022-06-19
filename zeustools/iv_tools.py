@@ -344,7 +344,7 @@ def real_units(bias, fb, col=0, whole_array=False,
 
 class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def __init__(self, directory,
-                 power_temp=130, file=False):
+                 power_temp=130, file=False, file_temp_override=None):
         # If Plot_power = True, the 2-d array plot/colorbar
         # will show the saturation powers at the temperature = power_temp
         # Otherwise (plot_power=False) it will show normal resistance
@@ -355,7 +355,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             self.ivhelper.load_directory(directory)
         else:
             self.ivhelper = IVHelper()
-            self.ivhelper.load_file(directory)
+            self.ivhelper.load_file(directory,temp=file_temp_override)
         self.ivhelper.switch_to_real_units()
         self.last_colorbar = None
         # maybe get slopes for every px and use them as bitmaps?
