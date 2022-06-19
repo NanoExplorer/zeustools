@@ -123,7 +123,10 @@ class IVHelper:
     def load_file(self, file, temp=None):
         self.filenames.append(file)
         if temp is None:
-            i = file.find("mK")
+            if "mK" in file:
+                i = file.find("mK")
+            elif "mk" in file:
+                i = file.find("mk")
             self.temperatures.append(file[i-3:i+2])
             self.temperatures_int.append(int(file[i-3:i]))
         else:
@@ -467,6 +470,18 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.ax2.set_xlabel("bias voltage (V)")
         self.ax2.set_ylabel("feedback current (A)")
 
+    def detectors_hist(iv_container,title):
+        plt.figure()
+        ax=plt.gca()
+        n,b,p=plt.hist(iv_container.power_data[:,:5].flatten(),bins=30,label="350 $\mu$m")
+        plt.hist(iv_container.power_data[:,5:12].flatten(),bins=b,alpha=0.8,label="450 $\mu$m")
+
+        title(title)
+        ax.set_xlabel("power (W)")
+        ax.set_ylabel("# detectors")
+        ax.legend()
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
+
+
