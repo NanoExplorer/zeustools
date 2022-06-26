@@ -473,17 +473,24 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.ax2.set_xlabel("bias voltage (V)")
         self.ax2.set_ylabel("feedback current (A)")
 
-    def detectors_hist(iv_container,title,bins=30):
+    def detectors_hist(self,title,bins=30,arrays=[350,450]):
         plt.figure()
         ax=plt.gca()
-        n,b,p=plt.hist(iv_container.power_data[:,:5].flatten(),bins=bins,label="350 $\mu$m")
-        plt.hist(iv_container.power_data[:,5:12].flatten(),bins=b,alpha=0.8,label="450 $\mu$m")
+        dat_pw = self.power_data*1e12
+        if 350 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m")
+        if 450 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m")
+        if 200 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m")
+        if 600 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m")
 
         plt.title(title)
-        ax.set_xlabel("power (W)")
+        ax.set_xlabel("power (pW)")
         ax.set_ylabel("# detectors")
         ax.legend()
-        return b
+        return bins
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
