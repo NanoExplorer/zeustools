@@ -424,10 +424,12 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             data[:, :12] = np.ma.masked
         self.data = data
         self.interactive_plot()
+        self.cb.set_label("Power (W)")
 
     def interactive_plot_rn(self):
         self.data = self.rn_data
         self.interactive_plot()
+        self.cb.set_label("TES Normal Resistance (ohm)")
 
     def update_colorbar(self, sm):
         if self.last_colorbar:
