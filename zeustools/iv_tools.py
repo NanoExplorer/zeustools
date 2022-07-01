@@ -473,21 +473,27 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.ax2.set_xlabel("bias voltage (V)")
         self.ax2.set_ylabel("feedback current (A)")
 
-    def detectors_hist(self,title,bins=30,arrays=[350,450]):
+    def detectors_hist(self,title,bins=30,arrays=[350,450],plot_rn=False):
         plt.figure()
         ax=plt.gca()
-        dat_pw = self.power_data*1e12
+        if plot_rn:
+            dat_pw = self.rn_data.filled()*1000
+            ax.set_xlabel("resistance (m$\\Omega$)")
+        else:
+            dat_pw = self.power_data.filled()*1e12
+            ax.set_xlabel("power (pW)")
+
         if 350 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m")
+            n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m",color="C2")
         if 450 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m")
+            n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m",color="C1")
         if 200 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m")
+            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
         if 600 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m")
+            n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m",color="C3")
 
         plt.title(title)
-        ax.set_xlabel("power (pW)")
+
         ax.set_ylabel("# detectors")
         ax.legend()
         return bins
