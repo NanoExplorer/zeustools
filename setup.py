@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zeustools-NanoExplorer", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="Christopher Rooney",
     author_email="ctr44@cornell.edu",
     description="A compendium of tools useful for processing ZEUS-2 data",
@@ -24,4 +24,5 @@ setuptools.setup(
         ],
     },
     python_requires='>=3.6',
+    include_package_data=True
 )

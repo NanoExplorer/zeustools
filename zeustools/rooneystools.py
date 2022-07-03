@@ -5,7 +5,8 @@ from scipy import optimize
 from zeustools.codystools import readChopFile
 from zeustools import mce_data
 from matplotlib import pyplot as plt
-
+from zeustools import data
+import importlib.resources as res
 
 def gaussian(x, sigma, mu, a):
     """I never understood why numpy or scipy don't have their own gaussian function.
@@ -359,18 +360,20 @@ class ArrayMapper:
     The phys_to_mce function in this class will return an index you can use immediately 
     to index an mce_data datacube in order to address a pixel by its physical location.
 
-    This class needs to be able to access the ``arrayA_map.dat``, ``arrayB_map.dat``, and ``arrayC_map.dat`` files that specify the mapping
-    between pixel locations physically on the array and pixel positions within the MCE data 
-    datacube, so when you initialize it either make sure they are present in a folder called 
-    ``config/`` or specify the path to wherever you're storing them.
-
-    :param path: path to a folder containing the three ``arrayX_map.dat`` files.
-        As noted above, this defaults to ``config/``.   
+    :param path: (optional) path to a folder containing the three ``arrayX_map.dat`` files.
+        The default array map is the one most recently updated in 2021 with input from Bo, and 
+        is now included in the package by default!   
     """
-    def __init__(self,path="config/"):
-        self.arrays = {'a':np.loadtxt(f"{path}/arrayA_map.dat",usecols=range(0,4),dtype=int),
-                       'b':np.loadtxt(f"{path}/arrayB_map.dat",usecols=range(0,4),dtype=int),
-                       'c':np.loadtxt(f"{path}/arrayC_map.dat",usecols=range(0,4),dtype=int)}
+    def __init__(self,path=None):
+        if path:
+            self.arrays = {'a':np.loadtxt(f"{path}/arrayA_map.dat",usecols=range(0,4),dtype=int),
+                           'b':np.loadtxt(f"{path}/arrayB_map.dat",usecols=range(0,4),dtype=int),
+                           'c':np.loadtxt(f"{path}/arrayC_map.dat",usecols=range(0,4),dtype=int)}
+        else:
+            self.arrays={}
+            for array in ['a','b','c']:
+                with res.open_text(data,f"array{array.upper()}_map.dat") as array_file:
+                    self.arrays[array] = np.loadtxt(array_file,usecols=range(0,4),dtype=int)
         #these arrays have the following 4columns:
         # spatial, spectral, mcerow, mcecol
     
