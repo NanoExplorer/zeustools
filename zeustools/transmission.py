@@ -2,7 +2,7 @@ import numpy as np
 from astropy import units as units
 from astropy import constants as consts
 import scipy.interpolate as interp
-import pandas
+import pandas as pd
 from zeustools import data
 import importlib.resources as res
 
@@ -17,7 +17,7 @@ class AtmosphereTransmission:
     """
     def __init__(self):
         with res.open_text(data,"pwv_database.csv") as file:
-            table=pandas.read_csv(file)
+            table=pd.read_csv(file)
         self.freqs = np.array(table.iloc[:,0],dtype=float)
         self.transmissions = np.array(table.iloc[:,1:],dtype=float)
         self.pwvs = np.array(table.columns[1:],dtype=float)
@@ -46,10 +46,11 @@ FILTER_NAMES = {
     "b688":"LPF_58cm-1_B688_Slit-200Array",
     "k2330":"BPF_645um_K2330",
     "b676":"BPF_200um_B676 Thumper",
-    "k2338":"BPF_350um_K2338"
-    "k2586":"S3313R9" # This is the newest 350 micron bandpass filter. 
+    "k2338":"BPF_350um_K2338",
+    "k2586":"S3313R9", # This is the newest 350 micron bandpass filter. 
     # It was designed to mimic the zeus-1 350 micron filter.
-    "w1018":"T0555R10" # This is the zeus-1 350 micron filter.
+    "w1018":"T0555R10", # This is the zeus-1 350 micron filter.
+    "window":"wavenumber-nepers-hdpe"
 }
 
 class FilterTransmission:
@@ -77,7 +78,7 @@ class FilterTransmission:
             bounds_error=False
         elif filterType == "window":
             # HDPE digitized from Birch and Dromey 1981
-            self._load_excel("hdpe.xlsx","wavenumber-nepers-hdpe",x_col="wavenumber",y_col="transmission")
+            self._load_excel("hdpe.xlsx",filterType,x_col="wavenumber",y_col="transmission")
         elif filterType == "scatter":
             self.interpolator = lambda s,x: 0.95
         elif filterType == "k2586" or filterType == "w1018":
@@ -113,14 +114,14 @@ class FilterTransmission:
         """
         return self.interpolator(wl)
 
-class GratingTransmission(FilterTransmission):
-    def __init__(self,gratingType):
-        with res.open_text(data,)
+# class GratingTransmission(FilterTransmission):
+#     def __init__(self,gratingType):
+#         with res.open_text(data,)
 
 
 class ZeusOpticsChain:
     def __init__(self,config="2021"):
-        if config="2021":
+        if config=="2021":
             self.filters = {
                 "common":["entrance","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2586"],
@@ -129,7 +130,7 @@ class ZeusOpticsChain:
                 "600":["b688","k2330"]
             }
             self.grating="shiny"
-        elif config="2019":
+        elif config=="2019":
             self.filters = {
                 "common":["entrance","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2586"],
@@ -138,7 +139,7 @@ class ZeusOpticsChain:
                 "600":["b688","k2330"]
             }
             self.grating="dull"
-        elif config="lab_late_2019":
+        elif config=="lab_late_2019":
             self.filters = {
                 "common":["entrance","zitex","scatter","ir","k2329"],
                 "350":["k2329","w1018"],
@@ -147,7 +148,7 @@ class ZeusOpticsChain:
                 "600":["b688","k2330"]
             }
             self.grating="dull"
-        elif config="lab_2019":
+        elif config=="lab_2019":
             self.filters = {
                 "common":["entrance","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2338"],
