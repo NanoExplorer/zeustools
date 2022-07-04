@@ -53,15 +53,40 @@ FILTER_NAMES = {
 }
 
 class FilterTransmission:
-    def __init__(self, filterType):
-        if filterType == "zitex":
-            self.load_csv("zitex.csv")
-        elif filterType == "k2586" or filterType == "w1018":
-            self.load_excel("Replacement 350um_BP_Sept 2019.xls",filterType)
-        else:
-            self.load_excel("Z2_CurrentFilters.xlsx",filterType)
+    """
+    This class provides a good way to interpolate the transmission of the ZEUS-2 filters.
+    For most of the filters, we have spreadsheets of their measured transmission, but for the
+    zitex filter I digitized the plot of G110 zitex transmission from Benford 1999.
 
-    def load_excel(self,fname,sheetname,x_col="Wave#(cm-1)",y_col="Transmission",x_unit="cm-1"):
+    Create a FilterTransmission object providing one of the filter names/keys from the FILTER_NAMES 
+    dictionary, and then call the interp function with a wavelength in microns to get back its transmission at 
+    that wavelength.
+
+    """
+    def __init__(self, filterType):
+        """Initializes a FilterTransmission object with the transmission properties of a certain
+        type of filter.
+
+        :param filterType: The name of the filter to load. e.g., `k2338`, `zitex`, or `ir`.
+
+        :return: FilterTransmission object corresponding to the named filter.
+        """
+        bounds_error=True
+        if filterType == "zitex":
+            self._load_csv("zitex.csv") # Digitized from Benford Gaidis and Kooi 1999
+            bounds_error=False
+        elif filterType == "window":
+            # HDPE digitized from Birch and Dromey 1981
+            self._load_excel("hdpe.xlsx","wavenumber-nepers-hdpe",x_col="wavenumber",y_col="transmission")
+        elif filterType == "scatter":
+            self.interpolator = lambda s,x: 0.95
+        elif filterType == "k2586" or filterType == "w1018":
+            self._load_excel("Replacement 350um_BP_Sept 2019.xls",filterType)
+        else:
+            self._load_excel("Z2_CurrentFilters.xlsx",filterType)
+        self.interpolator = interp.interp1d(self.wl,self.transmission,bounds_error=bounds_error,fill_value=0.95)
+
+    def _load_excel(self,fname,sheetname,x_col="Wave#(cm-1)",y_col="Transmission",x_unit="cm-1"):
         with res.open_binary(data,fname) as xlfile:
             xl = pd.ExcelFile(xlfile)
             df = pd.read_excel(xl,FILTER_NAMES[sheetname],skiprows=1)
@@ -71,7 +96,7 @@ class FilterTransmission:
                 raise ValueError("x unit not supported")
             self.transmission = df[y_col]
 
-    def load_csv(self,name,x_col="wavelength",y_col="transmission",x_unit="um"):
+    def _load_csv(self,name,x_col="wavelength",y_col="transmission",x_unit="um"):
         with res.open_text(data,name) as csvfile:
             csv = pd.read_csv(csvfile)
             self.wl = csv[x_col]
@@ -79,8 +104,14 @@ class FilterTransmission:
             if x_unit != "um":
                 raise ValueError("x unit not supported")
 
-    def interp(self,freq):
-        pass
+    def interp(self,wl):
+        """Run the interpolator at the given wavelength (in microns)
+
+        :param wl: The desired wavelength or wavelengths to extract the transmission for.
+
+        :return: numpy array of transmissions corresponding to the given wavelengths.
+        """
+        return self.interpolator(wl)
 
 class GratingTransmission(FilterTransmission):
     def __init__(self,gratingType):
@@ -134,10 +165,20 @@ class ZeusOpticsChain:
                     continue
                 self.filter_objs["filter_name"] = FilterTransmission(filter_name)
 
-
+    def compute_transmission(self,wl,filters):
+        total_transmission=np.ones_like(wl)
+        for f in filters:
+            total_transmission*= self.filter_objs[f].interp(wl)
 
     def get_transmission_microns(self,wl):
         if 300<wl<400:
+            return self.compute_transmission(wl, self.filters["common"]+self.filters["350"])
+        if 400<wl<500:
+            return self.compute_transmission(wl, self.filters["common"]+self.filters["450"])
+        if 500<wl<700:
+            return self.compute_transmission(wl, self.filters["common"]+self.filters["600"])
+        if 100<wl<300:
+            return self.compute_transmission(wl, self.filters["common"]+self.filters["200"])
 
 
 
