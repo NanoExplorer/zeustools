@@ -80,7 +80,8 @@ class FilterTransmission:
             # HDPE digitized from Birch and Dromey 1981
             self._load_excel("hdpe.xlsx",filterType,x_col="wavenumber",y_col="transmission")
         elif filterType == "scatter":
-            self.interpolator = lambda s,x: 0.95
+            self.interpolator = lambda x: 0.95
+            return
         elif filterType == "k2586" or filterType == "w1018":
             self._load_excel("Replacement 350um_BP_Sept 2019.xls",filterType)
         else:
@@ -97,13 +98,20 @@ class FilterTransmission:
                 raise ValueError("x unit not supported")
             self.transmission = df[y_col]
 
-    def _load_csv(self,name,x_col="wavelength",y_col="transmission",x_unit="um"):
+    def _load_csv(self,name,x_col="wavelength",y_col="transmission",x_unit="um",skip_rows=0):
+        if type(x_col) is not list:
+            x_col = [x_col]
+        if type(y_col) is not list:
+            y_col = [y_col]
+        self.wl = np.array([])
+        self.transmission = np.array([])
         with res.open_text(data,name) as csvfile:
-            csv = pd.read_csv(csvfile)
-            self.wl = csv[x_col]
-            self.transmission = csv[y_col]
-            if x_unit != "um":
-                raise ValueError("x unit not supported")
+            csv = pd.read_csv(csvfile,skiprows=skip_rows)
+            for x_col_n,y_col_n in zip(x_col,y_col):
+                self.wl=np.hstack([self.wl,csv[x_col_n]])
+                self.transmission = np.hstack([self.transmission,csv[y_col_n]])
+                if x_unit != "um":
+                    raise ValueError("x unit not supported")
 
     def interp(self,wl):
         """Run the interpolator at the given wavelength (in microns)
@@ -118,12 +126,23 @@ class FilterTransmission:
 #     def __init__(self,gratingType):
 #         with res.open_text(data,)
 
+class GratingTransmission(FilterTransmission):
+    def __init__(self,gratingType,fileName="grating_eff.csv",bounds=True):
+        orders = ["3","4","5","9"]
+        gratingCode = gratingType[0].lower()
+        x_cols = [f"{gratingCode}x{order}" for order in orders]
+        y_cols = [f"{gratingCode}y{order}" for order in orders]
+        self._load_csv(fileName,x_col=x_cols,y_col=y_cols,skip_rows=1)
+        self.transmission/=100
+        self.interpolator = interp.interp1d(self.wl,self.transmission,bounds_error=bounds)
+
+
 
 class ZeusOpticsChain:
     def __init__(self,config="2021"):
         if config=="2021":
             self.filters = {
-                "common":["entrance","zitex","scatter","ir","k2329"],
+                "common":["window","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2586"],
                 "450":["k2329","w1586"],
                 "200":["b688","b676"],
@@ -132,7 +151,7 @@ class ZeusOpticsChain:
             self.grating="shiny"
         elif config=="2019":
             self.filters = {
-                "common":["entrance","zitex","scatter","ir","k2329"],
+                "common":["window","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2586"],
                 "450":["k2329","w1586"],
                 "200":["b688","b676"],
@@ -141,7 +160,7 @@ class ZeusOpticsChain:
             self.grating="dull"
         elif config=="lab_late_2019":
             self.filters = {
-                "common":["entrance","zitex","scatter","ir","k2329"],
+                "common":["window","zitex","scatter","ir","k2329"],
                 "350":["k2329","w1018"],
                 "450":["k2329","w1586"],
                 "200":["b688","b676"],
@@ -150,7 +169,7 @@ class ZeusOpticsChain:
             self.grating="dull"
         elif config=="lab_2019":
             self.filters = {
-                "common":["entrance","zitex","scatter","ir","k2329"],
+                "common":["window","zitex","scatter","ir","k2329"],
                 "350":["k2329","k2338"],
                 "450":["k2329","w1586"],
                 "200":["b688","b676"],
@@ -160,26 +179,40 @@ class ZeusOpticsChain:
         else:
             raise ValueError("unknown configuration name.")
         self.filter_objs = {}
-        for key,value in self.filters:
+        for key in self.filters.keys():
+            value = self.filters[key]
             for filter_name in value:
                 if filter_name in self.filter_objs:
                     continue
-                self.filter_objs["filter_name"] = FilterTransmission(filter_name)
+                self.filter_objs[filter_name] = FilterTransmission(filter_name)
+        self.grating_obj= GratingTransmission(self.grating)
+        self.tuning_ranges = GratingTransmission(self.grating,fileName="z2_tuning_ranges.csv",bounds=False)
 
     def compute_transmission(self,wl,filters):
-        total_transmission=np.ones_like(wl)
+        if len(wl)==0:
+            return
+        total_transmission=np.ones_like(wl,dtype=float)
         for f in filters:
-            total_transmission*= self.filter_objs[f].interp(wl)
+            this_filter_trans = self.filter_objs[f].interp(wl)
+            total_transmission*= this_filter_trans
+            print(f,this_filter_trans,total_transmission)
+        return total_transmission
 
-    def get_transmission_microns(self,wl):
-        if 300<wl<400:
-            return self.compute_transmission(wl, self.filters["common"]+self.filters["350"])
-        if 400<wl<500:
-            return self.compute_transmission(wl, self.filters["common"]+self.filters["450"])
-        if 500<wl<700:
-            return self.compute_transmission(wl, self.filters["common"]+self.filters["600"])
-        if 100<wl<300:
-            return self.compute_transmission(wl, self.filters["common"]+self.filters["200"])
+    def get_transmission_microns(self,wl,show_tuning_range=False):
+        if type(wl) is not np.ndarray:
+            wl = np.array(wl)
+        out = np.zeros_like(wl,dtype=float)
+        values_350 = np.logical_and(wl>300,wl<400)
+        values_450 = np.logical_and(wl>=400,wl<500)
+        values_650 = np.logical_and(wl>=500,wl<700)
+        values_200 = np.logical_and(wl>100,wl<=300)
+        for i,f in zip([values_200,values_350,values_450,values_650],["200","350","450","600"]):
+            out[i] = self.compute_transmission(wl[i], self.filters["common"]+self.filters[f])
+        out = out * self.grating_obj.interp(wl)
+        if show_tuning_range:
+            out = out * self.tuning_ranges.interp(wl)
+        return out
+
 
 
 
