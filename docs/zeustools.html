@@ -1,67 +1,34 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>zeustools package &mdash; zeustools 0.0.3 documentation</title>
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zeustools package &mdash; zeustools 0.0.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="mce_data submodule" href="mce_data.html" />
     <link rel="prev" title="The ZEUS-2 Calibration Pipeline" href="calibpipeline.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> zeustools
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -69,17 +36,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
@@ -92,261 +49,208 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.plotting">zeustools.plotting module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.pointing">zeustools.pointing module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-zeustools.rooneystools">zeustools.rooneystools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.transmission">zeustools.transmission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">zeustools.transmission module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="mce_data.html">mce_data submodule</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">zeustools</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>zeustools package</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/zeustools.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="zeustools-package">
-<h1>zeustools package<a class="headerlink" href="#zeustools-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-zeustools.bpio">
-<span id="zeustools-bpio-module"></span><h2>zeustools.bpio module<a class="headerlink" href="#module-zeustools.bpio" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeustools.bpio.extract_from_beamfile">
-<code class="descclassname">zeustools.bpio.</code><code class="descname">extract_from_beamfile</code><span class="sig-paren">(</span><em>fname</em>, <em>beam</em>, <em>spat</em>, <em>arrnums</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_from_beamfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sometimes you want to read out the reduced data for individual 
+             
+  <section id="zeustools-package">
+<h1>zeustools package<a class="headerlink" href="#zeustools-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-zeustools.bpio">
+<span id="zeustools-bpio-module"></span><h2>zeustools.bpio module<a class="headerlink" href="#module-zeustools.bpio" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.extract_from_beamfile">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">extract_from_beamfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrnums</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_from_beamfile" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRECATED, since Bo’s script now uses different formatting
+Sometimes you want to read out the reduced data for individual 
 beams from Bo’s reduction script. This is the function that handles that.
 Given a filename, this will grab one spatial position from that beam.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fname</strong> – the file name of the beamfile that you want to load</li>
-<li><strong>beam</strong> – the beam number that you want to extract</li>
-<li><strong>spat</strong> – the spatial position you want</li>
-<li><strong>arrnums</strong> – determines whether you get the data before or after the dead pixel
-subtraction, clean routine, independent component analysis, etc. Ask Bo what number you should input.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> – the file name of the beamfile that you want to load</p></li>
+<li><p><strong>beam</strong> – the beam number that you want to extract</p></li>
+<li><p><strong>spat</strong> – the spatial position you want</p></li>
+<li><p><strong>arrnums</strong> – determines whether you get the data before or after the dead pixel
+subtraction, clean routine, independent component analysis, etc. Ask Bo what number you should input.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 4xn array, where return[0:4] are spatial position, signal, noise, and
 weight.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.bpio.extract_one_spatial_position">
-<code class="descclassname">zeustools.bpio.</code><code class="descname">extract_one_spatial_position</code><span class="sig-paren">(</span><em>a</em>, <em>spat</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_one_spatial_position" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes the numpy z file from Bo’s script and return a 1-d spectrum
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.extract_one_spatial_position">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">extract_one_spatial_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_one_spatial_position" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRECATED, since Bo’s script now uses different formatting
+Takes the numpy z file from Bo’s script and return a 1-d spectrum
 of a single spatial position.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>a</strong> – this is the npz load object, loaded from Bo’s reduction script</li>
-<li><strong>spat</strong> – This is the spatial position you would like to extract.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – this is the npz load object, loaded from Bo’s reduction script</p></li>
+<li><p><strong>spat</strong> – This is the spatial position you would like to extract.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 4xn array, where return[0:4] are spatial position, signal, noise, and
 weight.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.bpio.load_data_and_extract">
-<code class="descclassname">zeustools.bpio.</code><code class="descname">load_data_and_extract</code><span class="sig-paren">(</span><em>fname</em>, <em>spat</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.load_data_and_extract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Automatically loads an npz file from Bo’s reduction script
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.load_data_and_extract">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">load_data_and_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.load_data_and_extract" title="Permalink to this definition"></a></dt>
+<dd><p>Automatically loads an csv file from Bo’s reduction script
 and returns a 1-d spectrum of a single spatial position.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>fname</strong> – this is the filename of the .npz file from Bo’s script</li>
-<li><strong>spat</strong> – This is the spatial position you would like to extract.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> – this is the filename of the .npz file from Bo’s script</p></li>
+<li><p><strong>spat</strong> – This is the spatial position you would like to extract.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a 4xn array, where return[0:4] are spatial position, signal, noise, and
-weight.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple of: 1d array of spatial position, 1d array of spectrum, 
+spatial position, and 1d array of noise. Both sig and noise arrays are masked
+arrays, where the mask has been set to True for nans</p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.calibration">
-<span id="zeustools-calibration-module"></span><h2>zeustools.calibration module<a class="headerlink" href="#module-zeustools.calibration" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeustools.calibration.flat_to_wm2">
-<code class="descclassname">zeustools.calibration.</code><code class="descname">flat_to_wm2</code><span class="sig-paren">(</span><em>sky_transparency</em>, <em>obs_wavelength</em>, <em>pixel_deltalambda</em>, <em>sky_temp=&lt;Quantity 270. K&gt;</em>, <em>cabin_temp=&lt;Quantity 288. K&gt;</em>, <em>beam_size=&lt;Quantity 9.58774897e-10 sr&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.flat_to_wm2" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="module-zeustools.calibration">
+<span id="zeustools-calibration-module"></span><h2>zeustools.calibration module<a class="headerlink" href="#module-zeustools.calibration" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration.flat_to_wm2">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration.</span></span><span class="sig-name descname"><span class="pre">flat_to_wm2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">sky_transparency</span></em>, <em class="sig-param"><span class="pre">obs_wavelength</span></em>, <em class="sig-param"><span class="pre">pixel_deltalambda</span></em>, <em class="sig-param"><span class="pre">sky_temp=&lt;Quantity</span> <span class="pre">270.</span> <span class="pre">K&gt;</span></em>, <em class="sig-param"><span class="pre">cabin_temp=&lt;Quantity</span> <span class="pre">288.</span> <span class="pre">K&gt;</span></em>, <em class="sig-param"><span class="pre">beam_size=&lt;Quantity</span> <span class="pre">9.58774897e-10</span> <span class="pre">sr&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.flat_to_wm2" title="Permalink to this definition"></a></dt>
 <dd><p>Get the power in W/m^2/bin that the detectors see when
 doing a skychop. This can be multiplied by the flat-divided spectra later.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sky_transparency</strong> – The line-of-sight transparency of the sky. 
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sky_transparency</strong> – The line-of-sight transparency of the sky. 
 This is usually calculated by get_real_pwv,
-then querying the APEX sky model.</li>
-<li><strong>obs_wavelength</strong> – Astropy Quantity containing the lab-frame wavelength of the line</li>
-<li><strong>pixel_deltalambda</strong> – Astropy Quantity containing the difference in wavelength between light 
+then querying the APEX sky model.</p></li>
+<li><p><strong>obs_wavelength</strong> – Astropy Quantity containing the lab-frame wavelength of the line</p></li>
+<li><p><strong>pixel_deltalambda</strong> – Astropy Quantity containing the difference in wavelength between light 
 seen by the line pixel and a pixel next to it.
-TODO: how linear is it really?</li>
-<li><strong>sky_temp</strong> – astropy quantity guess of sky temperature - usually around 0 Celsius</li>
-<li><strong>cabin_temp</strong> – astropy quantity temperature in cabin</li>
-<li><strong>beam_size</strong> – astropy quantity beam size</li>
+TODO: how linear is it really?</p></li>
+<li><p><strong>sky_temp</strong> – astropy quantity guess of sky temperature - usually around 0 Celsius</p></li>
+<li><p><strong>cabin_temp</strong> – astropy quantity temperature in cabin</p></li>
+<li><p><strong>beam_size</strong> – astropy quantity beam size</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration.get_real_pwv">
-<code class="descclassname">zeustools.calibration.</code><code class="descname">get_real_pwv</code><span class="sig-paren">(</span><em>pwv</em>, <em>altitude</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.get_real_pwv" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration.get_real_pwv">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration.</span></span><span class="sig-name descname"><span class="pre">get_real_pwv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.get_real_pwv" title="Permalink to this definition"></a></dt>
 <dd><p>Given the zenith PWV (reported by APEX) and altitude of source,
 returns the real amount of water between the telescope and space.</p>
 <p>Basically returns pwv/cos(zenith_angle)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pwv</strong> – zenith PWV reported by APEX</li>
-<li><strong>altitude</strong> – Altitude of source</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pwv</strong> – zenith PWV reported by APEX</p></li>
+<li><p><strong>altitude</strong> – Altitude of source</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.calibration_pipeline">
-<span id="zeustools-calibration-pipeline-module"></span><h2>zeustools.calibration_pipeline module<a class="headerlink" href="#module-zeustools.calibration_pipeline" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.contsub">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">contsub</code><span class="sig-paren">(</span><em>data</em>, <em>line_px</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.contsub" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="module-zeustools.calibration_pipeline">
+<span id="zeustools-calibration-pipeline-module"></span><h2>zeustools.calibration_pipeline module<a class="headerlink" href="#module-zeustools.calibration_pipeline" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.contsub">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">contsub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_px</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.contsub" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.cut">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">cut</code><span class="sig-paren">(</span><em>data</em>, <em>min_px</em>, <em>max_px</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.cut" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.cut">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">cut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_px</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.cut" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.flux_calibration">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">flux_calibration</code><span class="sig-paren">(</span><em>data</em>, <em>flat_flux_density</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.flux_calibration" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.flux_calibration">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">flux_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_flux_density</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.flux_calibration" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.get_drop_indices">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">get_drop_indices</code><span class="sig-paren">(</span><em>spec_pos</em>, <em>px_to_drop</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.get_drop_indices" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.get_drop_indices">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">get_drop_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px_to_drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.get_drop_indices" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.getcsvspec">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">getcsvspec</code><span class="sig-paren">(</span><em>label</em>, <em>spec</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.getcsvspec" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.getcsvspec">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">getcsvspec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.getcsvspec" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.plot_spec">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">plot_spec</code><span class="sig-paren">(</span><em>spec</em>, <em>saveas</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.plot_spec" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.plot_spec">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">plot_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saveas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.plot_spec" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.run_pipeline">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">run_pipeline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.run_pipeline" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.run_pipeline">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">run_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.run_pipeline" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.shift_and_add">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">shift_and_add</code><span class="sig-paren">(</span><em>data1</em>, <em>data2</em>, <em>px1</em>, <em>px2</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.shift_and_add" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.shift_and_add">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">shift_and_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.shift_and_add" title="Permalink to this definition"></a></dt>
 <dd><p>takes in two spectra. Shifts the second one spectrally by px_offset
 to align the line pixel between the two runs. Weights the spectra appropriately
 TODO: use np.average to clean up this mess.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.calibration_pipeline.wavelength_calibration">
-<code class="descclassname">zeustools.calibration_pipeline.</code><code class="descname">wavelength_calibration</code><span class="sig-paren">(</span><em>data</em>, <em>position_of_line</em>, <em>bin_width</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.wavelength_calibration" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.wavelength_calibration">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">wavelength_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_of_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.wavelength_calibration" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.codystools">
-<span id="zeustools-codystools-module"></span><h2>zeustools.codystools module<a class="headerlink" href="#module-zeustools.codystools" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="zeustools.codystools.createModelSnakeEntireArray">
-<code class="descclassname">zeustools.codystools.</code><code class="descname">createModelSnakeEntireArray</code><span class="sig-paren">(</span><em>tseries</em>, <em>goodSnakeCorr=0.85</em>, <em>minSnakeNumber=10</em>, <em>bestPixel=(6</em>, <em>14)</em>, <em>fastFreq=0.25</em>, <em>quiet=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.createModelSnakeEntireArray" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="module-zeustools.codystools">
+<span id="zeustools-codystools-module"></span><h2>zeustools.codystools module<a class="headerlink" href="#module-zeustools.codystools" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.codystools.createModelSnakeEntireArray">
+<span class="sig-prename descclassname"><span class="pre">zeustools.codystools.</span></span><span class="sig-name descname"><span class="pre">createModelSnakeEntireArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tseries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">goodSnakeCorr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.85</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minSnakeNumber</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bestPixel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(6,</span> <span class="pre">14)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fastFreq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.createModelSnakeEntireArray" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a model snake given the time series of the entire array</p>
 <p>First correlates all pixels against each other to find a trend.
 Px correlated better than <cite>goodSnakeCorr</cite> with the <cite>bestPixel</cite> are 
@@ -355,30 +259,27 @@ used to generate the model snake.</p>
 This is equivalent to convolving the time series with a gaussian.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.codystools.gaussianSimple">
-<code class="descclassname">zeustools.codystools.</code><code class="descname">gaussianSimple</code><span class="sig-paren">(</span><em>vec</em>, <em>a</em>, <em>v0</em>, <em>sigma</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.gaussianSimple" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.codystools.gaussianSimple">
+<span class="sig-prename descclassname"><span class="pre">zeustools.codystools.</span></span><span class="sig-name descname"><span class="pre">gaussianSimple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.gaussianSimple" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.codystools.nan_helper">
-<code class="descclassname">zeustools.codystools.</code><code class="descname">nan_helper</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.nan_helper" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.codystools.nan_helper">
+<span class="sig-prename descclassname"><span class="pre">zeustools.codystools.</span></span><span class="sig-name descname"><span class="pre">nan_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.nan_helper" title="Permalink to this definition"></a></dt>
 <dd><p>Helper to handle indices and logical indices of NaNs.</p>
-<dl class="docutils">
-<dt>Input:</dt>
-<dd><ul class="first last simple">
-<li>y, 1d numpy array with possible NaNs</li>
+<dl>
+<dt>Input:</dt><dd><ul class="simple">
+<li><p>y, 1d numpy array with possible NaNs</p></li>
 </ul>
 </dd>
-<dt>Output:</dt>
-<dd><ul class="first last simple">
-<li>nans, logical indices of NaNs</li>
-<li>index, a function, with signature indices= index(logical_indices),
-to convert logical indices of NaNs to ‘equivalent’ indices</li>
+<dt>Output:</dt><dd><ul class="simple">
+<li><p>nans, logical indices of NaNs</p></li>
+<li><p>index, a function, with signature indices= index(logical_indices),
+to convert logical indices of NaNs to ‘equivalent’ indices</p></li>
 </ul>
 </dd>
-<dt>Example:</dt>
-<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># linear interpolation of NaNs</span>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># linear interpolation of NaNs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nans</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span> <span class="n">nan_helper</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">[</span><span class="n">nans</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">nans</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="o">~</span><span class="n">nans</span><span class="p">),</span> <span class="n">y</span><span class="p">[</span><span class="o">~</span><span class="n">nans</span><span class="p">])</span>
 </pre></div>
@@ -387,25 +288,68 @@ to convert logical indices of NaNs to ‘equivalent’ indices</li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.codystools.readChopFile">
-<code class="descclassname">zeustools.codystools.</code><code class="descname">readChopFile</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.readChopFile" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.codystools.readChopFile">
+<span class="sig-prename descclassname"><span class="pre">zeustools.codystools.</span></span><span class="sig-name descname"><span class="pre">readChopFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.codystools.readChopFile" title="Permalink to this definition"></a></dt>
 <dd><p>Reads in the .chop file so you know when the chopper was on or off</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.plotting">
-<span id="zeustools-plotting-module"></span><h2>zeustools.plotting module<a class="headerlink" href="#module-zeustools.plotting" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="zeustools.plotting.FakeEvent">
-<em class="property">class </em><code class="descclassname">zeustools.plotting.</code><code class="descname">FakeEvent</code><span class="sig-paren">(</span><em>key</em>, <em>xdata</em>, <em>ydata</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.FakeEvent" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="module-zeustools.plotting">
+<span id="zeustools-plotting-module"></span><h2>zeustools.plotting module<a class="headerlink" href="#module-zeustools.plotting" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.plotting.ClickType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">ClickType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ClickType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.plotting.ClickType.TS_ADD">
+<span class="sig-name descname"><span class="pre">TS_ADD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#zeustools.plotting.ClickType.TS_ADD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.plotting.ClickType.TS_FLAT_ADD">
+<span class="sig-name descname"><span class="pre">TS_FLAT_ADD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#zeustools.plotting.ClickType.TS_FLAT_ADD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.plotting.ClickType.TS_FLAT_ONLY">
+<span class="sig-name descname"><span class="pre">TS_FLAT_ONLY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#zeustools.plotting.ClickType.TS_FLAT_ONLY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.plotting.ClickType.TS_ONLY">
+<span class="sig-name descname"><span class="pre">TS_ONLY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#zeustools.plotting.ClickType.TS_ONLY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.plotting.FakeEvent">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">FakeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.FakeEvent" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Used internally in case you want to manually trigger one of the event handlers</p>
 </dd></dl>
 
-<dl class="class">
-<dt id="zeustools.plotting.ZeusInteractivePlotter">
-<em class="property">class </em><code class="descclassname">zeustools.plotting.</code><code class="descname">ZeusInteractivePlotter</code><span class="sig-paren">(</span><em>data</em>, <em>cube</em>, <em>ts=None</em>, <em>flat=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.plotting.MultiInteractivePlotter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">MultiInteractivePlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multi_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.MultiInteractivePlotter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.plotting.ZeusInteractivePlotter" title="zeustools.plotting.ZeusInteractivePlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">zeustools.plotting.ZeusInteractivePlotter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.MultiInteractivePlotter.onkey">
+<span class="sig-name descname"><span class="pre">onkey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.MultiInteractivePlotter.onkey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.MultiInteractivePlotter.set_index">
+<span class="sig-name descname"><span class="pre">set_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.MultiInteractivePlotter.set_index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">ZeusInteractivePlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This is an awesome object that gives you some of the features of the zalpha script!</p>
 <p>Tested in ipython notebooks, you first need to initialize such that you are plotting interactively.
@@ -420,13 +364,12 @@ You can now click on any pixel on the array and immediately view its time series
 additional options too:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>Click on a pixel to view its time series</li>
-<li>Right click to view a pixel’s time series and flat time series (if the flat cube is provided)</li>
+<li><p>Click on a pixel to view its time series</p></li>
+<li><p>Right click to view a pixel’s time series and flat time series (if the flat cube is provided)</p></li>
+<li><p>Middle click (or if that doesn’t work press ‘a’ while hovering) to add a time series without clearing the previous one</p></li>
+<li><p>Press ‘f’ while hovering to add a time series+flat series without clearing</p></li>
+<li><p>Press ‘c’ while hovering to mask that pixel, removing it from the colorbar calculation and array plot.</p></li>
 </ol>
-<p>3. Middle click (or if that doesn’t work press ‘a’ while hovering) to add a time series without clearing
-the previous one
-4. Press ‘f’ while hovering to add a time series+flat series without clearing
-5. Press ‘c’ while hovering to mask that pixel, removing it from the colorbar calculation and array plot.</p>
 </div></blockquote>
 <p>This is a work in progress, and is not very robust. If you suspect something is wrong, try accessing
 <code class="docutils literal notranslate"><span class="pre">error</span></code> member variable. If it exists it contains the most recent error that occurred. You can also:</p>
@@ -438,209 +381,220 @@ the previous one
 <p>that blurb will print the error type and also its traceback. Usually exceptions are thrown
 into Ginnungagap by Trickster God Loki on behalf of the matplotlib event system, so they don’t 
 appear immediately.</p>
-<dl class="method">
-<dt id="zeustools.plotting.ZeusInteractivePlotter.interactive_plot">
-<code class="descname">interactive_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.interactive_plot" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.bottom_flat">
+<span class="sig-name descname"><span class="pre">bottom_flat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.bottom_flat" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="zeustools.plotting.ZeusInteractivePlotter.onclick">
-<code class="descname">onclick</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onclick" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.bottom_plot">
+<span class="sig-name descname"><span class="pre">bottom_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.bottom_plot" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="zeustools.plotting.ZeusInteractivePlotter.onkey">
-<code class="descname">onkey</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onkey" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.interactive_plot">
+<span class="sig-name descname"><span class="pre">interactive_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.interactive_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.onclick">
+<span class="sig-name descname"><span class="pre">onclick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onclick" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.onkey">
+<span class="sig-name descname"><span class="pre">onkey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.onkey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.redraw_top_plot">
+<span class="sig-name descname"><span class="pre">redraw_top_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.redraw_top_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.run_signal_correlator">
+<span class="sig-name descname"><span class="pre">run_signal_correlator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.run_signal_correlator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.plotting.ZeusInteractivePlotter.static_plot">
+<span class="sig-name descname"><span class="pre">static_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">px_for_btm_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">btm_plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.ZeusInteractivePlotter.static_plot" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.plotting.get_physical_location">
-<code class="descclassname">zeustools.plotting.</code><code class="descname">get_physical_location</code><span class="sig-paren">(</span><em>xdata</em>, <em>ydata</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.get_physical_location" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.plotting.get_physical_location">
+<span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">get_physical_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.get_physical_location" title="Permalink to this definition"></a></dt>
 <dd><p>Used internally. The center of each pixel is at integer values, so the pixel extends
 from value - 0.5 to value+0.5. Here we correct for that and also tell you which array 
 your pixel is on. Usable with the plot_array and ZeusInteractivePlotter.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.plotting.plot_array">
-<code class="descclassname">zeustools.plotting.</code><code class="descname">plot_array</code><span class="sig-paren">(</span><em>somedata</em>, <em>ax=None</em>, <em>s=60</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.plot_array" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.plotting.plot_array">
+<span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">somedata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_px</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.plot_array" title="Permalink to this definition"></a></dt>
 <dd><p>Plots mce data nicely but in a less advanced way than Bo.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>somedata</strong> – this should be an array of size (33,24), i.e., mce data format.
-Each element is the ‘flux’ value of that pixel. This routine will colorize based on flux.</li>
-<li><strong>ax</strong> – a pyplot axis object in case you want to use yours instead of generating a new one.</li>
-<li><strong>s</strong> – size value for the squares representing pixels. Tweak this to your liking.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>somedata</strong> – this should be an array of size (33,24), i.e., mce data format.
+Each element is the ‘flux’ value of that pixel. This routine will colorize based on flux.</p></li>
+<li><p><strong>ax</strong> – a pyplot axis object in case you want to use yours instead of generating a new one.</p></li>
+<li><p><strong>s</strong> – size value for the squares representing pixels. Tweak this to your liking.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>A tuple containing 3 mpl objects:</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A tuple containing 3 mpl objects:</p>
 <ol class="arabic simple" start="0">
-<li>scatter plot object</li>
-<li>color bar object</li>
-<li>axis that the plots were added to</li>
+<li><p>scatter plot object</p></li>
+<li><p>color bar object</p></li>
+<li><p>axis that the plots were added to</p></li>
 </ol>
 </p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">3-Tuple</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>3-Tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.pointing">
-<span id="zeustools-pointing-module"></span><h2>zeustools.pointing module<a class="headerlink" href="#module-zeustools.pointing" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="zeustools.pointing.CachingRaster">
-<em class="property">class </em><code class="descclassname">zeustools.pointing.</code><code class="descname">CachingRaster</code><a class="headerlink" href="#zeustools.pointing.CachingRaster" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.plotting.spectrum_atm_plotter">
+<span class="sig-prename descclassname"><span class="pre">zeustools.plotting.</span></span><span class="sig-name descname"><span class="pre">spectrum_atm_plotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errbars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atm_helper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-18</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.plotting.spectrum_atm_plotter" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a 2-panel plot with atmospheric transmission on the bottom and the observed spectrum on top</p>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.pointing">
+<span id="zeustools-pointing-module"></span><h2>zeustools.pointing module<a class="headerlink" href="#module-zeustools.pointing" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.pointing.CachingRaster">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">CachingRaster</span></span><a class="headerlink" href="#zeustools.pointing.CachingRaster" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Reduces latency on the raster_plot function by only loading in each mce datafile once</p>
-<dl class="method">
-<dt id="zeustools.pointing.CachingRaster.go">
-<code class="descname">go</code><span class="sig-paren">(</span><em>filestem</em>, <em>start_filename</em>, <em>num_beams</em>, <em>pixels</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.CachingRaster.go" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.pointing.CachingRaster.go">
+<span class="sig-name descname"><span class="pre">go</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filestem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_beams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.CachingRaster.go" title="Permalink to this definition"></a></dt>
 <dd><p>Load in pointing raster scan. NOW WITH CACHING! FOR ALL YOUR LOW-LATENCY PLOTTING NEEDS.
 This is a wrapper around raster_load, and has the same paramters except existing_data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filestem</strong> – The folder that contains date folders. 
-e.g.: /data/cryo/current_data/</li>
-<li><strong>start_filename</strong> – The first number that was part of the raster</li>
-<li><strong>num_beams</strong> – The number of raster pointings on a side
-e.g.: For a 3x3 raster would be 3.</li>
-<li><strong>pixels</strong> – array of (mce_row,mce_col) for pixels to sum to make the raster plot
-tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily</li>
-<li><strong>do_plot</strong> – Set this to False if you want to just load in the data and not make a plot</li>
-<li><strong>existing_data</strong> – Used by the Caching Raster to speed up the loading process</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filestem</strong> – The folder that contains date folders. 
+e.g.: /data/cryo/current_data/</p></li>
+<li><p><strong>start_filename</strong> – The first number that was part of the raster</p></li>
+<li><p><strong>num_beams</strong> – The number of raster pointings on a side
+e.g.: For a 3x3 raster would be 3.</p></li>
+<li><p><strong>pixels</strong> – array of (mce_row,mce_col) for pixels to sum to make the raster plot
+tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily</p></li>
+<li><p><strong>do_plot</strong> – Set this to False if you want to just load in the data and not make a plot</p></li>
+<li><p><strong>existing_data</strong> – Used by the Caching Raster to speed up the loading process</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">amplitudes of signal at each pointing position</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>amplitudes of signal at each pointing position</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.pointing.make_added_pointing_plots">
-<code class="descclassname">zeustools.pointing.</code><code class="descname">make_added_pointing_plots</code><span class="sig-paren">(</span><em>date</em>, <em>fstem</em>, <em>fnums</em>, <em>specs</em>, <em>spats</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.make_added_pointing_plots" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.pointing.make_added_pointing_plots">
+<span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">make_added_pointing_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fnums</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.make_added_pointing_plots" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.pointing.make_spectral_pointing_plots">
-<code class="descclassname">zeustools.pointing.</code><code class="descname">make_spectral_pointing_plots</code><span class="sig-paren">(</span><em>date</em>, <em>fstem</em>, <em>fnums</em>, <em>specs</em>, <em>spats</em>, <em>array='a'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.make_spectral_pointing_plots" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.pointing.make_spectral_pointing_plots">
+<span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">make_spectral_pointing_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fnums</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.make_spectral_pointing_plots" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.pointing.pfRaster">
-<code class="descclassname">zeustools.pointing.</code><code class="descname">pfRaster</code><span class="sig-paren">(</span><em>filestem</em>, <em>firstnum</em>, <em>sidesize</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.pfRaster" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.pointing.pfRaster">
+<span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">pfRaster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filestem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firstnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sidesize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.pfRaster" title="Permalink to this definition"></a></dt>
 <dd><p>Uses the .pf files generated by the acquisition software to make a raster</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filestem</strong> – The folder that contains date folders. 
-e.g.: /data/cryo/current_data/</li>
-<li><strong>firstnum</strong> – The first number that was part of the raster</li>
-<li><strong>sidesize</strong> – The number of raster pointings on a side
-e.g.: For a 3x3 raster would be 3.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filestem</strong> – The folder that contains date folders. 
+e.g.: /data/cryo/current_data/</p></li>
+<li><p><strong>firstnum</strong> – The first number that was part of the raster</p></li>
+<li><p><strong>sidesize</strong> – The number of raster pointings on a side
+e.g.: For a 3x3 raster would be 3.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">amplitudes of signal at each pointing position</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>amplitudes of signal at each pointing position</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.pointing.raster_calc">
-<code class="descclassname">zeustools.pointing.</code><code class="descname">raster_calc</code><span class="sig-paren">(</span><em>arr</em>, <em>stepsize</em>, <em>initial_guess=(1000</em>, <em>0</em>, <em>0</em>, <em>8</em>, <em>0)</em>, <em>do_plot=True</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.raster_calc" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.pointing.raster_calc">
+<span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">raster_calc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stepsize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1000,</span> <span class="pre">0,</span> <span class="pre">0,</span> <span class="pre">8,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.raster_calc" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the pointing offset to apply to center the source.
 Prints the pointing correction command that you should send to APECS.
 This does a nicer job plotting the raster than the other functions.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>arr</strong> – a numpy array containing the values of each position</li>
-<li><strong>stepsize</strong> – arcseconds offset between raster positions</li>
-<li><strong>initial_guess</strong> – the initial guess for the 2d gaussian fit.
-It’s a tuple of (amplitude, x position, y position, sigma, baseline)</li>
-<li><strong>do_plot</strong> – whether or not to make a plot of the raster and gaussian fit. (default: True)</li>
-<li><strong>bounds</strong> – same as initial guess, except 2 tuples for max and min bounds for each parameters</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arr</strong> – a numpy array containing the values of each position</p></li>
+<li><p><strong>stepsize</strong> – arcseconds offset between raster positions</p></li>
+<li><p><strong>initial_guess</strong> – the initial guess for the 2d gaussian fit.
+It’s a tuple of (amplitude, x position, y position, sigma, baseline)</p></li>
+<li><p><strong>do_plot</strong> – whether or not to make a plot of the raster and gaussian fit. (default: True)</p></li>
+<li><p><strong>bounds</strong> – same as initial guess, except 2 tuples for max and min bounds for each parameters</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">best-fit paramteters</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>best-fit paramteters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.pointing.raster_load">
-<code class="descclassname">zeustools.pointing.</code><code class="descname">raster_load</code><span class="sig-paren">(</span><em>filestem</em>, <em>firstnum</em>, <em>sidesize</em>, <em>pixels</em>, <em>existing_data=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.raster_load" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.pointing.raster_load">
+<span class="sig-prename descclassname"><span class="pre">zeustools.pointing.</span></span><span class="sig-name descname"><span class="pre">raster_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filestem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firstnum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sidesize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.pointing.raster_load" title="Permalink to this definition"></a></dt>
 <dd><p>Load in and plot a pointing raster scan. 
 Modifies the existing_data array to contain newly-loaded information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>filestem</strong> – All of the filename except the number. 
-e.g.: <code class="docutils literal notranslate"><span class="pre">/data/cryo/current_data/saturn_191202_</span></code></li>
-<li><strong>firstnum</strong> – The first number that was part of the raster</li>
-<li><strong>sidesize</strong> – The number of raster pointings on a side
-e.g.: For a 3x3 raster would be 3.</li>
-<li><strong>pixels</strong> – array of (mce_row,mce_col) for pixels to sum to make the raster plot
-tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily</li>
-<li><strong>existing_data</strong> – Used by the Caching Raster to speed up the loading process</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filestem</strong> – All of the filename except the number. 
+e.g.: <code class="docutils literal notranslate"><span class="pre">/data/cryo/current_data/saturn_191202_</span></code></p></li>
+<li><p><strong>firstnum</strong> – The first number that was part of the raster</p></li>
+<li><p><strong>sidesize</strong> – The number of raster pointings on a side
+e.g.: For a 3x3 raster would be 3.</p></li>
+<li><p><strong>pixels</strong> – array of (mce_row,mce_col) for pixels to sum to make the raster plot
+tip: use ArrayMapper.phys_to_mce(spec,spat) to get this number easily</p></li>
+<li><p><strong>existing_data</strong> – Used by the Caching Raster to speed up the loading process</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">amplitudes of signal at each pointing position</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>amplitudes of signal at each pointing position</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-zeustools.rooneystools">
-<span id="zeustools-rooneystools-module"></span><h2>zeustools.rooneystools module<a class="headerlink" href="#module-zeustools.rooneystools" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="zeustools.rooneystools.ArrayMapper">
-<em class="property">class </em><code class="descclassname">zeustools.rooneystools.</code><code class="descname">ArrayMapper</code><span class="sig-paren">(</span><em>path='config/'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper" title="Permalink to this definition">¶</a></dt>
+</section>
+<section id="module-zeustools.rooneystools">
+<span id="zeustools-rooneystools-module"></span><h2>zeustools.rooneystools module<a class="headerlink" href="#module-zeustools.rooneystools" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.rooneystools.ArrayMapper">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">ArrayMapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class makes it easy to address mce data.</p>
 <p>MCE data is stored in “Row,Col” format, where the rows and columns correspond to how
@@ -657,88 +611,49 @@ the <code class="docutils literal notranslate"><span class="pre">mcedata</span><
 This does the latter.</p>
 <p>The phys_to_mce function in this class will return an index you can use immediately 
 to index an mce_data datacube in order to address a pixel by its physical location.</p>
-<p>This class needs to be able to access the <code class="docutils literal notranslate"><span class="pre">arrayA_map.dat</span></code>, <code class="docutils literal notranslate"><span class="pre">arrayB_map.dat</span></code>, and <code class="docutils literal notranslate"><span class="pre">arrayC_map.dat</span></code> files that specify the mapping
-between pixel locations physically on the array and pixel positions within the MCE data 
-datacube, so when you initialize it either make sure they are present in a folder called 
-<code class="docutils literal notranslate"><span class="pre">config/</span></code> or specify the path to wherever you’re storing them.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> – path to a folder containing the three <code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code> files.
-As noted above, this defaults to <code class="docutils literal notranslate"><span class="pre">config/</span></code>.</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="zeustools.rooneystools.ArrayMapper.array_name">
-<code class="descname">array_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.array_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>“A rose by any other name would smell as sweet”</p>
-<p>Converts various names for the 3 different physical arrays into the 
-internal scheme used by this class (which is the same as the letter used by 
-<code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code>, much to Thomas’s dismay. At least this is an easy way to convert
-to that scheme.)</p>
-<p>That scheme is follows:</p>
-<ul class="simple">
-<li>array “A” is the 400 um array (350/450)</li>
-<li>array “B” is the 200 um array</li>
-<li>array “C” is the 600 um array.</li>
-</ul>
-<p>simply pass any name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;400&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">400</span></code>, <code class="docutils literal notranslate"><span class="pre">350</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;200&quot;</span></code>) and 
-this will return the correct letter to use in <code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> – Human readable name for the array. Should be a string or number.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">one of ‘a’, ‘b’, or ‘c’.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="zeustools.rooneystools.ArrayMapper.grid_map">
-<code class="descname">grid_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.grid_map" title="Permalink to this definition">¶</a></dt>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – (optional) path to a folder containing the three <code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code> files.
+The default array map is the one most recently updated in 2021 with input from Bo, and 
+is now included in the package by default!</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.rooneystools.ArrayMapper.grid_map">
+<span class="sig-name descname"><span class="pre">grid_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.grid_map" title="Permalink to this definition"></a></dt>
 <dd><p>Return a grid of spectral positions and spatial positions for each mce_row and mce_column</p>
 <p>Note that for ease of use the 400 array has 10 added to all its spatial positions, 
 and the 200 array has 20 added to its spectral positions. If the entries are masked, there
 is nothing wired to that MCE location (usually indicates broken wires that have been routed
 around).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Numpy array of shape (33,24,2). The first two axes match the MCE; axis 0 selects an MCE 
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Numpy array of shape (33,24,2). The first two axes match the MCE; axis 0 selects an MCE 
 row, while axis 1 selects an MCE column. This way if you take 
-<code class="docutils literal notranslate"><span class="pre">np.grid_map()[mce_row,mce_col]</span></code> you get back <code class="docutils literal notranslate"><span class="pre">[spatial_position,spectral_position]</span></code></td>
-</tr>
-</tbody>
-</table>
+<code class="docutils literal notranslate"><span class="pre">np.grid_map()[mce_row,mce_col]</span></code> you get back <code class="docutils literal notranslate"><span class="pre">[spatial_position,spectral_position]</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="zeustools.rooneystools.ArrayMapper.phys_to_mce">
-<code class="descname">phys_to_mce</code><span class="sig-paren">(</span><em>spec</em>, <em>spat</em>, <em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.phys_to_mce" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.rooneystools.ArrayMapper.phys_to_mce">
+<span class="sig-name descname"><span class="pre">phys_to_mce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.ArrayMapper.phys_to_mce" title="Permalink to this definition"></a></dt>
 <dd><p>Given the physical position of a pixel (spectral position, spatial position, array name)
 returns the mce_row and mce_col of that pixel. That can be used to directly address
 the pixel from the mce datacube.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>spec</strong> – The spectral position of the pixel to index.</li>
-<li><strong>spat</strong> – The spatial position of the pixel to index.</li>
-<li><strong>array</strong> – The array the pixel is on. Should be a number or string, like “400” for the 400 micron array.</li>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> – The spectral position of the pixel to index.</p></li>
+<li><p><strong>spat</strong> – The spatial position of the pixel to index.</p></li>
+<li><p><strong>array</strong> – The array the pixel is on. Should be a number or string, like “400” for the 400 micron array.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Tuple of (mce_row, mce_col) of the pixel.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><p class="first">To load a data file and get the time series for spectral pixel 7 on spatial position 1
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of (mce_row, mce_col) of the pixel.</p>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>To load a data file and get the time series for spectral pixel 7 on spatial position 1
 of the 400 micron array:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chop</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">datacube</span> <span class="o">=</span> <span class="n">load_data_raw</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">am</span> <span class="o">=</span> <span class="n">ArrayMapper</span><span class="p">()</span>
@@ -746,117 +661,174 @@ of the 400 micron array:</p>
 <span class="n">time_series</span> <span class="o">=</span> <span class="n">datacube</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 </pre></div>
 </div>
-<p class="last">It is recommended that you initialize <code class="docutils literal notranslate"><span class="pre">am</span> <span class="pre">=</span> <span class="pre">ArrayMapper()</span></code> once and 
+<p>It is recommended that you initialize <code class="docutils literal notranslate"><span class="pre">am</span> <span class="pre">=</span> <span class="pre">ArrayMapper()</span></code> once and 
 reuse the <code class="docutils literal notranslate"><span class="pre">am</span></code> object over the lifetime of your code.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>TODO: better way to index multiple pixels.</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="zeustools.rooneystools.chi_sq_solver">
-<em class="property">class </em><code class="descclassname">zeustools.rooneystools.</code><code class="descname">chi_sq_solver</code><span class="sig-paren">(</span><em>bins</em>, <em>ys</em>, <em>function</em>, <em>guesses</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.array_name">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">array_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.array_name" title="Permalink to this definition"></a></dt>
+<dd><p>“A rose by any other name would smell as sweet”</p>
+<p>Converts various names for the 3 different physical arrays into the 
+internal scheme used by this class (which is the same as the letter used by 
+<code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code>, much to Thomas’s dismay. At least this is an easy way to convert
+to that scheme.)</p>
+<p>That scheme is follows:</p>
+<ul class="simple">
+<li><p>array “A” is the 400 um array (350/450)</p></li>
+<li><p>array “B” is the 200 um array</p></li>
+<li><p>array “C” is the 600 um array.</p></li>
+</ul>
+<p>simply pass any name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;400&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">400</span></code>, <code class="docutils literal notranslate"><span class="pre">350</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;200&quot;</span></code>) and 
+this will return the correct letter to use in <code class="docutils literal notranslate"><span class="pre">arrayX_map.dat</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – Human readable name for the array. Should be a string or number.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>one of ‘a’, ‘b’, or ‘c’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.bias_step_chop">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">bias_step_chop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.bias_step_chop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.big_signal_bad_px_finder">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">big_signal_bad_px_finder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corrthresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.big_signal_bad_px_finder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.rooneystools.chi_sq_solver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">chi_sq_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guesses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A chi squared analysis tool I built. I don’t know 
 whether it’s still useful. Kept around just in case.
 It might also assume your data is Poisson…
 Or I’ve just forgotten how chi squared works?</p>
-<dl class="method">
-<dt id="zeustools.rooneystools.chi_sq_solver.centers">
-<code class="descname">centers</code><span class="sig-paren">(</span><em>bins</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.centers" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.rooneystools.chi_sq_solver.centers">
+<span class="sig-name descname"><span class="pre">centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.centers" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="zeustools.rooneystools.chi_sq_solver.chi_sq">
-<code class="descname">chi_sq</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.chi_sq" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.rooneystools.chi_sq_solver.chi_sq">
+<span class="sig-name descname"><span class="pre">chi_sq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.chi_sq_solver.chi_sq" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.gaussian">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">gaussian</code><span class="sig-paren">(</span><em>x</em>, <em>sigma</em>, <em>mu</em>, <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.cube_nan_interpolator">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">cube_nan_interpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.cube_nan_interpolator" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.gaussian">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian" title="Permalink to this definition"></a></dt>
 <dd><p>I never understood why numpy or scipy don’t have their own gaussian function.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.gaussian_integral">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">gaussian_integral</code><span class="sig-paren">(</span><em>sigma</em>, <em>mu</em>, <em>a</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian_integral" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.gaussian_integral">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">gaussian_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.gaussian_integral" title="Permalink to this definition"></a></dt>
 <dd><p>Same parameter order as my “gaussian” function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.histGaussian">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">histGaussian</code><span class="sig-paren">(</span><em>something</em>, <em>nbins=50</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.histGaussian" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.get_ts_time_offset">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">get_ts_time_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.get_ts_time_offset" title="Permalink to this definition"></a></dt>
+<dd><p>Turns out that it’s not straightforward what’s going on between
+the gps card (and therefore the info in the .ts file) and the time
+on the pc (ie, what you get when you call datetime.now() or CTIME).</p>
+<p>I thought it could be like the TAI/GPS/leap second stuff, but that isn’t 
+really it either. (unless the MCE PC clock is set to TAI somehow.)</p>
+<p>Anyway, this method returns gps_card_time - pc_time by looking
+at the run file and the ts file. The run file contains the pc_time
+that mce_run was launched, and the ts file contains the gps_card_time
+of the first data point.</p>
+<p>Note, I do not do this here, but you could also check date modified
+for the data file and the run file—the runfile is written before data
+collection is commenced, and obviously the data file has to be modified
+after the last data point is collected. or the last entry in the ts file</p>
+<p>returns t_GPS - t_PC = t_offset
+so 
+t_GPS = t_offset + t_PC (i.e. add return value to PC time to convert so 
+it matches GPS time)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.histGaussian">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">histGaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">something</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.histGaussian" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.load_data_handle_outliers">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">load_data_handle_outliers</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='labchop'</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_handle_outliers" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.load_data_handle_outliers">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">load_data_handle_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'labchop'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_handle_outliers" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.load_data_raw">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">load_data_raw</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_raw" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.load_data_raw">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">load_data_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.load_data_raw" title="Permalink to this definition"></a></dt>
 <dd><p>Loads an MCE data file, chop file and TS file, returning
 the raw data for each of them.</p>
 <p>Note that if this turns out to be a “stare” dataset,
 there won’t be chop or TS files. So we make some surrogate
 chop and ts data sets. The chop will be all 0s and the ts
 will be a monotonicall increasing array.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the file name that you want to load.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A tuple containing 3 numpy arrays:<ol class="arabic simple" start="0">
-<li>Chop phase (whether we’re looking at the source or the sky)</li>
-<li>Time stamp</li>
-<li>Time series data cube as usual from mce_data (use <a class="reference internal" href="#zeustools.rooneystools.ArrayMapper" title="zeustools.rooneystools.ArrayMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayMapper</span></code></a> to index it)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – the file name that you want to load.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>A tuple containing 3 numpy arrays:</p>
+<ol class="arabic simple" start="0">
+<li><p>Chop phase (whether we’re looking at the source or the sky)</p></li>
+<li><p>Time stamp</p></li>
+<li><p>Time series data cube as usual from mce_data (use <a class="reference internal" href="#zeustools.rooneystools.ArrayMapper" title="zeustools.rooneystools.ArrayMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayMapper</span></code></a> to index it)</p></li>
 </ol>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">3-Tuple of numpy.array</td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>3-Tuple of numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.loadts">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">loadts</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.loadts" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.loadts">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">loadts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.loadts" title="Permalink to this definition"></a></dt>
 <dd><p>Really simple wrapper function to load a <code class="docutils literal notranslate"><span class="pre">.ts</span></code> file.</p>
 <p>Does literally the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{filename}</span><span class="s2">.ts&quot;</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">times</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.ts&quot;</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – the location of the data file to read the time stamps for. Don’t include the <code class="docutils literal notranslate"><span class="pre">.ts</span></code> extension</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">1-D numpy array of timestamps</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – the location of the data file to read the time stamps for. Don’t include the <code class="docutils literal notranslate"><span class="pre">.ts</span></code> extension</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1-D numpy array of timestamps</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.makeFileName">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">makeFileName</code><span class="sig-paren">(</span><em>date</em>, <em>name</em>, <em>number</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.makeFileName" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.makeFileName">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">makeFileName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.makeFileName" title="Permalink to this definition"></a></dt>
 <dd><p>Simple routine to convert a date, filename, and file index into a real
 data file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><p class="first">Say you have a data file in /data/cryo/20191130/saturn_191130_0023.
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p>Say you have a data file in /data/cryo/20191130/saturn_191130_0023.
 Calling:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">makeFileName</span><span class="p">(</span><span class="s1">&#39;20191130&#39;</span><span class="p">,</span><span class="s1">&#39;saturn&#39;</span><span class="p">,</span><span class="mi">23</span><span class="p">)</span>
 </pre></div>
@@ -866,42 +838,37 @@ Calling:</p>
 </pre></div>
 </div>
 <p>which you can easily append to the parent folder name.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>date</strong> – String date in <code class="docutils literal notranslate"><span class="pre">yyyymmdd</span></code> format</li>
-<li><strong>name</strong> – source name</li>
-<li><strong>number</strong> – integer of file number</li>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>date</strong> – String date in <code class="docutils literal notranslate"><span class="pre">yyyymmdd</span></code> format</p></li>
+<li><p><strong>name</strong> – source name</p></li>
+<li><p><strong>number</strong> – integer of file number</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">folder and file path relative to the data folder (e.g. /data/cryo)</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>folder and file path relative to the data folder (e.g. /data/cryo)</p>
+</dd>
+</dl>
 <p>TODO: it would be nice if this didn’t depend so much on data types and such</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.nan_helper">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nan_helper</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nan_helper" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nan_helper">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nan_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nan_helper" title="Permalink to this definition"></a></dt>
 <dd><p>Helper to handle indices and logical indices of NaNs.</p>
-<dl class="docutils">
-<dt>Input:</dt>
-<dd><ul class="first last simple">
-<li>y, 1d numpy array with possible NaNs</li>
+<dl>
+<dt>Input:</dt><dd><ul class="simple">
+<li><p>y, 1d numpy array with possible NaNs</p></li>
 </ul>
 </dd>
-<dt>Output:</dt>
-<dd><ul class="first last simple">
-<li>nans, logical indices of NaNs</li>
-<li>index, a function, with signature indices= index(logical_indices),
-to convert logical indices of NaNs to ‘equivalent’ indices</li>
+<dt>Output:</dt><dd><ul class="simple">
+<li><p>nans, logical indices of NaNs</p></li>
+<li><p>index, a function, with signature indices= index(logical_indices),
+to convert logical indices of NaNs to ‘equivalent’ indices</p></li>
 </ul>
 </dd>
-<dt>Example:</dt>
-<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># linear interpolation of NaNs</span>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># linear interpolation of NaNs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">nans</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span> <span class="n">nan_helper</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="p">[</span><span class="n">nans</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">nans</span><span class="p">),</span> <span class="n">x</span><span class="p">(</span><span class="o">~</span><span class="n">nans</span><span class="p">),</span> <span class="n">y</span><span class="p">[</span><span class="o">~</span><span class="n">nans</span><span class="p">])</span>
 </pre></div>
@@ -910,9 +877,14 @@ to convert logical indices of NaNs to ‘equivalent’ indices</li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.nd_mad">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nd_mad</code><span class="sig-paren">(</span><em>nparray</em>, <em>axis</em>, <em>extrainfo=False</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_mad" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nan_interp">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nan_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nan_interp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nd_mad">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nd_mad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nparray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extrainfo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_mad" title="Permalink to this definition"></a></dt>
 <dd><p>This is the backend for <a class="reference internal" href="#zeustools.rooneystools.nd_mads_from_median" title="zeustools.rooneystools.nd_mads_from_median"><code class="xref py py-func docutils literal notranslate"><span class="pre">nd_mads_from_median()</span></code></a>. 
 Given a numpy ndarray, we calculate the median absolute deviation</p>
 <p>NOTE! in scipy version 1.3 they added a median absolute deviation method!
@@ -921,31 +893,31 @@ you might consider using that instead in some cases.</p>
 from the median for every point on the array.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.nd_mads_from_median">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nd_mads_from_median</code><span class="sig-paren">(</span><em>nparray</em>, <em>axis</em>, <em>zero_padding_factor=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_mads_from_median" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nd_mads_from_median">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nd_mads_from_median</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nparray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_padding_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_mads_from_median" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the number of mads from the median for each data point, with median and mad computed over the specified axis</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.nd_nan_outliers">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nd_nan_outliers</code><span class="sig-paren">(</span><em>nparray</em>, <em>MAD_chop=5</em>, <em>axis=2</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_nan_outliers" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nd_nan_outliers">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nd_nan_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nparray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MAD_chop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_nan_outliers" title="Permalink to this definition"></a></dt>
 <dd><p>Returns an array with nans instead of outliers on a certain axis</p>
 <p>The input array is examined using the median absolute deviation method
 and outliers greater than the MAD_chop number are changed to np.nan.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.nd_reject_outliers">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">nd_reject_outliers</code><span class="sig-paren">(</span><em>nparray</em>, <em>MAD_chop=5</em>, <em>axis=2</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_reject_outliers" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.nd_reject_outliers">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">nd_reject_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nparray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MAD_chop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.nd_reject_outliers" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a masked array masking outliers on a certain axis.</p>
 <p>The input array is examined using the median absolute deviation method
 and outliers greater than the MAD_chop number are masked.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.parseCmdArgs">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">parseCmdArgs</code><span class="sig-paren">(</span><em>argumentList</em>, <em>helpList</em>, <em>typeList</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.parseCmdArgs" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.parseCmdArgs">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">parseCmdArgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argumentList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">helpList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typeList</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.parseCmdArgs" title="Permalink to this definition"></a></dt>
 <dd><p>Parses command-line arguments.</p>
 <p>arguments:
 3 lists of argument data. First is the list of arguments. Each
@@ -961,118 +933,376 @@ The last list contains the type.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.processChop">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">processChop</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.processChop" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.processChop">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">processChop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.processChop" title="Permalink to this definition"></a></dt>
 <dd><p>Loads in MCE data file, chop file, and TS file.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a tuple containing:<ol class="arabic simple" start="0">
-<li>data points where chop is on</li>
-<li>ts for chop on</li>
-<li>data for chop off</li>
-<li>ts for chop off</li>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>a tuple containing:</p>
+<ol class="arabic simple" start="0">
+<li><p>data points where chop is on</p></li>
+<li><p>ts for chop on</p></li>
+<li><p>data for chop off</p></li>
+<li><p>ts for chop off</p></li>
 </ol>
-</td>
-</tr>
-</tbody>
-</table>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.processChopBetter">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">processChopBetter</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.processChopBetter" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.processChopBetter">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">processChopBetter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.processChopBetter" title="Permalink to this definition"></a></dt>
 <dd><p>Loads in MCE data file and chop file.</p>
 <p>returns an array with the medians of each chop cycle for all pixels.</p>
 <p>TODO: needs a <em>better</em> name</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.readPf">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">readPf</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.readPf" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.readPf">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">readPf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.readPf" title="Permalink to this definition"></a></dt>
 <dd><p>Loads in a .pf file. Those contain the exact data that was
 sent to the APEX servers for pointing and/or focus calibration.
 We send lots of 1s to APEX because they do on-off/off and we 
 think we know better than them so we do all kinds of acrobatics.</p>
 <p>This script undoes the acrobatics so you see exactly what APEX
 would see.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> – The filename you want to load (INCLUDE the .pf extension)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">1-D array of data points (usually a time series)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – The filename you want to load (INCLUDE the .pf extension)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1-D array of data points (usually a time series)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="zeustools.rooneystools.twoD_Gaussian">
-<code class="descclassname">zeustools.rooneystools.</code><code class="descname">twoD_Gaussian</code><span class="sig-paren">(</span><em>pos</em>, <em>amplitude</em>, <em>xo</em>, <em>yo</em>, <em>sigma_x</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.twoD_Gaussian" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.rooneystools.twoD_Gaussian">
+<span class="sig-prename descclassname"><span class="pre">zeustools.rooneystools.</span></span><span class="sig-name descname"><span class="pre">twoD_Gaussian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.rooneystools.twoD_Gaussian" title="Permalink to this definition"></a></dt>
 <dd><p>Good for doing pointing. Doesn’t have too many parameters,
 for example we set sigma_x = sigma_y and we don’t have a theta.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-zeustools.transmission">
+<span id="zeustools-transmission-module"></span><h2>zeustools.transmission module<a class="headerlink" href="#module-zeustools.transmission" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">AtmosphereTransmission</span></span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides a method to calculate the sky
+transmission from APEX at arbitrary PWV and wavelength.
+It accomplishes this by using a downloaded copy of the APEX weather
+data (included with the package).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission.interp">
+<span class="sig-name descname"><span class="pre">interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission.interp" title="Permalink to this definition"></a></dt>
+<dd><p>interpolate the sky transmission at a given PWV and frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> – frequency in GHz</p></li>
+<li><p><strong>pwv</strong> – pwv in mm</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission.interp_internal_freq">
+<span class="sig-name descname"><span class="pre">interp_internal_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission.interp_internal_freq" title="Permalink to this definition"></a></dt>
+<dd><p>interpolate the sky transmission at a given PWV, using the frequency in the member variable <cite>observing_freq</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pwv</strong> – pwv in mm</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.FilterTransmission">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">FilterTransmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filterType</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.FilterTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides a good way to interpolate the transmission of the ZEUS-2 filters.
+For most of the filters, we have spreadsheets of their measured transmission, but for the
+zitex filter I digitized the plot of G110 zitex transmission from Benford 1999.</p>
+<p>Create a FilterTransmission object providing one of the filter names/keys from the FILTER_NAMES 
+dictionary, and then call the interp function with a wavelength in microns to get back its transmission at 
+that wavelength.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.FilterTransmission.interp">
+<span class="sig-name descname"><span class="pre">interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.FilterTransmission.interp" title="Permalink to this definition"></a></dt>
+<dd><p>Run the interpolator at the given wavelength (in microns)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wl</strong> – The desired wavelength or wavelengths to extract the transmission for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numpy array of transmissions corresponding to the given wavelengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.GratingTransmission">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">GratingTransmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gratingType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grating_eff.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.GratingTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.transmission.FilterTransmission" title="zeustools.transmission.FilterTransmission"><code class="xref py py-class docutils literal notranslate"><span class="pre">zeustools.transmission.FilterTransmission</span></code></a></p>
+<p>The grating transmission files are a bit different from the filter data files.
+This class takes care of that difference, and gives you back an object that is for all intents and purposes
+identical to a FilterTransmission object</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">ZeusOpticsChain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2021'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the main way for you to handle transmission calculations.
+It takes into account all the filters in the system as well as the grating efficiency
+and the tuning ranges of the grating. You can also specify the time period you are interested in
+so that we can load the correct combination of filters and grating etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – This string lets you define the time period that you want. Currently available 
+time periods are <code class="docutils literal notranslate"><span class="pre">2021</span></code> to load the configuration for APEX 2021, which includes the old “shiny” grating.
+<code class="docutils literal notranslate"><span class="pre">2019</span></code> loads the configuration at APEX in 2019, where we introduced the new k2586 350 micron bandpass filter.
+<code class="docutils literal notranslate"><span class="pre">lab_2019</span></code> loads the configuration for the lab tests in 2019 and 2018, where the 350 micron bandpass
+filter was the “k2338” variety, and <code class="docutils literal notranslate"><span class="pre">lab_late_2019</span></code> loads the config when the “w1018” bandpass filter was
+installed on the 350 micron array.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain.compute_transmission">
+<span class="sig-name descname"><span class="pre">compute_transmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain.compute_transmission" title="Permalink to this definition"></a></dt>
+<dd><p>This is mostly an internal-use function.
+Given a combination of filters, multiply them all at the given wavelengths.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain.get_transmission_microns">
+<span class="sig-name descname"><span class="pre">get_transmission_microns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tuning_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain.get_transmission_microns" title="Permalink to this definition"></a></dt>
+<dd><p>Use this method for all your transmission computation needs! Once you have
+initialized the object, supply this method with a wavelength or array of wavelengths
+in order to compute the throughput at those wavelengths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wl</strong> – wavelength or numpy array of wavelengths of interest</p></li>
+<li><p><strong>show_tuning_range</strong> – Optional. If this is True, we will return “0” transmission for wavelengths
+that cannot be observed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numpy array of throughput fractions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.transmission.airmass_factor">
+<span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">airmass_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elev</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.airmass_factor" title="Permalink to this definition"></a></dt>
+<dd><p>compute the airmass at a given elevation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>elev</strong> – elevation / altitude in degrees</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>airmass. multiply this by pwv before calculating atmosphere transmission.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id1">
+<h2>zeustools.transmission module<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h2>
+<span class="target" id="module-zeustools.iv_tools"></span><dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">IVHelper</span></span><a class="headerlink" href="#zeustools.iv_tools.IVHelper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Load in an IV curve or several IV curves and perform useful operations with them</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.get_corrected_ivs">
+<span class="sig-name descname"><span class="pre">get_corrected_ivs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_again</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.get_corrected_ivs" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all iv curves for col,row,
+currected to have normal y-intercept 0 and normal slope fixed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.get_temperature_colorbar_norm">
+<span class="sig-name descname"><span class="pre">get_temperature_colorbar_norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.get_temperature_colorbar_norm" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.load_directory">
+<span class="sig-name descname"><span class="pre">load_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.load_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Given a directory containing IV curve data, this function will load the IV 
+data and make it ready for processing.
+For best results, organize the folder so it only contains IV
+files and the associated run, out, and bias files.
+Also, each filename should contain the bath temperature it was taken at
+in the format 110mK</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.load_file">
+<span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.load_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.switch_to_real_units">
+<span class="sig-name descname"><span class="pre">switch_to_real_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.switch_to_real_units" title="Permalink to this definition"></a></dt>
+<dd><p>changes all internal data files from DAC units to real units
+As of now, this step is irreversible, so if you want to go back
+to DAC units you’ll have to reload the directory. But really, it should be easy
+since I keep the mce data array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">InteractiveIVPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">130</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_temp_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.plotting.ZeusInteractivePlotter" title="zeustools.plotting.ZeusInteractivePlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">zeustools.plotting.ZeusInteractivePlotter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.bottom_flat">
+<span class="sig-name descname"><span class="pre">bottom_flat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.bottom_flat" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.bottom_plot">
+<span class="sig-name descname"><span class="pre">bottom_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.bottom_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.build_data">
+<span class="sig-name descname"><span class="pre">build_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.build_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.detectors_hist">
+<span class="sig-name descname"><span class="pre">detectors_hist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">450]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_rn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.detectors_hist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_power">
+<span class="sig-name descname"><span class="pre">interactive_plot_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_power" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_rn">
+<span class="sig-name descname"><span class="pre">interactive_plot_rn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_rn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.update_colorbar">
+<span class="sig-name descname"><span class="pre">update_colorbar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.update_colorbar" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.find_transition">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">find_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.find_transition" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to find the superconducting transition by fitting the normal branch and looking for deviations.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.find_transition_index">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">find_transition_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.find_transition_index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.fixed_slope_interceptor">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">fixed_slope_interceptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.fixed_slope_interceptor" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.linear_normal_fit">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">linear_normal_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.linear_normal_fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.real_units">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">real_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whole_array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.real_units" title="Permalink to this definition"></a></dt>
+<dd><p>Given an array of biases and corresponding array of feedbacks (all in DAC units)
+calculate the actual current and voltage going through the TES.
+:param bias: Bias array in DAC units
+:param fb: feedback array in DAC units
+:param col: Optional. the MCE column that you are calculating for.</p>
+<blockquote>
+<div><p>This lets us select the correct resistor values</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>whole_array</strong> – Optional. If True, assumes that the value of the “fb” param
+is a whole mce data array, so we can handle resistors
+automatically.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(TES voltage array, TES current array) in Volts and Amps respectively.</p>
+</dd>
+</dl>
+<p>Todo: Different chips may have different parameters. We currently handle this by assuming
+the array has a uniform normal resistance of 4 mOhm.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.super_remover">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">super_remover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.super_remover" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – masked array containing IV curve datacube.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
 <p>Both the rooneystools and codystools modules are available at the base module level. I need to work on this organization thing.</p>
-<span class="target" id="module-zeustools"></span></div>
-</div>
+<span class="target" id="module-zeustools"></span></section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mce_data.html" class="btn btn-neutral float-right" title="mce_data submodule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="calibpipeline.html" class="btn btn-neutral float-left" title="The ZEUS-2 Calibration Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="calibpipeline.html" class="btn btn-neutral float-left" title="The ZEUS-2 Calibration Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mce_data.html" class="btn btn-neutral float-right" title="mce_data submodule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Christopher Rooney, Bo Peng, Cody Lamarche
-
-    </p>
+    <p>&#169; Copyright 2022, Christopher Rooney, Bo Peng, Cody Lamarche.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

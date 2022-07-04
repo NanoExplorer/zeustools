@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'zeustools'
-copyright = '2020, Christopher Rooney, Bo Peng, Cody Lamarche'
+copyright = '2022, Christopher Rooney, Bo Peng, Cody Lamarche'
 author = 'Christopher Rooney, Bo Peng, Cody Lamarche'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.3'
+release = '0.0.4'
 
 
 # -- General configuration ---------------------------------------------------

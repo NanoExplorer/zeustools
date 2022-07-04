@@ -61,6 +61,23 @@ zeustools.rooneystools module
    :undoc-members:
    :show-inheritance:
 
+zeustools.transmission module
+-----------------------------
+
+.. automodule:: zeustools.transmission
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+zeustools.transmission module
+-----------------------------
+
+.. automodule:: zeustools.iv_tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 
 Module contents
 ---------------

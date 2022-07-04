@@ -1,13 +1,13 @@
 The ZEUS-2 Calibration Pipeline
 ===============================
 
-When you install the pip module, you automatically get the calibration_pipeline script available for use. You can either run it directly with
+When you install the pip module, you automatically get the calibration_pipeline script available for use. You can either run it directly with::
 
-``$ calibration_pipeline``
+    $ calibration_pipeline
 
-which will automatically look for the configuration file ``settings.ini``, load it, and reduce the data described by it, or with
+which will automatically look for the configuration file ``settings.ini``, load it, and reduce the data described by it, or with::
 
-``$ calibration_pipeline custom_ini_file.ini``
+    $ calibration_pipeline custom_ini_file.ini
 
 so that you can specify the exact configuration file to use.
 

@@ -25,9 +25,10 @@ class AtmosphereTransmission:
 
     def interp(self,freq,pwv):
         """
-        params: 
-            freq: frequency in GHz
-            pwv: pwv in mm
+        interpolate the sky transmission at a given PWV and frequency.
+        
+        :param freq: frequency in GHz
+        :param pwv: pwv in mm
         """
         print(freq,pwv)
         # print(self.freqs)
@@ -35,6 +36,11 @@ class AtmosphereTransmission:
         return interp.interpn((self.freqs,self.pwvs),self.transmissions,(freq,pwv))
 
     def interp_internal_freq(self,pwv):
+        """ 
+        interpolate the sky transmission at a given PWV, using the frequency in the member variable `observing_freq`
+        
+        :param pwv: pwv in mm
+        """
         return self.interp(self.observing_freq,pwv)
 
 FILTER_NAMES = {
@@ -127,6 +133,10 @@ class FilterTransmission:
 #         with res.open_text(data,)
 
 class GratingTransmission(FilterTransmission):
+    """ The grating transmission files are a bit different from the filter data files.
+    This class takes care of that difference, and gives you back an object that is for all intents and purposes
+    identical to a FilterTransmission object
+    """
     def __init__(self,gratingType,fileName="grating_eff.csv",bounds=True):
         orders = ["3","4","5","9"]
         gratingCode = gratingType[0].lower()
@@ -139,6 +149,18 @@ class GratingTransmission(FilterTransmission):
 
 
 class ZeusOpticsChain:
+    """ This is the main way for you to handle transmission calculations.
+    It takes into account all the filters in the system as well as the grating efficiency
+    and the tuning ranges of the grating. You can also specify the time period you are interested in
+    so that we can load the correct combination of filters and grating etc.
+
+    :param config: This string lets you define the time period that you want. Currently available 
+        time periods are ``2021`` to load the configuration for APEX 2021, which includes the old "shiny" grating.
+        ``2019`` loads the configuration at APEX in 2019, where we introduced the new k2586 350 micron bandpass filter.
+        ``lab_2019`` loads the configuration for the lab tests in 2019 and 2018, where the 350 micron bandpass
+        filter was the "k2338" variety, and ``lab_late_2019`` loads the config when the "w1018" bandpass filter was
+        installed on the 350 micron array.
+    """
     def __init__(self,config="2021"):
         if config=="2021":
             self.filters = {
@@ -189,16 +211,28 @@ class ZeusOpticsChain:
         self.tuning_ranges = GratingTransmission(self.grating,fileName="z2_tuning_ranges.csv",bounds=False)
 
     def compute_transmission(self,wl,filters):
+        """This is mostly an internal-use function.
+        Given a combination of filters, multiply them all at the given wavelengths."""
         if len(wl)==0:
             return
         total_transmission=np.ones_like(wl,dtype=float)
         for f in filters:
             this_filter_trans = self.filter_objs[f].interp(wl)
             total_transmission*= this_filter_trans
-            print(f,this_filter_trans,total_transmission)
+            # print(f,this_filter_trans,total_transmission)
         return total_transmission
 
     def get_transmission_microns(self,wl,show_tuning_range=False):
+        """ Use this method for all your transmission computation needs! Once you have
+        initialized the object, supply this method with a wavelength or array of wavelengths
+        in order to compute the throughput at those wavelengths. 
+
+        :param wl: wavelength or numpy array of wavelengths of interest
+        :param show_tuning_range: Optional. If this is True, we will return "0" transmission for wavelengths
+            that cannot be observed
+
+        :return: numpy array of throughput fractions.
+        """
         if type(wl) is not np.ndarray:
             wl = np.array(wl)
         out = np.zeros_like(wl,dtype=float)
@@ -218,6 +252,12 @@ class ZeusOpticsChain:
 
 
 def airmass_factor(elev):
+    """ compute the airmass at a given elevation.
+    
+    :param elev: elevation / altitude in degrees
+
+    :return: airmass. multiply this by pwv before calculating atmosphere transmission.
+    """
     elev = elev*np.pi/180
     return(np.sin(elev))
 

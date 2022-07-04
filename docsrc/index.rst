@@ -1,4 +1,4 @@
-Welcome to zeustools's documentation!
+Welcome to ZEUStools's documentation!
 =====================================
 
 ZEUStools is designed to make our lives easier in terms of loading and processing ZEUS-2 data. It is organized into several different submodules.
@@ -10,6 +10,21 @@ There is also a library of general functions.
 The :py:mod:`.bpio` submodule is designed for reading in the outputs of Bo's data reduction pipeline. 
 
 The :py:mod:`.calibration` submodule contains functions for determining the real physical properties of our data.
+
+The :py:mod:`.transmission` submodule contains methods for calculating the transmission of the atmosphere at APEX
+and handling the transmissions of the various filters and optics elements in the ZEUS-2 system. Notably the :class:`~.transmission.ZeusOpticsChain` class for computing the total throughput of all the optics in the cryostat. It is designed to be really easy to use::
+
+    from zeustools import transmission
+    optics = transmission.ZeusOpticsChain()
+    wavelength = [200,201,202] # microns
+    optics.get_transmission_microns(wavelength)
+
+    atm = transmission.AtmosphereTransmission()
+    pwv = [0.5, 0.6] # mm
+    freq = [1500, 1500] # GHz
+    atm.interp(freq,pwv)
+
+The :py:mod:`.iv_tools` submodule is helpful for dealing with IV curves, for example calculating saturation power and normal resistance. 
 
 The :py:mod:`.codystools` submodule contains the most useful functions designed by Cody, notably :func:`~.codystools.createModelSnakeEntireArray`, which smooths the time-stream in Fourier space.
 

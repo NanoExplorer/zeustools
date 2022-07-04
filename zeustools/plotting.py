@@ -73,7 +73,8 @@ class FakeEvent:
 def get_physical_location(xdata,ydata):
     """ Used internally. The center of each pixel is at integer values, so the pixel extends
     from value - 0.5 to value+0.5. Here we correct for that and also tell you which array 
-    your pixel is on. Usable with the plot_array and ZeusInteractivePlotter."""
+    your pixel is on. Usable with the plot_array and ZeusInteractivePlotter.
+    """
 
     xclk = (xdata+0.5)//1
     yclk = (ydata+0.5)//1
@@ -111,8 +112,7 @@ class ZeusInteractivePlotter():
 
         1. Click on a pixel to view its time series
         2. Right click to view a pixel's time series and flat time series (if the flat cube is provided)
-        3. Middle click (or if that doesn't work press 'a' while hovering) to add a time series without clearing
-        the previous one
+        3. Middle click (or if that doesn't work press 'a' while hovering) to add a time series without clearing the previous one
         4. Press 'f' while hovering to add a time series+flat series without clearing
         5. Press 'c' while hovering to mask that pixel, removing it from the colorbar calculation and array plot.
 

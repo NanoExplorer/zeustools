@@ -17,6 +17,10 @@ except:
 
 
 def super_remover(data):
+    """ Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7 
+
+    :param data: masked array containing IV curve datacube.
+    """
     # this advanced function can do whole mce data files
     # though it assumes that "data" is a masked array already
 
@@ -39,6 +43,8 @@ def super_remover(data):
 
 
 def find_transition(bias, data):
+    """ Attempt to find the superconducting transition by fitting the normal branch and looking for deviations.
+    """
     # First, do a really rough fit to the first 10 data points, which should be guaranteed to be normal
     result = stats.linregress(bias[0:10], data[0:10])
     # Find the residuals
@@ -96,6 +102,7 @@ def fixed_slope_interceptor(bias, data, slope):
 
 
 class IVHelper:
+    """ Load in an IV curve or several IV curves and perform useful operations with them"""
     def __init__(self):
         pass
         self.filenames = []
@@ -265,19 +272,18 @@ def real_units(bias, fb, col=0, whole_array=False,
                ):
     """ Given an array of biases and corresponding array of feedbacks (all in DAC units)
     calculate the actual current and voltage going through the TES.
-    Params: bias, fb: bias and feedback values in DAC units
-       col: the MCE column that you are calculating for.
+    :param bias: Bias array in DAC units
+    :param fb: feedback array in DAC units
+    :param col: Optional. the MCE column that you are calculating for.
             This lets us select the correct resistor values
-       whole_array: If True, assumes that the value of the "fb" param
+    :param whole_array: Optional. If True, assumes that the value of the "fb" param
                     is a whole mce data array, so we can handle resistors
                     automatically.
 
-    Returns: (TES voltage array, TES current array) in Volts and Amps respectively.
+    :return: (TES voltage array, TES current array) in Volts and Amps respectively.
     
-    Todo: Different chips may have different parameters. Need to figure out which 
-    parameters vary and allow for that.
-    
-
+    Todo: Different chips may have different parameters. We currently handle this by assuming
+    the array has a uniform normal resistance of 4 mOhm.
 
     """
     # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT----
