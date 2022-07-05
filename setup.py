@@ -24,5 +24,13 @@ setuptools.setup(
         ],
     },
     python_requires='>=3.6',
-    include_package_data=True
+    include_package_data=True,
+    install_requires=[
+        "numpy>=1.13",
+        "astropy",
+        "matplotlib",
+        "pandas",
+        "xlrd",
+        "openpyxl",
+    ]
 )
