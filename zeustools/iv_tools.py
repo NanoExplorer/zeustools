@@ -272,9 +272,10 @@ def real_units(bias, fb, col=0, whole_array=False,
                 # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT----  # noqa: E127
                 # all units Ohms    
                 mce_bias_R = 467,
-                dewar_bias_R = 49,
+                #dewar_bias_R = 49, Old value, not sure where it comes from?
+                dewar_bias_R = 130,
                 # These numbers need to be double checked. On the cold ping-thru sheet we have values like 130 ohms
-                # and Carl's thesis reports 587 ohms for total bias resistance.
+                # and Carl's thesis reports 587 ohms for total bias resistance (MCE+Dewar).
 
                 cmb_shunts = [0, 3, 4],
                 actpol_R = 180e-6,  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
