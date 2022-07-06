@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -37,7 +38,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The ZEUS-2 Calibration Pipeline</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#the-process">The Process</a></li>
@@ -77,7 +78,7 @@
            <div itemprop="articleBody">
              
   <section id="the-zeus-2-calibration-pipeline">
-<h1>The ZEUS-2 Calibration Pipeline<a class="headerlink" href="#the-zeus-2-calibration-pipeline" title="Permalink to this headline"></a></h1>
+<h1>The ZEUS-2 Calibration Pipeline<a class="headerlink" href="#the-zeus-2-calibration-pipeline" title="Permalink to this heading"></a></h1>
 <p>When you install the pip module, you automatically get the calibration_pipeline script available for use. You can either run it directly with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ calibration_pipeline
 </pre></div>
@@ -88,12 +89,12 @@
 </div>
 <p>so that you can specify the exact configuration file to use.</p>
 <section id="the-process">
-<h2>The Process<a class="headerlink" href="#the-process" title="Permalink to this headline"></a></h2>
+<h2>The Process<a class="headerlink" href="#the-process" title="Permalink to this heading"></a></h2>
 <p>First we calibrate each reduction from Bo’s pipeline, multiplying by the flux of the flat file and dividing by atmospheric transmission. This value is also divided by the telescope efficiencies.
 Then we shift each reduction to match the line pixels, and finally we do a weighted average of the spectra.</p>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h2>
 <p>The calibration pipeline requires a settings file to tell it what to do. This is in the form of a <cite>.INI</cite> file, which is a plain text file. Each line in this file can be one of three things:</p>
 <ol class="arabic simple">
 <li><p>A section declaration, like <code class="docutils literal notranslate"><span class="pre">[REDUCTION1]</span></code>. This starts a new section, and any variables declared after the heading belong to that section (until the next section heading)</p></li>
@@ -101,7 +102,7 @@ Then we shift each reduction to match the line pixels, and finally we do a weigh
 <li><p>A comment, like <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">The</span> <span class="pre">variable</span> <span class="pre">&quot;pwv&quot;</span> <span class="pre">specifies</span> <span class="pre">the</span> <span class="pre">precipitable</span> <span class="pre">water</span> <span class="pre">vapor</span> <span class="pre">during</span> <span class="pre">the</span> <span class="pre">observation</span></code></p></li>
 </ol>
 <section id="the-global-section">
-<h3>The <code class="docutils literal notranslate"><span class="pre">[GLOBAL]</span></code> section<a class="headerlink" href="#the-global-section" title="Permalink to this headline"></a></h3>
+<h3>The <code class="docutils literal notranslate"><span class="pre">[GLOBAL]</span></code> section<a class="headerlink" href="#the-global-section" title="Permalink to this heading"></a></h3>
 <p>This section defines variables that don’t change while observing one source. Below are the required variables that need to be defined, example values, and descriptions of each.</p>
 <dl class="simple">
 <dt>lambda_line_px = 205.564</dt><dd><p>Wavelength in microns of observed spectral line</p>
@@ -146,7 +147,7 @@ Now we also produce .png files with rough spectra.</p>
 </dl>
 </section>
 <section id="the-reduction-sections">
-<h3>The reduction sections<a class="headerlink" href="#the-reduction-sections" title="Permalink to this headline"></a></h3>
+<h3>The reduction sections<a class="headerlink" href="#the-reduction-sections" title="Permalink to this heading"></a></h3>
 <p>Now we ask you to define each observing chunk. You’ll need the name of the file that
 Bo’s pipeline created (usually ends in <code class="docutils literal notranslate"><span class="pre">_final_spec.npz</span></code>), the atmospheric transmission at the time,
 and which spectral position the line was placed on.

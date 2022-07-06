@@ -69,7 +69,7 @@ zeustools.transmission module
    :undoc-members:
    :show-inheritance:
 
-zeustools.transmission module
+zeustools.iv_tools module
 -----------------------------
 
 .. automodule:: zeustools.iv_tools

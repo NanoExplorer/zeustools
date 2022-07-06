@@ -269,16 +269,51 @@ class IVHelper:
 
 
 def real_units(bias, fb, col=0, whole_array=False,
+                # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT----  # noqa: E127
+                # all units Ohms    
+                mce_bias_R = 467,
+                dewar_bias_R = 49,
+                # These numbers need to be double checked. On the cold ping-thru sheet we have values like 130 ohms
+                # and Carl's thesis reports 587 ohms for total bias resistance.
+
+                cmb_shunts = [0, 3, 4],
+                actpol_R = 180e-6,  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
+                cmb_R = 140e-6,  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
+                dewar_fb_R = 5280,  # = one MileOhm (~~joke~~)
+                # Seriously though, in Carl's script this value was 5280 ohm
+                # but on the cold ping through sheet, it is 1.28 kOhm or 1280 ohm.
+                # We think there are 4 kOhm in the MCE itself
+
+                # unitless
+                butterworth_constant = 1218,  # When running in data mode 2 and the low pass 
+                # filter is in the loop, all signals are multiplied by this factor
+
+                # relative to the TES inductance
+                rel_fb_inductance = 9,  # This means that for a change of 1 uA in the 
+                # TES, the squid will have to change 9 uA to keep up
+
+                # Volts. Note that these are bipolar voltages, eg the bias card can emit +- 5v
+                max_bias_voltage = 5,
+                max_fb_voltage = 0.958,  # seems a bit weird... still don't know where this number is from
+
+                bias_dac_bits = 16,
+                fb_dac_bits = 14
                ):
     """ Given an array of biases and corresponding array of feedbacks (all in DAC units)
     calculate the actual current and voltage going through the TES.
+    
     :param bias: Bias array in DAC units
     :param fb: feedback array in DAC units
     :param col: Optional. the MCE column that you are calculating for.
-            This lets us select the correct resistor values
-    :param whole_array: Optional. If True, assumes that the value of the "fb" param
-                    is a whole mce data array, so we can handle resistors
-                    automatically.
+        This lets us select the correct resistor values
+
+    :param whole_array: Optional. If True, assumes that the value of the 
+        "fb" param is a whole mce data array, 
+        so we can handle resistors automatically.
+
+    There are a lot of other parameters, and hopefully they're explanitory enough. They are
+    mostly intrinsic properties of the system, but until we are absolutely certain of their
+    values we need to be able to tweak them a little.
 
     :return: (TES voltage array, TES current array) in Volts and Amps respectively.
     
@@ -286,15 +321,6 @@ def real_units(bias, fb, col=0, whole_array=False,
     the array has a uniform normal resistance of 4 mOhm.
 
     """
-    # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT----
-    # all units Ohms    
-    mce_bias_R = 467
-    dewar_bias_R = 49
-
-    cmb_shunts = [0, 3, 4]
-    actpol_R = 180e-6  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
-    cmb_R = 140e-6  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
-
     if col in cmb_shunts:
         shunt_R = cmb_R  # = 180 uOhm
         # We might be using "THz" interface chips on these columns
@@ -307,26 +333,6 @@ def real_units(bias, fb, col=0, whole_array=False,
         shunt_R = np.repeat(actpol_R, fb.shape[1])
         for i in cmb_shunts:
             shunt_R[i] = cmb_R
-
-    dewar_fb_R = 5280  # = one MileOhm (~~joke~~)
-    # Seriously though, in Carl's script this value was 5280 ohm
-    # but on the cold ping through sheet, it is 1.28 kOhm or 1280 ohm.
-    # We think there are 4 kOhm in the MCE itself
-
-    # unitless
-    butterworth_constant = 1218  # When running in data mode 2 and the low pass 
-    # filter is in the loop, all signals are multiplied by this factor
-
-    # relative to the TES inductance
-    rel_fb_inductance = 9  # This means that for a change of 1 uA in the 
-    # TES, the squid will have to change 9 uA to keep up
-
-    # Volts. Note that these are bipolar voltages, eg the bias card can emit +- 5v
-    max_bias_voltage = 5
-    max_fb_voltage = 0.958  # seems a bit weird... still don't know where this number is from
-
-    bias_dac_bits = 16
-    fb_dac_bits = 14
     
     bias_raw_voltage = bias / 2**bias_dac_bits * max_bias_voltage * 2
     # last factor of 2 is because voltage is bipolar

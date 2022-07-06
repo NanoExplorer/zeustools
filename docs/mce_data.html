@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -36,7 +37,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="zeustools.html">zeustools package</a></li>
@@ -71,20 +72,20 @@
            <div itemprop="articleBody">
              
   <section id="mce-data-submodule">
-<h1>mce_data submodule<a class="headerlink" href="#mce-data-submodule" title="Permalink to this headline"></a></h1>
+<h1>mce_data submodule<a class="headerlink" href="#mce-data-submodule" title="Permalink to this heading"></a></h1>
 <p>The <a class="reference internal" href="#module-zeustools.mce_data" title="zeustools.mce_data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mce_data</span></code></a> (from <a class="reference external" href="https://e-mode.phas.ubc.ca/mcewiki/index.php/Python_data_and_runfile_modules">the MCE wiki</a>) is a low-level interface for reading the MCE binary files. In our case these are files like <code class="docutils literal notranslate"><span class="pre">saturn_191130_0030</span></code> with no file extension.</p>
 <p>The library has been modified in two important ways: First, it had a hard limit on file size—it would refuse to open files larger than a certain size—which I have exceeded in the past, so I modified it to accept larger files. I also modified it to run on Python 3.</p>
 <section id="module-zeustools.mce_data">
-<span id="mce-data-module"></span><h2>mce_data module<a class="headerlink" href="#module-zeustools.mce_data" title="Permalink to this headline"></a></h2>
+<span id="mce-data-module"></span><h2>mce_data module<a class="headerlink" href="#module-zeustools.mce_data" title="Permalink to this heading"></a></h2>
 <dl class="py exception">
 <dt class="sig sig-object py" id="zeustools.mce_data.BadRunfile">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">BadRunfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.BadRunfile" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">BadRunfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.BadRunfile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.BitField">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">BitField</span></span><a class="headerlink" href="#zeustools.mce_data.BitField" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">BitField</span></span><a class="headerlink" href="#zeustools.mce_data.BitField" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Describes the truncation and packing of a signal into a carrier word.</p>
 <dl class="py method">
@@ -103,7 +104,7 @@ Assumes a two’s complement architecture!</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.DataMode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">DataMode</span></span><a class="headerlink" href="#zeustools.mce_data.DataMode" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">DataMode</span></span><a class="headerlink" href="#zeustools.mce_data.DataMode" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>A DataMode consists of a set of BitFields describing signal
 packing into MCE data words.</p>
@@ -116,14 +117,14 @@ packing into MCE data words.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.HeaderFormat">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">HeaderFormat</span></span><a class="headerlink" href="#zeustools.mce_data.HeaderFormat" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">HeaderFormat</span></span><a class="headerlink" href="#zeustools.mce_data.HeaderFormat" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Contains description of MCE header content and structure.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.MCEData">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCEData</span></span><a class="headerlink" href="#zeustools.mce_data.MCEData" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCEData</span></span><a class="headerlink" href="#zeustools.mce_data.MCEData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Container for MCE data (single channel) and associated header and origin information.</p>
 </dd></dl>
@@ -131,12 +132,12 @@ packing into MCE data words.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="zeustools.mce_data.MCEFile">
 <span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCEFile</span></span><a class="headerlink" href="#zeustools.mce_data.MCEFile" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <a class="reference internal" href="#zeustools.mce_data.SmallMCEFile" title="zeustools.mce_data.SmallMCEFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">zeustools.mce_data.SmallMCEFile</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="#zeustools.mce_data.SmallMCEFile" title="zeustools.mce_data.SmallMCEFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">SmallMCEFile</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.MCERunfile">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCERunfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.MCERunfile" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCERunfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.MCERunfile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="zeustools.mce_data.MCERunfile.Item">
@@ -162,7 +163,7 @@ packing into MCE data words.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="zeustools.mce_data.SmallMCEFile">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">SmallMCEFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basic_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.SmallMCEFile" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">SmallMCEFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basic_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.SmallMCEFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Facilitate the loading of (single channels from) raw MCE
 flat-files.  Extraction and rescaling of data content is performed
