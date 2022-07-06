@@ -1265,12 +1265,17 @@ This lets us select the correct resistor values</p></li>
 <li><p><strong>whole_array</strong> – Optional. If True, assumes that the value of the 
 “fb” param is a whole mce data array, 
 so we can handle resistors automatically.</p></li>
+<li><p><strong>cmb_shunts</strong> – List of columns assumed to have the “CMB6” style shunt chip
+though this is probably wrong, it makes things consistent. All other columns are
+assumed to have “actpol” style shunt chips.</p></li>
+<li><p><strong>dewar_fb_R</strong> – Although this is listed as the dewar feedback resistance, it is really the MCE + dewar in one.
+At present we use MCE_R=4000, Dewar_R=1280. Unit:ohms.</p></li>
 </ul>
 </dd>
 </dl>
 <p>There are a lot of other parameters, and hopefully they’re explanitory enough. They are
 mostly intrinsic properties of the system, but until we are absolutely certain of their
-values we need to be able to tweak them a little.</p>
+values we need to be able to tweak them a little. Some quirks carried over from Carl’s script:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>(TES voltage array, TES current array) in Volts and Amps respectively.</p>

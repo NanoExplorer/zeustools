@@ -294,14 +294,14 @@ def real_units(bias, fb, col=0, whole_array=False,
 
                 # Volts. Note that these are bipolar voltages, eg the bias card can emit +- 5v
                 max_bias_voltage = 5,
-                max_fb_voltage = 0.958,  # seems a bit weird... still don't know where this number is from
+                max_fb_voltage = 0.958,  # seems a bit weird... still don't know where this number is from. Seems correct though
 
                 bias_dac_bits = 16,
                 fb_dac_bits = 14
                ):
     """ Given an array of biases and corresponding array of feedbacks (all in DAC units)
     calculate the actual current and voltage going through the TES.
-    
+
     :param bias: Bias array in DAC units
     :param fb: feedback array in DAC units
     :param col: Optional. the MCE column that you are calculating for.
@@ -310,10 +310,16 @@ def real_units(bias, fb, col=0, whole_array=False,
     :param whole_array: Optional. If True, assumes that the value of the 
         "fb" param is a whole mce data array, 
         so we can handle resistors automatically.
+    :param cmb_shunts: List of columns assumed to have the "CMB6" style shunt chip
+        though this is probably wrong, it makes things consistent. All other columns are
+        assumed to have "actpol" style shunt chips.
+    :param dewar_fb_R: Although this is listed as the dewar feedback resistance, it is really the MCE + dewar in one.
+        At present we use MCE_R=4000, Dewar_R=1280. Unit:ohms.
 
     There are a lot of other parameters, and hopefully they're explanitory enough. They are
     mostly intrinsic properties of the system, but until we are absolutely certain of their
-    values we need to be able to tweak them a little.
+    values we need to be able to tweak them a little. Some quirks carried over from Carl's script:
+
 
     :return: (TES voltage array, TES current array) in Volts and Amps respectively.
     
