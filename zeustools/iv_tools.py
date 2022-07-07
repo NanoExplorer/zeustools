@@ -450,15 +450,18 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.interactive_plot()
         self.cb.set_label("TES Normal Resistance (ohm)")
 
-    def update_colorbar(self, sm):
-        if self.last_colorbar:
+    def update_colorbar(self, sm, ax):
+        if self.last_colorbar and ax is self.ax2:
             self.last_colorbar.update_normal(sm)
         else:
-            self.last_colorbar = plt.colorbar(sm, ax=self.ax2, label="Temperature [mK]")
+            self.last_colorbar = plt.colorbar(sm, ax=ax, label="Temperature [mK]")
 
     # override
     def bottom_plot(self):
         row, col = am.phys_to_mce(*self.click_loc)
+        self.power_resistance_plot(row,col,self.ax2)
+
+    def power_resistance_plot(self,row,col,ax):
         bias, data, temp, slope = self.ivhelper.get_corrected_ivs(col, row)
         cmap = plt.cm.plasma
         norm = self.ivhelper.get_temperature_colorbar_norm()
@@ -467,14 +470,15 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             tes_voltage, tes_current = (bias[i], data[i])
             resistance = tes_voltage / tes_current
             power = tes_voltage * tes_current
-            self.ax2.plot(power*1e12, resistance*1e3, ".", c=cmap(norm(temp[i])))
+            ax.plot(power*1e12, resistance*1e3, ".", c=cmap(norm(temp[i])))
 
-        self.ax2.set_xlabel("power (pW)")
-        self.ax2.set_ylabel("resistance (mOhm)")
+        ax.set_xlabel("power (pW)")
+        ax.set_ylabel("resistance (mOhm)")
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        self.update_colorbar(sm)
-        self.ax2.set_ylim(0, 6)
-        self.ax2.set_xlim(0, 20)
+
+        self.update_colorbar(sm,ax)
+        ax.set_ylim(0, 6)
+        ax.set_xlim(0, 20)
 
     # override
     def bottom_flat(self):
@@ -486,7 +490,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         for i in range(len(data)):
             self.ax2.plot(bias[i], data[i], c=cmap(norm(temp[i])))
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        self.update_colorbar(sm)
+        self.update_colorbar(sm,ax=self.ax2)
         self.ax2.set_xlim(0, 3e-7)
         self.ax2.set_ylim(0, 7e-5)
         self.ax2.set_xlabel("bias voltage (V)")
