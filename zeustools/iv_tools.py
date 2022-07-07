@@ -366,7 +366,7 @@ def real_units(bias, fb, col=0, whole_array=False,
 
 class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def __init__(self, directory,
-                 power_temp=130, file=False, file_temp_override=None):
+                 power_temp=130, file=False, file_temp_override=None,real_units=True):
         # If Plot_power = True, the 2-d array plot/colorbar
         # will show the saturation powers at the temperature = power_temp
         # Otherwise (plot_power=False) it will show normal resistance
@@ -378,12 +378,15 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         else:
             self.ivhelper = IVHelper()
             self.ivhelper.load_file(directory,temp=file_temp_override)
-        self.ivhelper.switch_to_real_units()
+        if real_units:
+            self.ivhelper.switch_to_real_units()
+
         self.last_colorbar = None
         # maybe get slopes for every px and use them as bitmaps?
         # ideally use sat power?
         self.power_temp = power_temp
         self.build_data()
+        self.plot_clean = True
 
         super().__init__(self.rn_data,
                          None,
@@ -470,15 +473,25 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             tes_voltage, tes_current = (bias[i], data[i])
             resistance = tes_voltage / tes_current
             power = tes_voltage * tes_current
-            ax.plot(power*1e12, resistance*1e3, ".", c=cmap(norm(temp[i])))
-
-        ax.set_xlabel("power (pW)")
-        ax.set_ylabel("resistance (mOhm)")
+            if not self.plot_clean:
+                power = power.data
+                resistance = resistance.data
+            if self.ivhelper.is_real_units:
+                ax.plot(power*1e12, resistance*1e3, ".", c=cmap(norm(temp[i])))
+            else:
+                ax.plot(power, resistance, ".", c=cmap(norm(temp[i])))
+        if self.ivhelper.is_real_units:
+            ax.set_xlabel("power (pW)")
+            ax.set_ylabel("resistance (mOhm)")
+            ax.set_ylim(0, 6)
+            ax.set_xlim(0, 20)
+        else:
+            ax.set_xlabel("squid fb * det bias")
+            ax.set_ylabel("det bias / squid fb")
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 
         self.update_colorbar(sm,ax)
-        ax.set_ylim(0, 6)
-        ax.set_xlim(0, 20)
+
 
     # override
     def bottom_flat(self):
@@ -488,13 +501,20 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         norm = self.ivhelper.get_temperature_colorbar_norm()
         bias, data, temp, slope = self.ivhelper.get_corrected_ivs(col, row)
         for i in range(len(data)):
-            self.ax2.plot(bias[i], data[i], c=cmap(norm(temp[i])))
+            if self.plot_clean:
+                self.ax2.plot(bias[i], data[i], c=cmap(norm(temp[i])))
+            else:
+                self.ax2.plot(bias[i].data, data[i].data, c=cmap(norm(temp[i])))
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         self.update_colorbar(sm,ax=self.ax2)
-        self.ax2.set_xlim(0, 3e-7)
-        self.ax2.set_ylim(0, 7e-5)
-        self.ax2.set_xlabel("bias voltage (V)")
-        self.ax2.set_ylabel("feedback current (A)")
+        if self.ivhelper.is_real_units:
+            self.ax2.set_xlim(0, 3e-7)
+            self.ax2.set_ylim(0, 7e-5)
+            self.ax2.set_xlabel("bias voltage (V)")
+            self.ax2.set_ylabel("feedback current (A)")
+        else:
+            self.ax2.set_xlabel("bias")
+            self.ax2.set_ylabel("sq feedback")           
 
     def detectors_hist(self,title,bins=30,arrays=[350,450],plot_rn=False):
         plt.figure()
