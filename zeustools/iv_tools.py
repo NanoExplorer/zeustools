@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from scipy import stats
+from scipy import optimize
 from zeustools import plotting as zt_plotting
 import zeustools as zt
 try:
@@ -76,7 +77,7 @@ def find_transition_index(bias, data):
     # print(f"guess={guess:.2e}")
     # Find the closest index to the guess bias value
     idx = np.argmin(np.abs(bias-guess))
-    t_idx = np.argmin(np.abs(bias-orig_guess))
+    t_idx = np.argmin(np.abs(bias-orig_guess))+1
     return idx, t_idx
 
 
@@ -548,13 +549,167 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
 class InteractiveThermalPlotter(InteractiveIVPlotter):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
-        self.K = np.ma.masked_all(self.powers.shape[0],self.powers.shape[1])
-        for i in range(len(self.powers.shape[0])):
-            for j in range(len(self.powers.shape[1])):
+        self.K = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.Tc = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.n = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.K.fill_value=np.nan
+        self.Tc.fill_value=np.nan
+        self.n.fill_value=np.nan
+        T_bath = np.array(self.ivhelper.temperatures_int)
+        for i in range(self.powers.shape[0]):
+            for j in range(self.powers.shape[1]):
                 try:
-                    popt,pcov=optimize.curve_fit(psat_fitter,T_bath[good_data],P_sat[good_data],p0=[3.1,4.3e-18,172.5])
+                    P_sat = self.powers[i,j]
+                    good_data = np.logical_not(P_sat.mask)
+                    popt,pcov=optimize.curve_fit(psat_fitter,
+                        T_bath[good_data],
+                        P_sat[good_data],
+                        p0=[3.1,4.3e-18,172.5],maxfev=8000)
+                    self.K[i,j]=popt[1]
+                    self.Tc[i,j]=popt[2]
+                    self.n[i,j]=popt[0]
                 except RuntimeError:
                     pass
+                except TypeError:
+                    pass
+                except ValueError:
+                    pass
+        test_1=self.n<1.5
+        test_2=self.Tc < 100
+        tests = np.logical_or(test_1,test_2)
+        self.K[tests]=np.ma.masked
+        self.Tc[tests]=np.ma.masked
+        self.n[tests]=np.ma.masked
+
+    def interactive_plot_k(self, array='all'):
+        self._interactive_plot_array(self.K*1e12,array)
+        self.cb.set_label("K [pW/mK$^n$]")
+
+    def interactive_plot_tc(self,array="all"):
+        self._interactive_plot_array(self.Tc,array)
+        self.cb.set_label("Tc [mK]")
+
+    def interactive_plot_n(self,array="all"):
+        self._interactive_plot_array(self.n,array)
+        self.cb.set_label("n")
+
+    def interactive_plot_g(self,array="all"):
+        self._interactive_plot_array(self.n*self.K*(self.Tc)**(self.n-1)*1e12,array)
+        self.cb.set_label("G [pW/mK]")
+
+    def _interactive_plot_array(self,data,array):
+        data = np.ma.copy(data)
+        array = zt.array_name(array)
+        if array == "a":
+            data[:, 12:] = np.ma.masked
+        elif array == "b":
+            data[:, :12] = np.ma.masked
+        self.data = data
+        self.interactive_plot()
+
+    def bottom_plot(self):
+        row, col = am.phys_to_mce(*self.click_loc)
+        self.power_bath_plot(row,col,self.ax2)
+
+    def power_bath_plot(self,row,col,ax):
+        T_bath = self.ivhelper.temperatures_int
+        power = self.powers[row,col]
+        n =self.n.data[row,col]
+        k =self.K.data[row,col]
+        t =self.Tc.data[row,col]
+        ax.plot(T_bath,power*1e12,'.',label="data")
+        ax.plot(T_bath,psat_fitter(T_bath,n,k,t)*1e12,
+            label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
+        ax.legend()
+        ax.set_xlabel("T$_{bath}$ [mK]")
+        ax.set_ylabel("P$_{sat}$ [pW]")
+
+
+def psat_fitter(Tbath,n,K,T_c):
+    return K*(T_c**n-Tbath**n)
+
+
+class InteractiveThermalGPlotter(InteractiveIVPlotter):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.G = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.Tc = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.n = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
+        self.G.fill_value=np.nan
+        self.Tc.fill_value=np.nan
+        self.n.fill_value=np.nan
+        T_bath = np.array(self.ivhelper.temperatures_int)
+        for i in range(self.powers.shape[0]):
+            for j in range(self.powers.shape[1]):
+                try:
+                    P_sat = self.powers[i,j]
+                    good_data = np.logical_not(P_sat.mask)
+                    popt,pcov=optimize.curve_fit(psat_g_fitter,
+                        T_bath[good_data],
+                        P_sat[good_data],
+                        p0=[3.1,0.3e-12,172.5],maxfev=8000)
+                    self.G[i,j]=popt[1]
+                    self.Tc[i,j]=popt[2]
+                    self.n[i,j]=popt[0]
+                except RuntimeError:
+                    pass
+                except TypeError:
+                    pass
+                except ValueError:
+                    pass
+        test_1=self.n<1.5
+        test_2=self.Tc < 100
+        tests = np.logical_or(test_1,test_2)
+        self.G[tests]=np.ma.masked
+        self.Tc[tests]=np.ma.masked
+        self.n[tests]=np.ma.masked
+
+    def interactive_plot_tc(self,array="all"):
+        self._interactive_plot_array(self.Tc,array)
+        self.cb.set_label("Tc [mK]")
+
+    def interactive_plot_n(self,array="all"):
+        self._interactive_plot_array(self.n,array)
+        self.cb.set_label("n")
+
+    def interactive_plot_g(self,array="all"):
+        self._interactive_plot_array(self.G*1e12,array)
+        self.cb.set_label("G [pW/mK]")
+
+    def _interactive_plot_array(self,data,array):
+        data = np.ma.copy(data)
+        array = zt.array_name(array)
+        if array == "a":
+            data[:, 12:] = np.ma.masked
+        elif array == "b":
+            data[:, :12] = np.ma.masked
+        self.data = data
+        self.interactive_plot()
+
+    def bottom_plot(self):
+        row, col = am.phys_to_mce(*self.click_loc)
+        self.power_bath_plot(row,col,self.ax2)
+
+    def power_bath_plot(self,row,col,ax):
+        T_bath = self.ivhelper.temperatures_int
+        power = self.powers[row,col]
+        n =self.n.data[row,col]
+        g =self.G.data[row,col]
+        t =self.Tc.data[row,col]
+        ax.plot(T_bath,power*1e12,'.',label="data")
+        ax.plot(T_bath,psat_g_fitter(T_bath,n,g,t)*1e12,
+            label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
+        ax.legend()
+        ax.set_xlabel("T$_{bath}$ [mK]")
+        ax.set_ylabel("P$_{sat}$ [pW]")
+        if col < 12:
+            ax.set_ylim(0,5)
+        else:
+            ax.set_ylim(0,15)
+
+
+def psat_g_fitter(Tbath,n,g,T_c):
+    return g*(T_c**n-Tbath**n)/n/T_c**(n-1)
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
