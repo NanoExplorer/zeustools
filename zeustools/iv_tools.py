@@ -415,26 +415,30 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def build_data(self):
         shape = self.ivhelper.data[0].shape
         slopes = np.ones((shape[0], shape[1]))
-        powers = np.ma.ones((shape[0], shape[1]), fill_value=np.nan)
+        all_temps = self.ivhelper.temperatures_int
+        powers = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
+        powers.fill_value=np.nan
+
         for i in range(shape[0]):
             for j in range(shape[1]):
-                bias, data, temp, slope = self.ivhelper.get_corrected_ivs(j, i)
+                bias, data, temps, slope = self.ivhelper.get_corrected_ivs(j, i)
                 slopes[i, j] = slope
-                try:
-                    t_idx = temp.index(self.power_temp)
-                    power = bias[t_idx] * data[t_idx]
-                    powers[i, j] = np.ma.min(power)
-                except ValueError:
-                    # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
-                    powers[i, j] = np.ma.masked
+                for k,temp in enumerate(temps):
+                    try:
+                        t_idx = all_temps.index(temp)
+                        power = bias[k] * data[k]
+                        powers[i, j, t_idx] = np.ma.min(power)
+                    except ValueError:
+                        # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
+                        pass
 
         data = 1/slopes
         data = np.ma.array(np.abs(data))
         data[data > 0.007] = np.ma.masked
 
         powers[powers < 0] = np.ma.masked
-
-        self.power_data = powers
+        self.powers = powers
+        self.power_data = powers[:,:,all_temps.index(self.power_temp)]
         self.rn_data = data        
 
     def interactive_plot_power(self, array='all'):
@@ -540,6 +544,17 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         ax.set_ylabel("# detectors")
         ax.legend()
         return bins
+
+class InteractiveThermalPlotter(InteractiveIVPlotter):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.K = np.ma.masked_all(self.powers.shape[0],self.powers.shape[1])
+        for i in range(len(self.powers.shape[0])):
+            for j in range(len(self.powers.shape[1])):
+                try:
+                    popt,pcov=optimize.curve_fit(psat_fitter,T_bath[good_data],P_sat[good_data],p0=[3.1,4.3e-18,172.5])
+                except RuntimeError:
+                    pass
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
