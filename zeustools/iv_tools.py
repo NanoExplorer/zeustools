@@ -621,7 +621,7 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         k =self.K.data[row,col]
         t =self.Tc.data[row,col]
         ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(T_bath,psat_fitter(T_bath,n,k,t)*1e12,
+        ax.plot(T_bath.sorted(),psat_fitter(T_bath,n,k,t)*1e12,
             label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
@@ -704,7 +704,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
         g =self.G.data[row,col]
         t =self.Tc.data[row,col]
         ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(T_bath,psat_g_fitter(T_bath,n,g,t)*1e12,
+        ax.plot(sorted(T_bath),psat_g_fitter(sorted(T_bath),n,g,t)*1e12,
             label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
