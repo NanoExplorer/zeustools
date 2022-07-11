@@ -521,10 +521,13 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             self.ax2.set_xlabel("bias")
             self.ax2.set_ylabel("sq feedback")           
 
-    def detectors_hist(self,title,bins=30,arrays=[350,450],plot_rn=False):
+    def detectors_hist(self,title,bins=30,arrays=[350,450],plot_rn=False,data_override=None,xlabel="none"):
         plt.figure()
         ax=plt.gca()
-        if plot_rn:
+        if data_override is not None:
+            dat_pw = data_override.filled()
+            ax.set_xlabel(xlabel)
+        elif plot_rn:
             dat_pw = self.rn_data.filled()*1000
             ax.set_xlabel("resistance (m$\\Omega$)")
         else:
@@ -647,7 +650,11 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
                     popt,pcov=optimize.curve_fit(psat_g_fitter,
                         T_bath[good_data],
                         P_sat[good_data],
-                        p0=[3.1,0.3e-12,172.5],maxfev=8000)
+                        p0=[3.1,0.3e-12,172.5],
+                        bounds=([3,5e-14,150],[3.5,2e-12,220]),
+                        sigma=np.full_like(P_sat[good_data],1e-12),
+                        maxfev=8000)
+                    #print(popt)
                     self.G[i,j]=popt[1]
                     self.Tc[i,j]=popt[2]
                     self.n[i,j]=popt[0]
@@ -706,6 +713,20 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
             ax.set_ylim(0,5)
         else:
             ax.set_ylim(0,15)
+
+    def thermal_hist_G(self,title,arrays=[350,450],bins=30):
+        return self.detectors_hist(title,
+            bins=bins,
+            arrays=arrays,
+            data_override=self.G*1e12,
+            xlabel="G [pW/mK]")
+
+    def thermal_hist_Tc(self,title,arrays=[350,450],bins=30):
+        return self.detectors_hist(title,
+            bins=bins,
+            arrays=arrays,
+            data_override=self.Tc,
+            xlabel="Tc [mK]")
 
 
 def psat_g_fitter(Tbath,n,g,T_c):

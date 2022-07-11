@@ -78,6 +78,7 @@ class FilterTransmission:
 
         :return: FilterTransmission object corresponding to the named filter.
         """
+        self.filterType = filterType
         bounds_error=True
         if filterType == "zitex":
             self._load_csv("zitex.csv") # Digitized from Benford Gaidis and Kooi 1999
@@ -222,6 +223,7 @@ class ZeusOpticsChain:
             # print(f,this_filter_trans,total_transmission)
         return total_transmission
 
+
     def get_transmission_microns(self,wl,show_tuning_range=False):
         """ Use this method for all your transmission computation needs! Once you have
         initialized the object, supply this method with a wavelength or array of wavelengths
@@ -247,8 +249,20 @@ class ZeusOpticsChain:
             out = out * self.tuning_ranges.interp(wl)
         return out
 
+    def get_details_table(self,wl):
+        table = []
+        for filter_name in self.filter_objs:
+            transmission = []
+            for w in wl:
+                
+                try:
+                    transmission.append(self.filter_objs[filter_name].interp(w))
+                except ValueError:
+                    transmission.append(np.nan)
 
 
+            table.append([filter_name]+transmission)
+        return table
 
 
 def airmass_factor(elev):
