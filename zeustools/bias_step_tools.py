@@ -2,6 +2,12 @@ import numpy as np
 from numpy import ma
 
 
+def get_bias_array(mce):
+    hdr = mce.runfile.data["HEADER"]
+    bias_string = hdr["RB tes bias"]
+    return np.fromstring(bias_string, dtype=int, sep=" ")
+
+
 def naive_data_reduction(chop, cube):
     """Seriously stupid data reduction.
     Works only on the most well-behaved signals
@@ -41,6 +47,7 @@ def bias_step_resistance(mce):
         bw = 1218
 
     step_size_dac = int(hdr["RB cc ramp_step_size"])
+    bias = get_bias_array(mce)
     data = mce.Read(row_col = True).data
     delta_current_dac = naive_data_reduction(data)
-    
+
