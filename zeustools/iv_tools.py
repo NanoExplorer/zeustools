@@ -533,13 +533,12 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         else:
             dat_pw = self.power_data.filled()*1e12
             ax.set_xlabel("power (pW)")
-
+        if 200 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
         if 350 in arrays:
             n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m",color="C2")
         if 450 in arrays:
             n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m",color="C1")
-        if 200 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
         if 600 in arrays:
             n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m",color="C3")
 
