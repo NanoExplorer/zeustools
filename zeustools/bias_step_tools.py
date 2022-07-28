@@ -1,5 +1,6 @@
 import numpy as np
 from numpy import ma
+from zeustools import dac_converters
 
 
 def get_bias_array(mce):
@@ -47,7 +48,13 @@ def bias_step_resistance(mce):
         bw = 1218
 
     step_size_dac = int(hdr["RB cc ramp_step_size"])
-    bias = get_bias_array(mce)
+    # bias = get_bias_array(mce) # may want this later
     data = mce.Read(row_col = True).data
     delta_current_dac = naive_data_reduction(data)
+    dIbias = dac_converters.bias_dac_to_current(step_size_dac)
+    dI = dac_converters.fb_dac_to_tes_current(delta_current_dac,
+                                              butterworth_constant=bw)
+    approx_tes_dV = dIbias * dac_converters.get_shunt_array()[None, :, None]
+    approx_tes_R = approx_tes_dV / dI 
+    return approx_tes_R
 

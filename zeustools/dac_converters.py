@@ -76,19 +76,18 @@ def real_units(bias, fb, col=0, whole_array=False,
     the array has a uniform normal resistance of 4 mOhm.
 
     """
-    if col in cmb_shunts:
-        shunt_R = cmb_R  # = 180 uOhm
-        # We might be using "THz" interface chips on these columns
-    else:
-        shunt_R = actpol_R  # Anecdotal evidence suggests 
-        # we use "ActPol" interface chips for most columns,
-        # and mike niemack's thesis says they are 700 uOhm. however that's wrong. Mike niemacks thesis
-        # was on ACT not actpol.
+    if not whole_array:
+        if col in cmb_shunts:
+            shunt_R = cmb_R  # = 180 uOhm
+            # We might be using "THz" interface chips on these columns
+        else:
+            shunt_R = actpol_R  # Anecdotal evidence suggests 
+            # we use "ActPol" interface chips for most columns,
+            # and mike niemack's thesis says they are 700 uOhm. however that's wrong. Mike niemacks thesis
+            # was on ACT not actpol.
 
-    if whole_array:
-        shunt_R = np.repeat(actpol_R, fb.shape[1])
-        for i in cmb_shunts:
-            shunt_R[i] = cmb_R
+    else:
+        shunt_R = get_shunt_array(actpol_R, cmb_R, cmb_shunts)
     
     bias_current = bias_dac_to_current(bias, bias_dac_bits, max_bias_voltage, dewar_bias_R, mce_bias_R)
     tes_current = fb_dac_to_tes_current(fb, butterworth_constant, fb_dac_bits, max_fb_voltage, dewar_fb_R, rel_fb_inductance)
@@ -107,13 +106,23 @@ def real_units(bias, fb, col=0, whole_array=False,
     return(tes_voltage, tes_current)
 
 
+def get_shunt_array(actpol_R = ACTPOL_R,
+                    cmb_R = CMB_R,
+                    cmb_shunts = CMB_SHUNTS):
+    shunt_R = np.repeat(actpol_R, 24)
+    for i in cmb_shunts:
+        shunt_R[i] = cmb_R
+    return shunt_R
+
+
 def bias_dac_to_current(bias, 
                         bias_dac_bits = BIAS_DAC_BITS, 
                         max_bias_voltage = MAX_BIAS_VOLTAGE, 
                         dewar_bias_R = DEWAR_BIAS_R, 
                         mce_bias_R = MCE_BIAS_R):
     """ Given bias dac values, return the bias current. This works in absolute because the 
-    bias DAC is absolute. """
+    bias DAC is absolute. However it does also work in relative, i.e. for converting bias step
+    size. """
     bias_raw_voltage = bias / 2**bias_dac_bits * max_bias_voltage * 2
     # last factor of 2 is because voltage is bipolar
     bias_current = bias_raw_voltage/(dewar_bias_R+mce_bias_R)
