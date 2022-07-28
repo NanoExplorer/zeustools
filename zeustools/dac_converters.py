@@ -2,33 +2,33 @@ import numpy as np
 
 # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT---- 
 # most units ohms
-MCE_BIAS_R = 467,
+MCE_BIAS_R = 467
 # dewar_bias_R = 49, Old value, not sure where it comes from?
-DEWAR_BIAS_R = 130,
+DEWAR_BIAS_R = 130
 # These numbers need to be double checked. On the cold ping-thru sheet we have values like 130 ohms
 # and Carl's thesis reports 587 ohms for total bias resistance (MCE+Dewar).
 
-CMB_SHUNTS = [0, 3, 4],
-ACTPOL_R = 180e-6,  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
-CMB_R = 140e-6,  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
-DEWAR_FB_R = 5280,  # = one MileOhm (~~joke~~)
+CMB_SHUNTS = [0, 3, 4]
+ACTPOL_R = 180e-6  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
+CMB_R = 140e-6  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
+DEWAR_FB_R = 5280  # = one MileOhm (~~joke~~)
 # Seriously though, in Carl's script this value was 5280 ohm
 # but on the cold ping through sheet, it is 1.28 kOhm or 1280 ohm.
 # We think there are 4 kOhm in the MCE itself
 
 # unitless
-BUTTERWORTH_CONSTANT = 1218,  # When running in data mode 2 and the low pass 
+BUTTERWORTH_CONSTANT = 1218  # When running in data mode 2 and the low pass 
 # filter is in the loop, all signals are multiplied by this factor
 
 # relative to the TES inductance
-REL_FB_INDUCTANCE = 9,  # This means that for a change of 1 uA in the 
+REL_FB_INDUCTANCE = 9  # This means that for a change of 1 uA in the 
 # TES, the squid will have to change 9 uA to keep up
 
 # Volts. Note that these are bipolar voltages, eg the bias card can emit +- 5v
-MAX_BIAS_VOLTAGE = 5,
-MAX_FB_VOLTAGE = 0.958,  # seems a bit weird... still don't know where this number is from. Seems correct though
+MAX_BIAS_VOLTAGE = 5
+MAX_FB_VOLTAGE = 0.958  # seems a bit weird... still don't know where this number is from. Seems correct though
 
-BIAS_DAC_BITS = 16,
+BIAS_DAC_BITS = 16
 FB_DAC_BITS = 14
 
 
