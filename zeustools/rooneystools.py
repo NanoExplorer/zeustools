@@ -567,12 +567,3 @@ def big_signal_bad_px_finder(chop, cube, corrthresh=0.5):
     return np.abs(corrcoeff) < corrthresh
 
 
-def bias_step_chop(mce):
-    hdr = mce.runfile.data["HEADER"]
-    data_rate = int(hdr["RB cc data_rate"])
-    step_rate = int(hdr["RB cc ramp_step_period"])
-    data_points_per_phase = step_rate//data_rate
-    npts = mce.Read(row_col=True).data.shape[2]
-    i = np.arange(npts)
-    chop = (i // data_points_per_phase) % 2
-    return chop
