@@ -11,7 +11,6 @@ from zeustools.dac_converters import real_units
 
 am = zt.ArrayMapper()  
 
-
 def super_remover(data):
     """ Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7 
 
@@ -447,15 +446,16 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         ax.legend()
         return bins
 
+
 class InteractiveThermalPlotter(InteractiveIVPlotter):
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        self.K = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.Tc = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.n = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.K.fill_value=np.nan
-        self.Tc.fill_value=np.nan
-        self.n.fill_value=np.nan
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.K = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.Tc = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.n = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.K.fill_value = np.nan
+        self.Tc.fill_value = np.nan
+        self.n.fill_value = np.nan
         T_bath = np.array(self.ivhelper.temperatures_int)
         for i in range(self.powers.shape[0]):
             for j in range(self.powers.shape[1]):
