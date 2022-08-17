@@ -428,6 +428,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                     try:
                         t_idx = all_temps.index(temp)
                         power = bias[k] * data[k]
+                        power[power<0] = np.ma.masked
                         powers[i, j, t_idx] = np.ma.min(power)
                     except ValueError:
                         # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
@@ -442,6 +443,29 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         self.power_data = powers[:,:,all_temps.index(self.power_temp)]
         self.rn_data = data        
 
+    def get_min_bias_and_resistance(self):
+        shape = self.ivhelper.data[0].shape
+        all_temps = self.ivhelper.temperatures_int
+        min_r = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
+        min_r.fill_value=np.nan
+        min_b = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
+        min_b.fill_value=np.nan
+
+        for i in range(shape[0]):
+            for j in range(shape[1]):
+                bias,data,temps,slope=self.ivhelper.get_corrected_ivs(j,i)
+                for k,temp in enumerate(temps):
+                    try:
+                        t_idx=all_temps.index(temp)
+                        power = bias[k] * data[k]
+                        power[power<0] = np.ma.masked
+                        idx = np.argmin(power)
+                        min_b[i,j,t_idx] = bias[k][idx]
+                        min_r[i,j,t_idx] = bias[k][idx]/data[k][idx]
+                    except ValueError:
+                        pass
+        return(min_b,min_r)
+    
     def interactive_plot_power(self, array='all'):
         array = zt.array_name(array)
         data = np.ma.copy(self.power_data)
