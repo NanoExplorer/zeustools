@@ -7,16 +7,10 @@ from enum import Enum
 from astropy import constants as const
 from astropy import units
 import matplotlib
-try:
-    am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
-except:
-    print("FAILED TO CREATE ARRAY MAP")
-#Whenever you import plotting.py you'd better have a 'config' directory in your working directory or else.
-#HAHA THAT INLCUDES BUILDING THE DOCS 
-# TODO: fix this. I think the arraymapper should have a default config somehow
-# Still needs fixing, but at least it kinda works in most cases now!
 
-BAD_DATA_CMAP = ListedColormap(["tab:orange","deeppink"])
+am = zt.ArrayMapper()  
+
+BAD_DATA_CMAP = ListedColormap(["tab:orange", "deeppink"])
 
 
 def plot_array(somedata, ax=None, s=60, bad_px=False):
@@ -40,37 +34,37 @@ def plot_array(somedata, ax=None, s=60, bad_px=False):
     mce_grid = am.grid_map()
     if ax is None:
         # we need an axis to plot on, so if one wasn't supplied, make it.
-        g=plt.figure(dpi=300)
+        g = plt.figure(dpi=300)
         g.gca().set_aspect(1)
-        ax=g.gca()
+        ax = g.gca()
     else:
-        #we always want our pixels to be square.
+        # we always want our pixels to be square.
         ax.set_aspect(1)
         
-    #This makes a scatter plot. A square shaped marker is placed at every spectral and spatial
-    #position, colored according to the flux value of that pixel.
-    stuff= ax.scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=somedata.filled(),s=s,marker='s')
-    cb = plt.colorbar(stuff,orientation='horizontal',ax=ax,aspect=50,fraction=0.05,shrink=0.9,pad=0.07)
+    # This makes a scatter plot. A square shaped marker is placed at every spectral and spatial
+    # position, colored according to the flux value of that pixel.
+    stuff = ax.scatter(mce_grid[:, :, 1], -mce_grid[:, :, 0], c=somedata.filled(), s=s, marker='s')
+    cb = plt.colorbar(stuff, orientation='horizontal', ax=ax, aspect=50, fraction=0.05, shrink=0.9, pad=0.07)
     
     if bad_px:
         baddata = somedata.copy()
         baddata.mask = np.logical_not(somedata.mask)
-        ax.scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=baddata.filled(),s=s,marker='s',cmap=BAD_DATA_CMAP)
+        ax.scatter(mce_grid[:, :, 1], -mce_grid[:, :, 0], c=baddata.filled(), s=s, marker='s', cmap=BAD_DATA_CMAP)
 
-    #The sizing of the colorbar is really fineagely. Might need to work on that TODO: sometime.
-    return stuff,cb,ax
+    # The sizing of the colorbar is really fineagely. Might need to work on that TODO: sometime.
+    return stuff, cb, ax
 
 
 class FakeEvent:
     """ Used internally in case you want to manually trigger one of the event handlers"""
-    def __init__(self,key,xdata,ydata):
-        self.key=key
-        self.xdata=xdata
-        self.ydata=ydata
-        self.button=key
+    def __init__(self, key, xdata, ydata):
+        self.key = key
+        self.xdata = xdata
+        self.ydata = ydata
+        self.button = key
 
 
-def get_physical_location(xdata,ydata):
+def get_physical_location(xdata, ydata):
     """ Used internally. The center of each pixel is at integer values, so the pixel extends
     from value - 0.5 to value+0.5. Here we correct for that and also tell you which array 
     your pixel is on. Usable with the plot_array and ZeusInteractivePlotter.
@@ -80,12 +74,12 @@ def get_physical_location(xdata,ydata):
     yclk = (ydata+0.5)//1
 
     if yclk <= -10:
-        #this is the 400 micron array
-        spatial= -yclk-10
+        # this is the 400 micron array
+        spatial = -yclk-10
         spectral = xclk
         array = 400
     elif xclk < 12:
-        #this is the 600 micron array
+        # this is the 600 micron array
         spatial = -yclk
         spectral = xclk
         array = 600
@@ -93,7 +87,7 @@ def get_physical_location(xdata,ydata):
         spatial = -yclk
         spectral = xclk-20
         array = 200
-    return spectral,spatial,array
+    return spectral, spatial, array
 
 
 class ZeusInteractivePlotter():

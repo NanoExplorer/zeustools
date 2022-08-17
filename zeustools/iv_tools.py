@@ -7,15 +7,9 @@ from scipy import stats
 from scipy import optimize
 from zeustools import plotting as zt_plotting
 import zeustools as zt
-try:
-    am = zt.ArrayMapper()  # YES I JUST MADE A GLOBAL VARIABLE. DO I REGRET IT? NO. WILL IT HURT? ABSOLUTELY.
-except:
-    print("FAILED TO CREATE ARRAY MAP")
-# Whenever you import plotting.py you'd better have a 'config' directory in your working directory or else.
-# HAHA THAT INLCUDES BUILDING THE DOCS 
-# TODO: fix this. I think the arraymapper should have a default config somehow
-# Still needs fixing, but at least it's less annoying!
+from zeustools.dac_converters import real_units
 
+am = zt.ArrayMapper()  
 
 def super_remover(data):
     """ Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7 
@@ -269,102 +263,6 @@ class IVHelper:
         return(new_bias, new_data, new_temp, avg_slope)
 
 
-def real_units(bias, fb, col=0, whole_array=False,
-                # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT----  # noqa: E127
-                # all units Ohms    
-                mce_bias_R = 467,
-                #dewar_bias_R = 49, Old value, not sure where it comes from?
-                dewar_bias_R = 130,
-                # These numbers need to be double checked. On the cold ping-thru sheet we have values like 130 ohms
-                # and Carl's thesis reports 587 ohms for total bias resistance (MCE+Dewar).
-
-                cmb_shunts = [0, 3, 4],
-                actpol_R = 180e-6,  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
-                cmb_R = 140e-6,  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
-                dewar_fb_R = 5280,  # = one MileOhm (~~joke~~)
-                # Seriously though, in Carl's script this value was 5280 ohm
-                # but on the cold ping through sheet, it is 1.28 kOhm or 1280 ohm.
-                # We think there are 4 kOhm in the MCE itself
-
-                # unitless
-                butterworth_constant = 1218,  # When running in data mode 2 and the low pass 
-                # filter is in the loop, all signals are multiplied by this factor
-
-                # relative to the TES inductance
-                rel_fb_inductance = 9,  # This means that for a change of 1 uA in the 
-                # TES, the squid will have to change 9 uA to keep up
-
-                # Volts. Note that these are bipolar voltages, eg the bias card can emit +- 5v
-                max_bias_voltage = 5,
-                max_fb_voltage = 0.958,  # seems a bit weird... still don't know where this number is from. Seems correct though
-
-                bias_dac_bits = 16,
-                fb_dac_bits = 14
-               ):
-    """ Given an array of biases and corresponding array of feedbacks (all in DAC units)
-    calculate the actual current and voltage going through the TES.
-
-    :param bias: Bias array in DAC units
-    :param fb: feedback array in DAC units
-    :param col: Optional. the MCE column that you are calculating for.
-        This lets us select the correct resistor values
-
-    :param whole_array: Optional. If True, assumes that the value of the 
-        "fb" param is a whole mce data array, 
-        so we can handle resistors automatically.
-    :param cmb_shunts: List of columns assumed to have the "CMB6" style shunt chip
-        though this is probably wrong, it makes things consistent. All other columns are
-        assumed to have "actpol" style shunt chips.
-    :param dewar_fb_R: Although this is listed as the dewar feedback resistance, it is really the MCE + dewar in one.
-        At present we use MCE_R=4000, Dewar_R=1280. Unit:ohms.
-
-    There are a lot of other parameters, and hopefully they're explanitory enough. They are
-    mostly intrinsic properties of the system, but until we are absolutely certain of their
-    values we need to be able to tweak them a little. Some quirks carried over from Carl's script:
-
-
-    :return: (TES voltage array, TES current array) in Volts and Amps respectively.
-    
-    Todo: Different chips may have different parameters. We currently handle this by assuming
-    the array has a uniform normal resistance of 4 mOhm.
-
-    """
-    if col in cmb_shunts:
-        shunt_R = cmb_R  # = 180 uOhm
-        # We might be using "THz" interface chips on these columns
-    else:
-        shunt_R = actpol_R  # Anecdotal evidence suggests 
-        # we use "ActPol" interface chips for most columns,
-        # and mike niemack's thesis says they are 700 uOhm.
-
-    if whole_array:
-        shunt_R = np.repeat(actpol_R, fb.shape[1])
-        for i in cmb_shunts:
-            shunt_R[i] = cmb_R
-    
-    bias_raw_voltage = bias / 2**bias_dac_bits * max_bias_voltage * 2
-    # last factor of 2 is because voltage is bipolar
-    bias_current = bias_raw_voltage/(dewar_bias_R+mce_bias_R)
-    fb_real_dac = fb / butterworth_constant
-    fb_raw_voltage = fb_real_dac / 2**fb_dac_bits * max_fb_voltage * 2 
-    # again, last factor of 2 is because voltage is bipolar
-    fb_current = fb_raw_voltage / dewar_fb_R
-    tes_current = fb_current / rel_fb_inductance
-    
-    shunt_current = bias_current - tes_current
-    
-    if whole_array:
-        tes_voltage = shunt_current * shunt_R[None, :, None]  # geez
-        # This is what you have to do if you want to multiply
-        # by an array with axis=1...
-        # np.multiply claims to have an axis argument,
-        # but I couldn't get it to work
-    else:
-        tes_voltage = shunt_current * shunt_R
-    
-    return(tes_voltage, tes_current)
-
-
 class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     def __init__(self, directory,
                  power_temp=130, file=False, file_temp_override=None,real_units=True):
@@ -557,13 +455,12 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         else:
             dat_pw = self.power_data.filled()*1e12
             ax.set_xlabel("power (pW)")
-
+        if 200 in arrays:
+            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
         if 350 in arrays:
             n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m",color="C2")
         if 450 in arrays:
             n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m",color="C1")
-        if 200 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
         if 600 in arrays:
             n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m",color="C3")
 
@@ -573,15 +470,16 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         ax.legend()
         return bins
 
+
 class InteractiveThermalPlotter(InteractiveIVPlotter):
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        self.K = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.Tc = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.n = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.K.fill_value=np.nan
-        self.Tc.fill_value=np.nan
-        self.n.fill_value=np.nan
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.K = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.Tc = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.n = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.K.fill_value = np.nan
+        self.Tc.fill_value = np.nan
+        self.n.fill_value = np.nan
         T_bath = np.array(self.ivhelper.temperatures_int)
         for i in range(self.powers.shape[0]):
             for j in range(self.powers.shape[1]):
@@ -645,7 +543,7 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         k =self.K.data[row,col]
         t =self.Tc.data[row,col]
         ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(T_bath,psat_fitter(T_bath,n,k,t)*1e12,
+        ax.plot(T_bath.sorted(),psat_fitter(T_bath,n,k,t)*1e12,
             label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
@@ -728,7 +626,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
         g =self.G.data[row,col]
         t =self.Tc.data[row,col]
         ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(T_bath,psat_g_fitter(T_bath,n,g,t)*1e12,
+        ax.plot(sorted(T_bath),psat_g_fitter(sorted(T_bath),n,g,t)*1e12,
             label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
