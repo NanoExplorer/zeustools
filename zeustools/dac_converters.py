@@ -1,4 +1,6 @@
 import numpy as np
+from zeustools import data
+import importlib.resources as res
 
 # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT---- 
 # most units ohms
@@ -142,5 +144,15 @@ def fb_dac_to_tes_current(fb,
     # again, last factor of 2 is because voltage is bipolar
     fb_current = fb_raw_voltage / dewar_fb_R
     tes_current = fb_current / rel_fb_inductance
+    with res.open_text(data, "column_sign.dat") as file:
+        table = np.loadtxt(file)
+    tes_current = tes_current * table[:, 1]
     return tes_current
 
+
+def mcefile_get_butterworth_constant(mce):
+    if mce.data_mode == 1:
+        bw = 1
+    else:
+        bw = 1218
+    return bw

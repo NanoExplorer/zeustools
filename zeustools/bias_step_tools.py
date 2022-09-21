@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import ma
-from zeustools import dac_converters
+from zeustools import dac_converters as dac
 from zeustools import plotting
 
 def get_bias_array(mce):
@@ -34,6 +34,11 @@ def bias_step_chop(mce):
     return chop
 
 
+def get_step_size(mce):
+    hdr = mce.runfile.data["HEADER"]
+    return int(hdr["RB cc ramp_step_size"])
+
+
 def bias_step_resistance(mce):
     """ Given an MCE SmallMCEFile object, compute the reistance of each pixel at the current bias point.
     
@@ -42,25 +47,46 @@ def bias_step_resistance(mce):
 
     """
     hdr = mce.runfile.data["HEADER"]
-    if mce.data_mode == 1:
-        bw = 1
-    else:
-        bw = 1218
+    bw = dac.mcefile_get_butterworth_constant(mce)
+    step_size_dac = int(hdr["RB cc ramp_step_size"])
+    # bias = get_bias_array(mce) # may want this later
+    data = mce.Read(row_col = True).data
+    chop = bias_step_chop(mce)
+    delta_current_dac = naive_data_reduction(chop, data)
+    dIbias = dac.bias_dac_to_current(step_size_dac)
+    dI = dac.fb_dac_to_tes_current(delta_current_dac,
+                                   butterworth_constant=bw)
+    approx_tes_dV = dIbias * dac.get_shunt_array()
+    approx_tes_R = approx_tes_dV / dI 
+    return approx_tes_R
 
+
+def bias_step_di_di(mce):
+    """ Given an MCE SmallMCEFile object, compute the reistance of each pixel at the current bias point.
+    
+    :param mce: mce data file object
+    :returns: MCE shaped array contining dI_fb/dI_bias. target value is -0.05.
+
+    """
+    hdr = mce.runfile.data["HEADER"]
+    bw = dac.mcefile_get_butterworth_constant(mce)
     step_size_dac = int(hdr["RB cc ramp_step_size"])
     # bias = get_bias_array(mce) # may want this later
     data = mce.Read(row_col = True).data
     chop = bias_step_chop(mce)
     delta_current_dac = naive_data_reduction(chop,data)
-    dIbias = dac_converters.bias_dac_to_current(step_size_dac)
-    dI = dac_converters.fb_dac_to_tes_current(delta_current_dac,
-                                              butterworth_constant=bw)
-    approx_tes_dV = dIbias * dac_converters.get_shunt_array()
-    approx_tes_R = approx_tes_dV / dI 
+    dIbias = dac.bias_dac_to_current(step_size_dac)
+    dI = dac.fb_dac_to_tes_current(delta_current_dac,
+                                   butterworth_constant=bw)
+    approx_tes_R = dI / dIbias 
     return approx_tes_R
 
-def bs_interactive_plotter_factory(mce):
-    data = bias_step_resistance(mce)
+def bs_interactive_plotter_factory(mce,didi=False):
+    print("baaa")
+    if didi:
+        data=bias_step_di_di(mce)
+    else:
+        data = bias_step_resistance(mce)
     cube = mce.Read(row_col=True).data
     chop = bias_step_chop(mce)
 

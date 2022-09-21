@@ -7,6 +7,7 @@ from enum import Enum
 from astropy import constants as const
 from astropy import units
 import matplotlib
+import traceback
 
 am = zt.ArrayMapper()  
 
@@ -294,6 +295,16 @@ class ZeusInteractivePlotter():
         except Exception as e:
             self.error = e
             #raise
+    def check_for_errors(self):
+        """ Untested. Prints out the most recent exception thrown in the interactive
+        plot routine, since those get lost in the void otherwise. """
+        try:
+            err = self.error
+            print(err)
+            traceback.print_tb(err.__traceback__)
+        except AttributeError:
+            print("No errors")
+            return
 
 
 class MultiInteractivePlotter(ZeusInteractivePlotter):

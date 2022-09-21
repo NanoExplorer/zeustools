@@ -1,0 +1,219 @@
+#!/usr/bin/env python
+
+USAGE="""
+%prog [options]
+Acquire bias or heater step data, using MCE internal commanding.
+This script uses internal MCE ramping to produce a square wave on the
+TES (or heater) bias lines.  It will cause the bias to step between
+      [ current bias ] and [ current bias + depth ]
+Ramp parameters are specified in a config file (probably
+$MAS_CONFIG/bias_step.cfg), but all settings can be overridden from
+the command line.
+This version ramps all bias cards simultaneously.
+"""
+
+from mce_control import mce_control as MCE
+import os
+import time
+
+from auto_setup.util import mas_path
+mas_path = mas_path()
+
+from ConfigParser import SafeConfigParser
+from optparse import OptionParser
+
+from glob import glob
+
+simple_delist = lambda x: x.split()
+
+class SmarterConfig(SafeConfigParser):
+    # This actually isn't that much smarter.
+    def __init__(self, filename=None):
+        SafeConfigParser.__init__(self)
+        if filename is not None:
+            self.read(filename)
+    def get_type(self, type_caster, section, key, default=None):
+        if self.has_section(section) and self.has_option(section, key):
+            return type_caster(self.get(section, key))
+        if default is not None:
+            return default
+        raise ValueError, 'Unknown config parameter %s:%s' % \
+            (section, key)
+    def getfloat(self, section, key, default=None):
+        return self.get_type(float, section, key, default)
+    def getint(self, section, key, default=None):
+        return self.get_type(int, section, key, default)
+    def getstr(self, section, key, default=None):
+        return self.get_type(str, section, key, default)
+    def getlist(self, section, key, default=None):
+        return self.get_type(simple_delist, section, key, default)
+
+
+o = OptionParser(usage=USAGE)
+o.add_option('--filename',help=
+             "Filename.")
+o.add_option('--depth', type=int, help=
+             "Depth of the step, in DAC units.")
+o.add_option('--dwell', type=float, help=
+             "Dwell time of each level, in seconds.")
+o.add_option('--frames', type=int, help=
+             "Number of frames to acquire.")
+o.add_option('--readout-rounding', type=int, default=None, help=
+             "Specify whether the stepping rate should be rounded to be an "
+             "even multiple of the readout rate.")
+o.add_option('--data-mode', type=int, default=1, help=
+             "Specify data_mode.  Defaults to 1 (unfiltered feedback only). "\
+                 "The original data_mode will be restored on exit.")
+o.add_option('--config-file', help=
+             "Specify config file from which to get defaults.")
+o.add_option('--array-id', help=
+             "Specify config file from which to get defaults.")
+
+opts, args = o.parse_args()
+
+# Load config file?
+explicit_config_file = (opts.config_file is not None)
+if not explicit_config_file:
+    opts.config_file = os.path.join(mas_path.config_dir(), 'bias_step.cfg')
+
+cfg = SmarterConfig()
+if os.path.exists(opts.config_file):
+    print(opts.config_file)
+    cfg.read(opts.config_file)
+    array_file = os.path.join(mas_path.data_root(), 'array_id')
+    if opts.array_id is None:
+        if os.path.exists(array_file):
+            opts.array_id = open(array_file).readline().strip()
+        else:
+            print 'No array_id file, using array_id="default"'
+            opts.array_id = 'default'
+else:
+    print 'Did not find config file "%s"' % opts.config_file
+    if explicit_config_file:
+        # Deal breaker
+        raise RuntimeError
+    opts.array_id = 'default'
+
+# Check and convert options.
+
+
+if opts.filename is None:
+    opts.filename = cfg.getstr(opts.array_id, 'filename',
+                               'bias_step_{num}')
+    custom_filename = False
+else:
+    custom_filename = True
+
+if "{num}" in opts.filename:
+    #find file names and the next sequential number:
+    path = mas_path.data_dir() + "/" 
+    files=glob( path + opts.filename.format(num="????"))
+    if len(files)==0:
+        no=0
+    else:
+        lastfile=sorted(files)[-1]
+        no=lastfile.replace(path+opts.filename.format(num=""),"")
+        no = int(no)+1
+    opts.filename = opts.filename.format(num="{:04d}".format(no))
+
+
+## We're not ready for this yet...
+#if not '/' in opts.filename:
+#    # Prepend $MAS_DATA
+#    opts.filename = mas_path.data_dir() + '/' + opts.filename
+
+if opts.depth is None:
+    opts.depth = cfg.getint(opts.array_id, 'depth', 50)
+
+if opts.dwell is None:
+    opts.dwell = cfg.getfloat(opts.array_id, 'dwell', 0.5)
+
+if opts.frames is None:
+    opts.frames = cfg.getint(opts.array_id, 'frames', 2000)
+
+if opts.readout_rounding is None:
+    opts.readout_rounding = cfg.getint(opts.array_id, 'readout_rounding', 1)
+
+#
+# Preparation 
+#
+
+mce = MCE()
+ctime0 = int(time.time())
+data_mode_before = mce.data_mode()
+sync_mode_before = mce.read("cc", "use_sync")
+clock_mode_before = mce.read("cc","select_clk")
+dv_mode_before = mce.read("cc", "use_dv")
+
+## Get timing and stuff.
+
+readout_rate = mce.readout_rate()
+mux_rate = mce.mux_rate()
+print 'Internal frame rate is currently %.3f Hz' % mux_rate
+print 'Readout rate is %.3f Hz' % readout_rate
+
+dwell_cycles = int(round(opts.dwell * mux_rate))
+print 'Requested switching every %i mux cycles' % dwell_cycles
+print 'Dwell time is %.4f' % (dwell_cycles / mux_rate)
+
+if opts.readout_rounding:
+    data_period = mce.data_rate()
+    dwell_cycles = int(round(opts.dwell * readout_rate)) * data_period
+    print 'Rounding to %i mux cycles to match data_rate=%i' % \
+        (dwell_cycles, data_period)
+
+# Disable MCE internal commanding
+mce.write('cc', 'internal_cmd_mode', 0)
+mce.write("cc", "use_sync", 0)
+mce.write("cc","select_clk",0)
+mce.write("cc", "use_dv", 0)
+# Set everything up except ramp_card_addr
+## The card and parameter to step can, in principal be extracted from
+## mce_status -g output.  For now, we hard code them :O
+## Card id's will be 7,8,9 for bc1,2,3.  "mod_val" param is 0x27
+
+for k, v in [
+    #('ramp_card_addr', int(bc[2]) + 6),
+    ('ramp_param_id', 0x27),
+    ('ramp_step_period', dwell_cycles),
+    ('ramp_min_val', 0),
+    ('ramp_max_val', opts.depth),
+    ('ramp_step_size', opts.depth),
+    ('ramp_step_data_num', 1),
+    ]:
+    mce.write('cc', k, v)
+
+# Probably data mode 1; unfiltered 32-bit feedback
+mce.data_mode(opts.data_mode)
+
+# Zero mod_val and set the mod_val targets:
+#[(0,1)->('bc2 bias'+ 2)] [(1,1)->('bc2 bias'+ 1)] [(2,1)->('bc2 bias'+ 0)] 
+#[(3,1)->('bc1 bias'+ 9)] [(4,1)->('bc1 bias'+ 6)] [(5,1)->('bc1 bias'+ 5)] 
+#[(6,1)->('bc1 bias'+ 8)] [(7,1)->('bc1 bias'+ 0)] [(8,1)->('bc1 bias'+ 4)] 
+#[(9,1)->('bc1 bias'+ 3)] [(10,1)->('bc2 bias'+ 3)] [(11,1)->('bc2 bias'+ 4)] 
+#[(12,1)->('bc2 bias'+ 6)] [(13,1)->('bc2 bias'+ 7)] [(14,1)->('bc2 bias'+ 8)] 
+#[(15,1)->('bc2 bias'+ 9)] [(16,1)->('bc3 bias'+ 2)] [(17,1)->('bc2 bias'+11)] [(18,1)->('bc3 bias'+ 3)]
+for i in [1,2,3]:
+    mce.write("bc"+str(i), 'mod_val', [0])
+    mce.write("bc"+str(i), "enbl_bias_mod", [1 for j in range(12)])
+
+mce.write('cc', 'ramp_card_addr', 0x0c)
+
+# Enable the ramp and acquire
+mce.write('cc', 'internal_cmd_mode', 2)
+
+# Acquire.
+os.system('mce_run %s %i s' % (opts.filename,opts.frames))
+
+# Disable ramp, write mod_val to 0 to restore bias.
+time.sleep(.05)
+mce.write('cc', 'internal_cmd_mode', 0)
+time.sleep(.05)
+for i in [1,2,3]:
+    mce.write("bc"+str(i), 'mod_val', [0])
+    
+# Restore data_mode
+mce.data_mode(int(data_mode_before))
+mce.write("cc", "use_sync", sync_mode_before)
+mce.write("cc","select_clk",clock_mode_before)
+mce.write("cc", "use_dv", dv_mode_before)
