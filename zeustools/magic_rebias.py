@@ -70,6 +70,7 @@ def main(tune_px):
     # good_px = didi < -0.02 
     bias = zt.get_bias_array(md)
     finished_cols = []
+    need_auto_setup = False
     for i, p in enumerate(tune_px):
         slope = didi[am.phys_to_mce(*p)]
         print(f"di/di column {i}: {slope:.4f}")
@@ -77,6 +78,7 @@ def main(tune_px):
             #superconducting
             bias[i] += 300
             print("                     increase by 300")
+            need_auto_setup=True
         elif slope > 0.05:
             #normal
             bias[i] -= 200
@@ -92,6 +94,8 @@ def main(tune_px):
     accept = input("accept? [y/n]")
     if accept == 'y':
         set_new_bias(bias)
+        if need_auto_setup:
+            subprocess.call(["auto_setup"])
         for i in sorted(finished_cols)[::-1]:
             del tune_px[i]
         if len(tune_px)!=0:
