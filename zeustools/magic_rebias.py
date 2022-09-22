@@ -31,7 +31,7 @@ def set_new_bias(arr):
     subprocess.call([
         "mce_cmd",
         "-qx",
-        "rb",
+        "wb",
         "tes",
         "bias"
     ] + arr)
