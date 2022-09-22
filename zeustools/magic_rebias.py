@@ -16,12 +16,13 @@ def run_bias_step(fname,frames):
         "--filename",
         fname,
         "--frames",
-        frames,
+        str(frames),
 
     ])
 
 
 def set_new_bias(arr):
+    arr = [str(x) for x in arr]
     subprocess.call([
         "mas_param",
         "set",
@@ -97,6 +98,7 @@ def main(tune_px):
             main(tune_px)
     else:
         exit()
+
 
 if __name__ == "__main__":
     main([
