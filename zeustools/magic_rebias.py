@@ -94,7 +94,7 @@ def main(tune_px):
         set_new_bias(bias)
         for i in sorted(finished_cols)[::-1]:
             del tune_px[i]
-        if len(tune_px!=0):
+        if len(tune_px)!=0:
             main(tune_px)
     else:
         exit()
