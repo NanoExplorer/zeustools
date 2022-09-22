@@ -71,7 +71,7 @@ def main(tune_px):
     bias = zt.get_bias_array(md)
     finished_cols = []
     for i, p in enumerate(tune_px):
-        slope = didi[am.phys_to_mce(p)]
+        slope = didi[am.phys_to_mce(*p)]
         print(f"di/di column {i}: {slope:.4f}")
         if slope > 1:
             #superconducting
