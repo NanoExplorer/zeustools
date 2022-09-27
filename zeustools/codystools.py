@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit, objmode
 
 
 def readChopFile(fname):
@@ -14,30 +15,30 @@ def readChopFile(fname):
     return cidx, chop
 
 
-def nan_helper(y):
-    """Helper to handle indices and logical indices of NaNs.
-
-    Input:
-        - y, 1d numpy array with possible NaNs
-    Output:
-        - nans, logical indices of NaNs
-        - index, a function, with signature indices= index(logical_indices),
-          to convert logical indices of NaNs to 'equivalent' indices
-    Example:
-        >>> # linear interpolation of NaNs
-        >>> nans, x= nan_helper(y)
-        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
-    """
-
-    return np.isnan(y), lambda z: z.nonzero()[0]
-
-
+@njit(cache=True)
 def gaussianSimple(vec, a, v0, sigma):
     expFrac = -1.0*((vec-v0)**2.0)/(2.0*sigma**2.0)
     return a*np.exp(expFrac)
 
-
+@njit(cache=True)
 def createModelSnakeEntireArray(tseries, goodSnakeCorr=0.85, minSnakeNumber=10, bestPixel=(6,14),fastFreq=0.25,quiet=False):
+    # If I put this in here njit can cache it otherwise it cannot.
+    def nan_helper(y):
+        """Helper to handle indices and logical indices of NaNs.
+
+        Input:
+            - y, 1d numpy array with possible NaNs
+        Output:
+            - nans, logical indices of NaNs
+            - index, a function, with signature indices= index(logical_indices),
+              to convert logical indices of NaNs to 'equivalent' indices
+        Example:
+            >>> # linear interpolation of NaNs
+            >>> nans, x= nan_helper(y)
+            >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+        """
+
+        return np.isnan(y), lambda z: z.nonzero()[0]
     """Creates a model snake given the time series of the entire array
 
     First correlates all pixels against each other to find a trend.
@@ -51,13 +52,13 @@ def createModelSnakeEntireArray(tseries, goodSnakeCorr=0.85, minSnakeNumber=10, 
     bestTS = tseries[bestPixel]
     #print(bestTS)
     #Cross-corelate the best pixel time series with all other time series:
-    corMat = np.zeros([4,np.shape(tseries)[0]*np.shape(tseries)[1]])
+    corMat = np.zeros((4,np.shape(tseries)[0]*np.shape(tseries)[1]))
     count = 0
     good_count=0
     for i in range(np.shape(tseries)[0]):
         for j in range(np.shape(tseries)[1]):
             non_nan_indexes = np.isfinite(bestTS) & np.isfinite(tseries[i,j,:])
-            a = np.corrcoef(bestTS[non_nan_indexes], tseries[i,j,non_nan_indexes])
+            a = np.corrcoef(bestTS[non_nan_indexes], tseries[i,j][non_nan_indexes])
             #print(a)
             corMat[0,count] = i
             corMat[1,count] = j
@@ -68,22 +69,22 @@ def createModelSnakeEntireArray(tseries, goodSnakeCorr=0.85, minSnakeNumber=10, 
                     #print(i,j)
                     good_count += 1
             count+=1
-    print("{} correlated px".format(good_count))
+    print(str(good_count) + " correlated px")
 
     #Find out which pixels are best correlated with the best time series     
     corMatSorted = corMat[:,corMat[2,:].argsort()]
     goodIdxs = np.where((corMatSorted[2,:] > goodSnakeCorr) & (corMatSorted[2,:] < 1.0))[0]
     #If none are well correlated, combine the minimum allowable number in order to get the snake template
     if len(goodIdxs) == 0:
-        goodIdxs = range(-1-minSnakeNumber,-1)
+        goodIdxs = np.arange(-1-minSnakeNumber,-1)
     #Make the model snake by combining the best-correclated time series
-    thisModelSnake = 0.0
+    thisModelSnake = np.zeros_like(bestTS)
     #normFactor = 0.0
     #plt.figure()
     for ll in goodIdxs:
         chunkRMS = np.nanstd(tseries[int(corMatSorted[0,ll]),int(corMatSorted[1,ll]),:][0:1000])
-        if not quiet:
-            print("CHUNKRMS =" + str(chunkRMS) + "ll="+ str(ll))
+        # if not quiet:
+        #     print("CHUNKRMS =" + str(chunkRMS) + "ll="+ str(ll))
         medianZeroCurTS = tseries[int(corMatSorted[0,ll]),int(corMatSorted[1,ll]),:] - np.nanmedian(tseries[int(corMatSorted[0,ll]),int(corMatSorted[1,ll]),:])
         #print chunkRMS
         ampNormTS = corMatSorted[3,ll]*medianZeroCurTS/(3.0*np.nanstd(medianZeroCurTS))
@@ -103,17 +104,21 @@ def createModelSnakeEntireArray(tseries, goodSnakeCorr=0.85, minSnakeNumber=10, 
     #Mirror the time series and append it to the end to reduce edge effects.
     #This gives better results than not doing it, but there may still be a better way
     origlen=len(thisModelSnake)
-    fourier = np.fft.fft(np.append(thisModelSnake,thisModelSnake[::-1]))
+    with objmode(fourier='complex128[:]'):
+        fourier = np.fft.fft(np.append(thisModelSnake,thisModelSnake[::-1]))
     #fourier = np.fft.fft(thisModelSnake)
     #print(fourier)
     #exit()
     thisn = thisModelSnake.size*2
     timestep = 1/398.72
-    freq = np.fft.fftfreq(thisn, d=timestep)
+    with objmode(freq='float64[:]'):
+        freq = np.fft.fftfreq(thisn, d=timestep)
 
     gaussianWindow = gaussianSimple(freq, 1.0, 0.0, fastFreq)
     fourier = fourier*gaussianWindow
-    ifftModelSnake = np.fft.ifft(fourier)
+
+    with objmode(ifftModelSnake='complex128[:]'):
+        ifftModelSnake = np.fft.ifft(fourier)
     modelSnake = ifftModelSnake.real[0:origlen]
     
     #plt.figure()
