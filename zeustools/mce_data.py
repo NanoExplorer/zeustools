@@ -124,6 +124,7 @@ class MCEData:
         self.data_is_dict = True
         self.data = []
         self.channels = []
+        self.chop = []
 
 def _rangify(start, count, n, name='items'):
     """
@@ -582,7 +583,10 @@ class SmallMCEFile:
             cc_count = (count + start + pack_factor-1) // pack_factor - cc_start
 
         # Get detector data as (n_ro x (size_ro*n_rc)) array
-        data_in = self.ReadRaw(count=cc_count, start=cc_start)
+        r_data_in = self.ReadRaw(count=cc_count, start=cc_start, raw_frames = True)
+        # split data so r_data_in contains headers but data_in does not
+        ho = self.header['_header_size']
+        data_in = r_data_in[:,ho:ho+self.size_ro*self.n_rc]
 
         # Check data mode for processing instructions
         dm_data = MCE_data_modes.get('%i'%self.data_mode)
@@ -610,6 +614,13 @@ class SmallMCEFile:
         data_out.n_frames = data.shape[1]
         data_out.header = self.header
 
+        # Populate data_out with chopper signal
+        format = HeaderFormat()
+        status_addr = format.offsets["status"]
+        all_statuses = r_data_in[:,status_addr]
+        chop = numpy.bitwise_and(all_statuses,0x0200)/512
+        data_out.chop = chop
+        
         # Unravel the field= vs. fields=[...] logic
         if field == None:
             field = 'default'
