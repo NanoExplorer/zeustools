@@ -20,6 +20,7 @@ def gaussianSimple(vec, a, v0, sigma):
     expFrac = -1.0*((vec-v0)**2.0)/(2.0*sigma**2.0)
     return a*np.exp(expFrac)
 
+
 @njit(cache=True)
 def createModelSnakeEntireArray(tseries, goodSnakeCorr=0.85, minSnakeNumber=10, bestPixel=(6,14),fastFreq=0.25,quiet=False):
     # If I put this in here njit can cache it otherwise it cannot.

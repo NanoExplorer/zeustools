@@ -6,14 +6,18 @@ import importlib.resources as res
 # most units ohms
 MCE_BIAS_R = 467
 # dewar_bias_R = 49, Old value, not sure where it comes from?
-DEWAR_BIAS_R = 130
+DEWAR_BIAS_R = 132 # Checked from cold ping-through on Oct 2 2022
 # These numbers need to be double checked. On the cold ping-thru sheet we have values like 130 ohms
 # and Carl's thesis reports 587 ohms for total bias resistance (MCE+Dewar).
 
 CMB_SHUNTS = [0, 3, 4]
 ACTPOL_R = 180e-6  # 180 uOhm, 830 nH [ref: Sherry Cho email]; probably same resistance as THz shunt 
 CMB_R = 140e-6  # completely ballparked based off of known THz chip resistance giving TESs 4 mOhm normal R
-DEWAR_FB_R = 5280  # = one MileOhm (~~joke~~)
+
+DEWAR_FB_R = 5350  # Assuming 4 kOhm in the MCE, checked during cold ping-through on Oct 2 2022
+# resistances of SQ1FB lines was average 1.35 kOhm
+
+# DEWAR_FB_R = 5280  # = one MileOhm (~~joke~~)
 # Seriously though, in Carl's script this value was 5280 ohm
 # but on the cold ping through sheet, it is 1.28 kOhm or 1280 ohm.
 # We think there are 4 kOhm in the MCE itself
@@ -149,6 +153,10 @@ def fb_dac_to_tes_current(fb,
     tes_current = tes_current * table[:, 1]
     return tes_current
 
+def correct_signs(cube):
+    with res.open_text(data,"column_sign.dat") as signfile:
+        signtable = np.loadtxt(signfile)
+    return cube * signtable[:,1][None,:,None]
 
 def mcefile_get_butterworth_constant(mce):
     if mce.data_mode == 1:
