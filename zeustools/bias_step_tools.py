@@ -85,6 +85,8 @@ def bs_interactive_plotter_factory(mce,didi=False):
     print("baaa")
     if didi:
         data=bias_step_di_di(mce)
+        data[data>0.05] = np.ma.masked
+        data[data<-0.08] = np.ma.masked
     else:
         data = bias_step_resistance(mce)
     cube = mce.Read(row_col=True).data
