@@ -32,6 +32,7 @@ def plot_array(somedata, ax=None, s=60, bad_px=False):
 
     :rtype: 3-Tuple
     """
+    somedata.fill_value = np.nan
     mce_grid = am.grid_map()
     if ax is None:
         # we need an axis to plot on, so if one wasn't supplied, make it.
@@ -46,7 +47,6 @@ def plot_array(somedata, ax=None, s=60, bad_px=False):
     # position, colored according to the flux value of that pixel.
     stuff = ax.scatter(mce_grid[:, :, 1], -mce_grid[:, :, 0], c=somedata.filled(), s=s, marker='s')
     cb = plt.colorbar(stuff, orientation='horizontal', ax=ax, aspect=50, fraction=0.05, shrink=0.9, pad=0.07)
-    
     if bad_px:
         baddata = somedata.copy()
         baddata.mask = np.logical_not(somedata.mask)
@@ -123,10 +123,18 @@ class ZeusInteractivePlotter():
     appear immediately.
     """
     def __init__(self,data,cube,ts=None,flat=None,chop=None):
-
+        if type(data) is np.ndarray:
+            data = np.ma.array(data)
+        if type(cube) is np.ndarray:
+            cube = np.ma.array(cube)
         self.data = data
         self.data.fill_value = np.nan
+        if ts is not None and len(ts)<cube.shape[2]:
+            cube = cube[:,:,:len(ts)]
         self.cube = cube
+        self.cube.fill_value= np.nan
+        if ts is not None and len(ts) > cube.shape[2]:
+            ts = ts[:cube.shape[2]]
         self.ts = ts
         self.flat = flat
         self.heightratio = [2, 1]
@@ -139,13 +147,16 @@ class ZeusInteractivePlotter():
         self.badpx = True  # whether to show bad pixels.
         self.badpx_corr_thresh = 0.5
         self.chop = chop
+        self.click_loc = (10,0,400)
+        self.linewidth=1
 
     def interactive_plot(self):
 
         # Initialize subplots
-        self.fig, (self.ax, self.ax2) = plt.subplots(2, 1,
-                                                     gridspec_kw={'height_ratios': self.heightratio},
-                                                     figsize=self.figsize)
+        if self.fig is None:
+            self.fig, (self.ax, self.ax2) = plt.subplots(2, 1,
+                                                         gridspec_kw={'height_ratios': self.heightratio},
+                                                         figsize=self.figsize)
         # Perform initial draw of top plot (array map)
         self.redraw_top_plot()
 
@@ -165,6 +176,7 @@ class ZeusInteractivePlotter():
         # Set up keybinds
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onkey)
+
 
     def redraw_top_plot(self):
         # Draw the array in the top panel, and store some objects
@@ -193,12 +205,12 @@ class ZeusInteractivePlotter():
         if px_for_btm_plot is not None:
             spectral, spatial, array = px_for_btm_plot
             data_to_plot = self.cube[am.phys_to_mce(*px_for_btm_plot)]
-            data_to_plot = data_to_plot - min(data_to_plot)
+            data_to_plot = data_to_plot - ma.min(data_to_plot)
             self.ax2.plot(self.ts,data_to_plot,label=f"data({spectral},{spatial})")
 
             if btm_plot_type == ClickType.TS_FLAT_ONLY and self.flat is not None:
                 flat_to_plot = self.flat[am.phys_to_mce(*px_for_btm_plot)]
-                flat_to_plot = flat_to_plot - min(flat_to_plot)
+                flat_to_plot = flat_to_plot - ma.min(flat_to_plot)
 
                 if len(flat_to_plot) > len(self.ts):
                     ts_to_plot = self.ts
@@ -247,20 +259,23 @@ class ZeusInteractivePlotter():
                 self.bottom_flat()
 
             self.ax2.legend()
+
+            self.plt.draw()
         except Exception as e:
             self.error = e
             # raise
 
     def bottom_plot(self):
         data_to_plot = self.cube[am.phys_to_mce(*self.click_loc)]
-        data_to_plot = data_to_plot - min(data_to_plot)
+        data_to_plot = data_to_plot - np.ma.min(data_to_plot)
         self.ax2.plot(self.ts, 
                       data_to_plot, 
-                      label=f"data({self.click_loc[0]},{self.click_loc[1]})")
+                      label=f"data({self.click_loc[0]},{self.click_loc[1]})",
+                      linewidth=self.linewidth)
 
     def bottom_flat(self):
         flat_to_plot = self.flat[am.phys_to_mce(*self.click_loc)]
-        flat_to_plot = flat_to_plot - min(flat_to_plot)
+        flat_to_plot = flat_to_plot - ma.min(flat_to_plot)
 
         if len(flat_to_plot) > len(self.ts):
             ts_to_plot = self.ts
@@ -304,6 +319,12 @@ class ZeusInteractivePlotter():
             traceback.print_tb(err.__traceback__)
         except AttributeError:
             print("No errors")
+            # except this attribute errror
+            # that we used
+            # to signify
+            # that there
+            # were no
+            # errors
             return
 
 
