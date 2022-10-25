@@ -5,6 +5,7 @@ import numba
 import numba.typed
 import zeustools as zt
 
+
 @njit
 def chunk_data(chop, cube):
     """
@@ -42,7 +43,7 @@ def chunk_data(chop, cube):
             start_idx = i 
             lastchop = chop[i]
             
-    return(chunks, phases)
+    return (chunks, phases)
 
 
 @njit
@@ -82,7 +83,7 @@ def chunk_data_1d(chop, ts):
             start_idx = i 
             lastchop = chop[i]
             
-    return(chunks, phases)
+    return (chunks, phases)
 
 
 @njit
@@ -107,7 +108,7 @@ def offset_chunk_data(chop, cube):
             # bundle data together:
             half_chop_size = (i-start_idx)//2
             half_chop_idx = i - half_chop_size
-            if half_chop_size<last_chop_size-1:
+            if half_chop_size < last_chop_size-1:
                 break
             chunks.append(cube[:, :, start_idx:half_chop_idx])
             chunks.append(cube[:, :, half_chop_idx:i])
@@ -117,9 +118,9 @@ def offset_chunk_data(chop, cube):
             start_idx = i 
 
             lastchop = chop[i]
-            last_chop_size=half_chop_size
+            last_chop_size = half_chop_size
             
-    return(chunks, phases)
+    return (chunks, phases)
 
 
 @njit
@@ -188,7 +189,8 @@ def reduce_chunks(chunks, fn=numba_median):
         for j in range(chunk_shape[0]):
             for k in range(chunk_shape[1]):
                 new_chunks[j, k, i] = fn(chunk[j, k])
-    return(new_chunks)
+    return (new_chunks)
+
 
 @njit
 def reduce_chunks_1d(chunks, fn=numba_mean):
@@ -200,21 +202,22 @@ def reduce_chunks_1d(chunks, fn=numba_mean):
     for i in range(len(chunks)):
         chunk = chunks[i]
         new_chunks[i] = fn(chunk)
-    return(new_chunks)
+    return (new_chunks)
+
 
 @njit
 def subtract_chunks(reduced_chunks, phases, lowphase=0):
     chunk_shape = reduced_chunks.shape
-    time_series = np.zeros((chunk_shape[0],chunk_shape[1],chunk_shape[2]//2))
+    time_series = np.zeros((chunk_shape[0], chunk_shape[1], chunk_shape[2]//2))
     if phases[0] == lowphase:
         sign = -1
     else:
         sign = 1
         
-    for i in range(0,chunk_shape[2],2):
-        lochunk = reduced_chunks[:,:,i+1]
-        hichunk = reduced_chunks[:,:,i]
-        time_series[:,:,i//2] = (hichunk - lochunk)*sign
+    for i in range(0, chunk_shape[2], 2):
+        lochunk = reduced_chunks[:, :, i+1]
+        hichunk = reduced_chunks[:, :, i]
+        time_series[:, :, i//2] = (hichunk - lochunk)*sign
     return time_series
     
         
@@ -232,17 +235,17 @@ def simple_data_reduction(chop, cube):
     
 
 @njit
-def subtract_all_model_snake(cube,snake):
+def subtract_all_model_snake(cube, snake):
     shape = cube.shape
-    subtracted_cube=np.zeros_like(cube)
-    slopes = np.zeros((shape[0],shape[1]))
-    intercepts = np.zeros((shape[0],shape[1]))
+    subtracted_cube = np.zeros_like(cube)
+    slopes = np.zeros((shape[0], shape[1]))
+    intercepts = np.zeros((shape[0], shape[1]))
     for i in range(shape[0]):
         for j in range(shape[1]):
-            coeffs = poly.fit_poly(snake,cube[i,j],1)
+            coeffs = poly.fit_poly(snake, cube[i, j], 1)
             m = coeffs[0]
             b = coeffs[1]
-            subtracted_cube[i,j] = cube[i,j]-(snake*m+b)
-            slopes[i,j] = m
-            intercepts[i,j]=b
-    return subtracted_cube,slopes,intercepts
+            subtracted_cube[i, j] = cube[i, j]-(snake*m+b)
+            slopes[i, j] = m
+            intercepts[i, j] = b
+    return subtracted_cube, slopes, intercepts
