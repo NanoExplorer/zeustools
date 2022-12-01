@@ -4,7 +4,11 @@ from astropy import constants as consts
 import scipy.interpolate as interp
 import pandas
 
+print("Deprecation Warning! atm_util is not supported. \
+      please use zeustools.transmission.AtmosphereTransmission"
+
 class TransmissionHelper:
+    """ DEPRECATED. use zeustools.transmission.AtmosphereTransmission """
     def __init__(self,file):
         table=pandas.read_csv(file)
         self.freqs = np.array(table.iloc[:,0],dtype=float)
