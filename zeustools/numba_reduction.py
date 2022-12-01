@@ -124,9 +124,11 @@ def offset_chunk_data(chop, cube):
 
 
 @njit
-def offset_subtract_chunks(chunks, phases, lophase=0):
+def offset_subtract_chunks(chunks, phases, lophase=0, weights=None):
+    weight_values = weights if weights is not None else np.ones_like(chunks)
     chunk_shape = chunks.shape
     time_series = np.zeros((chunk_shape[0], chunk_shape[1], chunk_shape[2]//2-1))
+    weights_out = np.ones_like(time_series)
     for i, phase in enumerate(phases):
         if i+1 < chunk_shape[2]:
             if phase != phases[i+1]:
@@ -134,19 +136,26 @@ def offset_subtract_chunks(chunks, phases, lophase=0):
                     sign = -1
                 else:
                     sign = 1
-                first_chunk = chunks[:, :, i]
-                second_chunk = chunks[:, :, i+1]
+                w1 = weight_values[:, :, i]
+                w2 = weight_values[:, :, i+1]
+                first_chunk = chunks[:, :, i] 
+                second_chunk = chunks[:, :, i+1] 
+                w = 1/(1/w1 + 1/w2)
+                # normalize W because we are not averaging first and
+                # second, instead we are just adding them.
                 time_series[:, :, i//2] = (first_chunk-second_chunk)*sign
-    return time_series
+                weights_out[:, :, i//2] = w
+    return time_series, weights_out
 
 
-def offset_data_reduction(chop, cube):
+def offset_data_reduction(chop, cube, lophase = 1):
+    # lophase = 1 appears to be correct for calibration data like Uranus
     cube = zt.dac_converters.correct_signs(cube)
-    chunks, phases = offset_chunk_data(chop, cube)
+    chunks, phases = offset_chunk_data(chop, cube) 
     #print(chunks[-1].shape,chunks[-2].shape, chunks[-3].shape,chunks[-4].shape,chunks[-5].shape)
     reduced_chunks = reduce_chunks(chunks)
     #print(reduced_chunks[1, 1])
-    time_series = offset_subtract_chunks(reduced_chunks, phases)
+    time_series,_ = offset_subtract_chunks(reduced_chunks, phases, lophase=lophase)
     #print(time_series[1,1])
     s = time_series.shape
     if s[2] % 2 != 0:
@@ -184,6 +193,7 @@ def reduce_chunks(chunks, fn=numba_median):
     # unfortunately we often have a phase with one less data point than it should
     chunk_shape = chunks[0].shape
     new_chunks = np.zeros((chunk_shape[0], chunk_shape[1], len(chunks)))
+    # chunk_shape[2] is the parameter that can vary
     for i in range(len(chunks)):
         chunk = chunks[i]
         for j in range(chunk_shape[0]):
@@ -222,8 +232,19 @@ def subtract_chunks(reduced_chunks, phases, lowphase=0):
     
         
 @njit
-def calculate_chunk_error(chunks):
-    pass
+def calculate_chunk_hash_std(chunks):
+    return reduce_chunks(chunks, fn=numba_std)
+    
+
+@njit
+def calculate_chunk_weights(chunks):
+    std = calculate_chunk_hash_std(chunks)
+    chunk_n = np.ones(len(chunks))
+    for i, c in enumerate(chunks):
+        chunk_n[i] = float(c.shape[2])
+    return chunk_n/std**2 /4
+    # equivalent to 1/(sigma^2) where sigma = std/sqrt(n) the 4 is for 400 hz sample/100 hz thermal
+    # the 4 is here, because we have less independent samples than chunk_n
     
 
 def simple_data_reduction(chop, cube):
