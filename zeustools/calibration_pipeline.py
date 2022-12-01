@@ -49,10 +49,9 @@ def shift_and_add(data1, data2, px1, px2):
     to align the line pixel between the two runs. Weights the spectra appropriately
     TODO: use np.average to clean up this mess.
     """
-
-    spec, sig, noise = data1
-    spec2, sig2, noise2 = data2
-
+    arr = data1 + data2
+    m = map(np.copy, arr)
+    spec, sig, noise, spec2, sig2, noise2 = m
     nan_idxs = np.isnan(sig)
     nan_idx2 = np.isnan(sig2)
 
@@ -60,6 +59,8 @@ def shift_and_add(data1, data2, px1, px2):
     sig2[nan_idx2] = 0
     noise[nan_idxs] = 10e10
     noise2[nan_idx2] = 10e10
+    noise[noise < 1e-6] = 10e10  # sometimes superconducting pixels show up unflagged
+    noise2[noise2 < 1e-6] = 10e10
     spec -= px1
     spec2 -= px2 
     # That shifts the spectral pixel number so that the line is on position "0" 
@@ -76,11 +77,11 @@ def shift_and_add(data1, data2, px1, px2):
     outsig[idx2] += sig2/noise2**2
     outnoise[idx] += 1/noise**2
     outnoise[idx2] += 1/noise2**2
-    outnoise = 1/outnoise
-    outsig = outsig*outnoise
-    outnoise = np.sqrt(outnoise)
-    outsig[outnoise>1e9] = np.nan
-    return(outspec, outsig, outnoise)
+    outnoise = 1/outnoise  # This sets outnoise to 1/wt
+    outsig = outsig*outnoise  # divide by weight 
+    outnoise = np.sqrt(outnoise)  # now outnoise is actually standard deviation
+    outsig[outnoise > 1e9] = np.nan
+    return (outspec, outsig, outnoise)
 
 # def shift_add(data,line_px):
 # 	"""
@@ -93,11 +94,6 @@ def shift_and_add(data1, data2, px1, px2):
 # 	# create an array to hold the result
 # 	specs = np.array([spec - i for (spec,_,_),i in zip(data,line_pix)])
 # 	final_spec = np.arange(np.min(specs.flatten()),np.max(specs.flatten()))
-
-
-
-
-
 
 
 def get_drop_indices(spec_pos, px_to_drop):
@@ -123,7 +119,7 @@ def getcsvspec(label, spec):
     return stringout
 
 
-def plot_spec(spec, saveas, bounds):
+def plot_spec(spec, saveas, bounds, do_close = True):
     plt.figure(figsize=(8, 6))
     #spec[1][spec[2]>1e-16] = np.nan
     line = plt.step(spec[0], spec[1], where='mid')
@@ -131,13 +127,13 @@ def plot_spec(spec, saveas, bounds):
     plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
     plt.ylabel("Flux, W m$^{-2}$ bin$^{-1}$")
     plt.xlabel("Velocity km s$^{-1}$")
-    if None not in bounds:
+    if bounds is not None and None not in bounds:
         plt.xlim(bounds[0:2])
         plt.ylim(bounds[2:4])
     plt.tight_layout()
     plt.savefig(saveas, dpi=300)
-
-    plt.close()
+    if do_close:
+        plt.close()
 
 
 def run_pipeline():
