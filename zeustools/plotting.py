@@ -71,7 +71,7 @@ def get_physical_location(xdata, ydata):
     your pixel is on. Usable with the plot_array and ZeusInteractivePlotter.
     """
 
-    xclk = (xdata+0.5)//1
+    xclk = (xdata+0.5)//1  # clk stands for click
     yclk = (ydata+0.5)//1
 
     if yclk <= -10:

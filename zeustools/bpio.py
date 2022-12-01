@@ -25,23 +25,24 @@ def extract_one_spatial_position(a, spat):
                     weight[sorted_idxs]])
 
 
-def load_data_and_extract(fname, spat):
+def load_data_and_extract(fname, spat, err_file=None):
     """ Automatically loads an csv file from Bo's reduction script
     and returns a 1-d spectrum of a single spatial position.
 
     :param fname: this is the filename of the .npz file from Bo's script
     :param spat: This is the spatial position you would like to extract.
-    :return: tuple of: 1d array of spatial position, 1d array of spectrum, 
-        spatial position, and 1d array of noise. Both sig and noise arrays are masked
+    :return: tuple of: 1d array of spectral position, 1d array of spectrum, 
+        and 1d array of noise. Both sig and noise arrays are masked
         arrays, where the mask has been set to True for nans
     """
     signal = ma.array(pandas.read_csv(fname).iloc[spat,4:],dtype=float)
-    noise = ma.array(pandas.read_csv(fname.replace("flux","err")).iloc[spat,4:],dtype=float)
+    err_file = err_file or fname.replace("flux","err")
+    noise = ma.array(pandas.read_csv(err_file).iloc[spat,4:],dtype=float)
     nan_idx = np.logical_or(np.isnan(signal),np.isnan(noise))
     signal[nan_idx] = ma.masked
     noise[nan_idx] = ma.masked
-    spatial_position = np.arange(len(signal))
-    return spatial_position,signal,noise
+    spectral_position = np.arange(len(signal))
+    return spectral_position,signal,noise
 
 
 def extract_from_beamfile(fname, beam, spat, arrnums):

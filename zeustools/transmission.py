@@ -30,7 +30,7 @@ class AtmosphereTransmission:
         :param freq: frequency in GHz
         :param pwv: pwv in mm
         """
-        print(freq,pwv)
+        # print(freq,pwv)
         # print(self.freqs)
         # print(self.pwvs)
         return interp.interpn((self.freqs,self.pwvs),self.transmissions,(freq,pwv))
