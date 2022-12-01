@@ -16,7 +16,6 @@ class TransmissionHelper:
         self.pwvs = np.array(table.columns[1:],dtype=float)
         self.observing_freq = 0
 
-    def interp(self,freq,pwv):
         """
         params: 
             freq: frequency in GHz
