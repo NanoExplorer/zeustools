@@ -1,0 +1,52 @@
+Testing the ``zeustools`` module
+======================
+Note that if calibrations or array maps change, the test cases must be updated!
+
+
+Test ``rooneystools``
+-------------------
+
+>>> import zeustools as zt
+>>> zt.array_name("400")
+'a'
+>>> zt.array_name(350)
+'a'
+>>> zt.array_name(200)
+'b'
+>>> zt.array_name("600")
+'c'
+>>> zt.array_name("hahahaha")
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/home/christopher/Dropbox/code/zeus2/zeustools/zeustools/rooneystools.py", line 339, in array_name
+    raise ValueError("invalid array name")
+ValueError: invalid array name
+>>> am = zt.ArrayMapper()
+>>> am.phys_to_mce(8,0,400)
+(15, 1)
+>>> am.phys_to_mce(30,0,400)
+(11, 11)
+>>> am.phys_to_mce(20,7,200)
+(10, 12)
+>>> am.phys_to_mce(3,2,200)
+(25, 17)
+
+
+Test ``grating_cal``
+-------------------
+
+>>> from zeustools import grating_cal as gc
+>>> gcal = gc.GratingCalibrator()
+>>> gcal.phys_px_to_wavelength(8,0,400,1732)
+363.94656
+>>> gcal.phys_wavelength_to_index(8,0,400,363.938)
+1732
+>>> gcal.phys_px_to_wavelength(29,0,400,2097)
+455.60601
+>>> gcal.phys_wavelength_to_index(29,0,400,455.6)
+2097
+>>> gcal.spat_wavelength_index_to_spec(0,400,363.938,1743)
+8.5
+>>> gcal.spat_wavelength_index_to_spec(0,400,433.56,2790)
+29.2
+

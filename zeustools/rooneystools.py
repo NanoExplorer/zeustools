@@ -326,7 +326,7 @@ def array_name(name):
     :param name: Human readable name for the array. Should be a string or number.
     :return: one of 'a', 'b', or 'c'.
     """
-    name = str(name)
+    name = str(name).upper()
     if name == '400' or name == '350' or name == '450' or name == 'A':
         name = 'a'
     elif name == '200' or name == 'B':
