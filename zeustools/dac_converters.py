@@ -153,10 +153,13 @@ def fb_dac_to_tes_current(fb,
     tes_current = tes_current * table[:, 1]
     return tes_current
 
+
 def correct_signs(cube):
     with res.open_text(data,"column_sign.dat") as signfile:
         signtable = np.loadtxt(signfile)
+        #print(signtable)
     return cube * signtable[:,1][None,:,None]
+
 
 def mcefile_get_butterworth_constant(mce):
     if mce.data_mode == 1:
