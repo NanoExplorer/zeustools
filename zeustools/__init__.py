@@ -4,3 +4,4 @@ from zeustools import transmission
 from zeustools.bias_step_tools import *
 from zeustools import dac_converters
 from . import numba_reduction
+from . import leapseconds
