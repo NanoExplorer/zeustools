@@ -5,7 +5,7 @@ import scipy.interpolate as interp
 import pandas
 
 print("Deprecation Warning! atm_util is not supported. \
-      please use zeustools.transmission.AtmosphereTransmission"
+      please use zeustools.transmission.AtmosphereTransmission")
 
 class TransmissionHelper:
     """ DEPRECATED. use zeustools.transmission.AtmosphereTransmission """

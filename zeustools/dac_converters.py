@@ -1,9 +1,16 @@
+""" The purpose of this module is to facilitate the conversion of DAC units
+to physical units. Here, when I say "Physical Parameters" I mean volts and amps.
+
+This includes a lot of mostly hardcoded variables that describe the system. Most of this code
+comes from Carl's calculator scripts, and has been thoroughly re-checked by CR, BP, and AV.
+"""
+
 import numpy as np
 from zeustools import data
 import importlib.resources as res
 
 # ----THE FOLLOWING NUMBERS ARE COPIED FROM CARL'S PYTHON SCRIPT---- 
-# most units ohms
+#: most units ohms
 MCE_BIAS_R = 467
 # dewar_bias_R = 49, Old value, not sure where it comes from?
 DEWAR_BIAS_R = 132 # Checked from cold ping-through on Oct 2 2022
@@ -73,8 +80,7 @@ def real_units(bias, fb, col=0, whole_array=False,
 
     There are a lot of other parameters, and hopefully they're explanitory enough. They are
     mostly intrinsic properties of the system, but until we are absolutely certain of their
-    values we need to be able to tweak them a little. Some quirks carried over from Carl's script:
-
+    values we need to be able to tweak them a little. 
 
     :return: (TES voltage array, TES current array) in Volts and Amps respectively.
     

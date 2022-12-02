@@ -116,15 +116,19 @@ class MCEData:
     Container for MCE data (single channel) and associated header and origin information.
     """
     def __init__(self):
-        self.data = {}
         self.source = None
         self.start_frame = 0
         self.n_frames = 0
         self.header = None
         self.data_is_dict = True
+        
+        #: :py:class:`numpy.array`: the Data member variable contains the mce data as a 3-d datacube. 
         self.data = []
         self.channels = []
+
+        #: :py:class:`numpy.array`: Chop signal for the time series, as a 1-d array. 
         self.chop = []
+
 
 def _rangify(start, count, n, name='items'):
     """
@@ -545,6 +549,8 @@ class SmallMCEFile:
                     and checksum), with indices (frame, index_in_frame).
         :param cc_indices:  If True, count and start are interpreted as readout frame indices and
                     not sample indices.  Default is False.
+
+        :return data_out: An instance of :py:class:`MCEData` containing all your data needs.
         """
         if n_frames != None:
             print('Warning: Use of n_frames in Read() is deprecated, please use '\

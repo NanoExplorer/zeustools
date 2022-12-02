@@ -4,6 +4,11 @@ from . import numba_polyfit as poly
 import numba
 import numba.typed
 import zeustools as zt
+"""
+This module contains several routines written with Numba to process data
+as quickly as possible. This allows us to process data on the fly
+and send it to APEX for calibration purposes.
+"""
 
 
 @njit
@@ -11,15 +16,14 @@ def chunk_data(chop, cube):
     """
     Collect each data set associated with a single chop/wobble phase
     into a more manageable format.
-    params:
-        chop: numpy array of chop phase for each data point
-        cube: MCE time series data file [rows,cols,timepts]
-    returns:
-        list of chunks, where each chunk is a numpy array with shape
-            [rows,cols,numpts]
+
+    :param chop: numpy array of chop phase for each data point
+    :param cube: MCE time series data file [rows,cols,timepts]
+    :return: list of chunks, where each chunk is a numpy array with shape
+        [rows,cols,numpts]
         list of phases, representing the phase of the chunk.
         
-    e.g.:
+    e.g.
         if you have data like [[[1,2,3,4]]] (i.e. one pixel on the mce) 
         with chop like [1,1,0,0] you will get back
         list([[[1,2]]],[[[3,4]]]),list(1,0)
@@ -51,18 +55,10 @@ def chunk_data_1d(chop, ts):
     """
     Collect each data set associated with a single chop/wobble phase
     into a more manageable format.
-    params:
-        chop: numpy array of chop phase for each data point
-        cube: MCE time series data file [rows,cols,timepts]
-    returns:
-        list of chunks, where each chunk is a numpy array with shape
-            [rows,cols,numpts]
-        list of phases, representing the phase of the chunk.
-        
-    e.g.:
-        if you have data like [[[1,2,3,4]]] (i.e. one pixel on the mce) 
-        with chop like [1,1,0,0] you will get back
-        list([[[1,2]]],[[[3,4]]]),list(1,0)
+    
+    :param chop: numpy array of chop phase for each data point
+    :param ts: 1-d time series
+    :return: lists of floats instead of the arrays returned by :func:`chunk_data`
     """
     
     lastchop = chop[0]
@@ -89,9 +85,8 @@ def chunk_data_1d(chop, ts):
 @njit
 def offset_chunk_data(chop, cube):
     """
-    I don't have the energy to document this right now.
-    It's like chunk data but instead of doing full chop cycles 
-    it does half chop cycles. Part of a crazy idea I have.
+    Instead of chunking entire phases, chunk half-phases.
+    otherwise, this is the same as :func:`chunk_data`
     """
     lastchop = chop[0]
     start_idx = 0
@@ -125,6 +120,15 @@ def offset_chunk_data(chop, cube):
 
 @njit
 def offset_subtract_chunks(chunks, phases, lophase=0, weights=None):
+    """ similar to subtract_chunks, but instead of doing on-off, we do
+    average(half_of_on - half_of_off, -half_of_off + half_of_next_on) to
+    remove snakes.
+
+    :param chunks: list of 'chunks', first element returned by :func:`offset_chunk_data`.
+    :param phases: list of phases, second element of offset_chunk_data return
+    :param lophase: which chop phase to treat as "off" chop, i.e. the sign. usually 1, I think.
+    :param weights: weights to associate with chunks of data, can be obtained with :func:`calculate_chunk_weights`
+    """
     weight_values = weights if weights is not None else np.ones_like(chunks)
     chunk_shape = chunks.shape
     time_series = np.zeros((chunk_shape[0], chunk_shape[1], chunk_shape[2]//2-1))

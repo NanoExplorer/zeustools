@@ -9,6 +9,10 @@ import numpy as np
 import zeustools as zt
 
 class GratingCalibrator():
+    """ This class contains all the information needed to compute
+    grating indices and wavelengths. This is mostly Carl's code, and it
+    is a duplicate of the functionality of his Excel spreadsheet.
+    """
     def __init__(self):
         #---------------------------------------------------------------------------#
         #Initial Parameters - Don't edit
@@ -86,6 +90,13 @@ class GratingCalibrator():
         self.am = zt.ArrayMapper()
 
     def phys_to_coeffs(self,spec,array,return_order=False):
+        """ Given a location on the array, look up the correct
+        set of coefficients for the best-fit grating model. Optionally
+        return the grating order that falls onto the location you supplied.
+
+        :param int spec: Spectral Position on the array
+        :param int array: Array name (i.e. 400, 200, micron arrays etc)
+        """
         arr = zt.array_name(array)
         if arr == 'a':
             # 400 um array
@@ -109,6 +120,17 @@ class GratingCalibrator():
             return coeff
 
     def phys_px_to_wavelength(self,spec,spat,array,index):
+        """ Given a location on the array and a grating index, compute
+        the wavelength of light that should be falling on the detector.
+        
+        Parameters can be numpy arrays or numbers, except for `array`.
+        
+        :param int spec: Spectral position on array.
+        :param int spat: Spatial position on the array.
+        :param array: Which array to use
+        :param int index: Grating index 
+        :return: wavelength of light falling on specified detector(s)
+        """
         a = self.alpha(index)
         
         coeff,order = self.phys_to_coeffs(spec,array,return_order=True)
@@ -116,12 +138,35 @@ class GratingCalibrator():
         return self.cal_wavelength(order, a, spat, spec, coeff)
 
     def phys_wavelength_to_index(self,spec,spat,array,wavelength):
+        """ Given a location on the array and a wavelength of light, compute
+        the grating index that should be used to obtain the specified wavelength.
+        
+        Parameters can be numpy arrays or numbers, except for `array`.
+        
+        :param int spec: Spectral position on array.
+        :param int spat: Spatial position on the array.
+        :param array: Which array to use
+        :param wavelength: Wavelength in microns  
+        :return: Grating index 
+        """
         coeff = self.phys_to_coeffs(spec,array)
         order = self.wavelength_to_order(wavelength)
 
         return self.cal_index(order, wavelength, spat, spec, coeff)
 
     def spat_wavelength_index_to_spec(self,spat,array,wavelength,index):
+        """ Given a spatial position on the array, a grating index, and a 
+        wavelength, compute the spectral position that should see
+        the specified wavelength.
+        
+        Parameters can be numpy arrays or numbers, except for `array`.
+        
+        :param int spat: Spatial position on the array.
+        :param array: Which array to use
+        :param wavelength: Wavelength in microns
+        :param int index: Grating index 
+        :return: Spectral position seeing the specified wavelength.
+        """
         order = self.wavelength_to_order(wavelength)
         coeff = self.order_to_coeffs(order)
 
