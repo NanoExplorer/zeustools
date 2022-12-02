@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mce_data submodule &mdash; zeustools 0.0.4 documentation</title>
+  <title>Misc. Submodules &mdash; zeustools 0.0.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="zeustools package" href="zeustools.html" /> 
+    <link rel="prev" title="Data Analysis Utilities" href="analysis.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,9 +40,13 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="zeustools.html">zeustools package</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">mce_data submodule</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.mce_data">mce_data module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeustools.html">Zeustools API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inst.html">Instrument Analysis Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calib.html">Calibration Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Data Analysis Utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Misc. Submodules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mce-data-module">mce_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#leapseconds-module">leapseconds module</a></li>
 </ul>
 </li>
 </ul>
@@ -61,7 +65,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>mce_data submodule</li>
+      <li>Misc. Submodules</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/mce_data.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -71,13 +75,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mce-data-submodule">
-<h1>mce_data submodule<a class="headerlink" href="#mce-data-submodule" title="Permalink to this heading"></a></h1>
+  <section id="misc-submodules">
+<h1>Misc. Submodules<a class="headerlink" href="#misc-submodules" title="Permalink to this heading"></a></h1>
+<section id="mce-data-module">
+<h2>mce_data module<a class="headerlink" href="#mce-data-module" title="Permalink to this heading"></a></h2>
 <p>The <a class="reference internal" href="#module-zeustools.mce_data" title="zeustools.mce_data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mce_data</span></code></a> (from <a class="reference external" href="https://e-mode.phas.ubc.ca/mcewiki/index.php/Python_data_and_runfile_modules">the MCE wiki</a>) is a low-level interface for reading the MCE binary files. In our case these are files like <code class="docutils literal notranslate"><span class="pre">saturn_191130_0030</span></code> with no file extension.</p>
-<p>The library has been modified in two important ways: First, it had a hard limit on file size—it would refuse to open files larger than a certain size—which I have exceeded in the past, so I modified it to accept larger files. I also modified it to run on Python 3.</p>
-<section id="module-zeustools.mce_data">
-<span id="mce-data-module"></span><h2>mce_data module<a class="headerlink" href="#module-zeustools.mce_data" title="Permalink to this heading"></a></h2>
-<dl class="py exception">
+<p>The library has been modified in two important ways: First, it had a hard limit on file size—it would refuse to open files larger than a certain size—which I have exceeded in the past, so I modified it to accept larger files. I also modified it to run on Python 3. Now it also supports reading in the chop data that is embedded in the MCE data files!</p>
+<span class="target" id="module-zeustools.mce_data"></span><dl class="py exception">
 <dt class="sig sig-object py" id="zeustools.mce_data.BadRunfile">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">BadRunfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.mce_data.BadRunfile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
@@ -127,6 +131,18 @@ packing into MCE data words.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.mce_data.</span></span><span class="sig-name descname"><span class="pre">MCEData</span></span><a class="headerlink" href="#zeustools.mce_data.MCEData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Container for MCE data (single channel) and associated header and origin information.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.mce_data.MCEData.chop">
+<span class="sig-name descname"><span class="pre">chop</span></span><a class="headerlink" href="#zeustools.mce_data.MCEData.chop" title="Permalink to this definition"></a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>: Chop signal for the time series, as a 1-d array.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.mce_data.MCEData.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#zeustools.mce_data.MCEData.data" title="Permalink to this definition"></a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.array</span></code>: the Data member variable contains the mce data as a 3-d datacube.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py attribute">
@@ -201,6 +217,9 @@ and checksum), with indices (frame, index_in_frame).</p></li>
 not sample indices.  Default is False.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return data_out</dt>
+<dd class="field-even"><p>An instance of <a class="reference internal" href="#zeustools.mce_data.MCEData" title="zeustools.mce_data.MCEData"><code class="xref py py-class docutils literal notranslate"><span class="pre">MCEData</span></code></a> containing all your data needs.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -225,13 +244,147 @@ Read() method, which decodes the data into detector channels.</p>
 <dd></dd></dl>
 
 </section>
+<section id="leapseconds-module">
+<h2>leapseconds module<a class="headerlink" href="#leapseconds-module" title="Permalink to this heading"></a></h2>
+<p>The <a class="reference internal" href="#module-zeustools.leapseconds" title="zeustools.leapseconds"><code class="xref py py-mod docutils literal notranslate"><span class="pre">leapseconds</span></code></a> (from <a class="reference external" href="https://gist.github.com/zed/92df922103ac9deb1a05">this GitHub Gist</a>) module provides helper functions for converting between GPS time and UTC time. This can be important because .ts files are written with GPS timestamps.</p>
+<span class="target" id="module-zeustools.leapseconds"></span><p>Get TAI-UTC difference in seconds for a given time using tzdata.</p>
+<p>i.e., find the number of seconds that must be added to UTC to compute
+TAI for any timestamp at or after the given time[1].</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">leapseconds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leapseconds</span><span class="o">.</span><span class="n">dTAI_UTC_from_utc</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">datetime.timedelta(0, 32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leapseconds</span><span class="o">.</span><span class="n">utc_to_tai</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">datetime.datetime(2015, 7, 1, 0, 0, 36)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leapseconds</span><span class="o">.</span><span class="n">tai_to_utc</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">36</span><span class="p">))</span>
+<span class="go">datetime.datetime(2015, 7, 1, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leapseconds</span><span class="o">.</span><span class="n">tai_to_utc</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">35</span><span class="p">))</span> <span class="c1"># leap second</span>
+<span class="go">datetime.datetime(2015, 7, 1, 0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">leapseconds</span><span class="o">.</span><span class="n">tai_to_utc</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">34</span><span class="p">))</span>
+<span class="go">datetime.datetime(2015, 6, 30, 23, 59, 59)</span>
+</pre></div>
+</div>
+<p>Python 2.6+, Python 3, Jython, Pypy support.</p>
+<p>[1]: <a class="reference external" href="https://github.com/eggert/tz/blob/master/leap-seconds.list">https://github.com/eggert/tz/blob/master/leap-seconds.list</a>
+[2]: <a class="reference external" href="https://github.com/eggert/tz/blob/master/tzfile.h">https://github.com/eggert/tz/blob/master/tzfile.h</a>
+[3]: <a class="reference external" href="https://github.com/eggert/tz/blob/master/zic.c">https://github.com/eggert/tz/blob/master/zic.c</a>
+[4]: <a class="reference external" href="http://datacenter.iers.org/eop/-/somos/5Rgv/latest/16">http://datacenter.iers.org/eop/-/somos/5Rgv/latest/16</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.leapseconds.LeapSecond">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">LeapSecond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dTAI_UTC</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.LeapSecond" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.leapseconds.LeapSecond.dTAI_UTC">
+<span class="sig-name descname"><span class="pre">dTAI_UTC</span></span><a class="headerlink" href="#zeustools.leapseconds.LeapSecond.dTAI_UTC" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="zeustools.leapseconds.LeapSecond.utc">
+<span class="sig-name descname"><span class="pre">utc</span></span><a class="headerlink" href="#zeustools.leapseconds.LeapSecond.utc" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.dTAI_UTC_from_tai">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">dTAI_UTC_from_tai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tai_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.dTAI_UTC_from_tai" title="Permalink to this definition"></a></dt>
+<dd><p>UTC time = tai_time - dTAI_UTC_from_tai(tai_time).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.dTAI_UTC_from_utc">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">dTAI_UTC_from_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utc_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.dTAI_UTC_from_utc" title="Permalink to this definition"></a></dt>
+<dd><p>TAI time = utc_time + dTAI_UTC_from_utc(utc_time).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.gps_to_tai">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">gps_to_tai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gps_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.gps_to_tai" title="Permalink to this definition"></a></dt>
+<dd><p>Convert GPS time given as datetime object to TAI time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gps_time</strong> (<em>datetime</em>) – Datetime object containing GPS time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.gps_to_utc">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">gps_to_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gps_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.gps_to_utc" title="Permalink to this definition"></a></dt>
+<dd><p>Convert GPS time given as datetime object to UTC time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>gps_time</strong> (<em>datetime</em>) – Datetime object containing GPS time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.leapseconds">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">leapseconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tzfiles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['/usr/share/zoneinfo/right/UTC',</span> <span class="pre">'/usr/lib/zoneinfo/right/UTC']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.leapseconds" title="Permalink to this definition"></a></dt>
+<dd><p>Extract leap seconds from <em>tzfiles</em>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.tai_to_gps">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">tai_to_gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tai_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.tai_to_gps" title="Permalink to this definition"></a></dt>
+<dd><p>Convert TAI time given as datetime object to GPS time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tai_time</strong> (<em>datetime</em>) – Datetime object containing TAI time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.tai_to_utc">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">tai_to_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tai_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.tai_to_utc" title="Permalink to this definition"></a></dt>
+<dd><p>Convert TAI time given as datetime object to UTC time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tai_time</strong> (<em>datetime</em>) – Datetime object containing TAI time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.utc_to_gps">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">utc_to_gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utc_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.utc_to_gps" title="Permalink to this definition"></a></dt>
+<dd><p>Convert UTC time given as datetime object to GPS time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>utc_time</strong> (<em>datetime</em>) – Datetime object containing UTC time. If this 
+object does not have a timezone, it is treated as if it is in the UTC time
+zone, which is NOT how naive datetimes are usually treated. 
+Datetimes with timezones are treated appropriately.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.leapseconds.utc_to_tai">
+<span class="sig-prename descclassname"><span class="pre">zeustools.leapseconds.</span></span><span class="sig-name descname"><span class="pre">utc_to_tai</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utc_time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.leapseconds.utc_to_tai" title="Permalink to this definition"></a></dt>
+<dd><p>Convert UTC time given as datetime object to TAI time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>utc_time</strong> (<em>datetime</em>) – Datetime object containing UTC time. If this 
+object does not have a timezone, it is treated as if it is in the UTC time
+zone, which is NOT how naive datetimes are usually treated. 
+Datetimes with timezones are treated appropriately.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="zeustools.html" class="btn btn-neutral float-left" title="zeustools package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Data Analysis Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

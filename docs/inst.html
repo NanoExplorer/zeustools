@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instrument Analysis Utilities &mdash; zeustools 0.0.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calibration Utilities" href="calib.html" />
+    <link rel="prev" title="Zeustools API documentation" href="zeustools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zeustools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeustools.html">Zeustools API documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Instrument Analysis Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.transmission">zeustools.transmission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.iv_tools">zeustools.iv_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.dac_converters">zeustools.dac_converters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.bias_step_tools">zeustools.bias_step_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.grating_cal">zeustools.grating_cal module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calib.html">Calibration Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Data Analysis Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mce_data.html">Misc. Submodules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zeustools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Instrument Analysis Utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/inst.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="instrument-analysis-utilities">
+<h1>Instrument Analysis Utilities<a class="headerlink" href="#instrument-analysis-utilities" title="Permalink to this heading"></a></h1>
+<section id="module-zeustools.transmission">
+<span id="zeustools-transmission-module"></span><h2>zeustools.transmission module<a class="headerlink" href="#module-zeustools.transmission" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">AtmosphereTransmission</span></span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides a method to calculate the sky
+transmission from APEX at arbitrary PWV and wavelength.
+It accomplishes this by using a downloaded copy of the APEX weather
+data (included with the package).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission.interp">
+<span class="sig-name descname"><span class="pre">interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission.interp" title="Permalink to this definition"></a></dt>
+<dd><p>interpolate the sky transmission at a given PWV and frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq</strong> – frequency in GHz</p></li>
+<li><p><strong>pwv</strong> – pwv in mm</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.AtmosphereTransmission.interp_internal_freq">
+<span class="sig-name descname"><span class="pre">interp_internal_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.AtmosphereTransmission.interp_internal_freq" title="Permalink to this definition"></a></dt>
+<dd><p>interpolate the sky transmission at a given PWV, using the frequency in the member variable <cite>observing_freq</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pwv</strong> – pwv in mm</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.FilterTransmission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">FilterTransmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filterType</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.FilterTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides a good way to interpolate the transmission of the ZEUS-2 filters.
+For most of the filters, we have spreadsheets of their measured transmission, but for the
+zitex filter I digitized the plot of G110 zitex transmission from Benford 1999.</p>
+<p>Create a FilterTransmission object providing one of the filter names/keys from the FILTER_NAMES 
+dictionary, and then call the interp function with a wavelength in microns to get back its transmission at 
+that wavelength.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.FilterTransmission.interp">
+<span class="sig-name descname"><span class="pre">interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.FilterTransmission.interp" title="Permalink to this definition"></a></dt>
+<dd><p>Run the interpolator at the given wavelength (in microns)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wl</strong> – The desired wavelength or wavelengths to extract the transmission for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numpy array of transmissions corresponding to the given wavelengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.GratingTransmission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">GratingTransmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gratingType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fileName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grating_eff.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.GratingTransmission" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.transmission.FilterTransmission" title="zeustools.transmission.FilterTransmission"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilterTransmission</span></code></a></p>
+<p>The grating transmission files are a bit different from the filter data files.
+This class takes care of that difference, and gives you back an object that is for all intents and purposes
+identical to a FilterTransmission object</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">ZeusOpticsChain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2021'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the main way for you to handle transmission calculations.
+It takes into account all the filters in the system as well as the grating efficiency
+and the tuning ranges of the grating. You can also specify the time period you are interested in
+so that we can load the correct combination of filters and grating etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – This string lets you define the time period that you want. Currently available 
+time periods are <code class="docutils literal notranslate"><span class="pre">2021</span></code> to load the configuration for APEX 2021, which includes the old “shiny” grating.
+<code class="docutils literal notranslate"><span class="pre">2019</span></code> loads the configuration at APEX in 2019, where we introduced the new k2586 350 micron bandpass filter.
+<code class="docutils literal notranslate"><span class="pre">lab_2019</span></code> loads the configuration for the lab tests in 2019 and 2018, where the 350 micron bandpass
+filter was the “k2338” variety, and <code class="docutils literal notranslate"><span class="pre">lab_late_2019</span></code> loads the config when the “w1018” bandpass filter was
+installed on the 350 micron array.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain.compute_transmission">
+<span class="sig-name descname"><span class="pre">compute_transmission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain.compute_transmission" title="Permalink to this definition"></a></dt>
+<dd><p>This is mostly an internal-use function.
+Given a combination of filters, multiply them all at the given wavelengths.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain.get_details_table">
+<span class="sig-name descname"><span class="pre">get_details_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain.get_details_table" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.transmission.ZeusOpticsChain.get_transmission_microns">
+<span class="sig-name descname"><span class="pre">get_transmission_microns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_tuning_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.ZeusOpticsChain.get_transmission_microns" title="Permalink to this definition"></a></dt>
+<dd><p>Use this method for all your transmission computation needs! Once you have
+initialized the object, supply this method with a wavelength or array of wavelengths
+in order to compute the throughput at those wavelengths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wl</strong> – wavelength or numpy array of wavelengths of interest</p></li>
+<li><p><strong>show_tuning_range</strong> – Optional. If this is True, we will return “0” transmission for wavelengths
+that cannot be observed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numpy array of throughput fractions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.transmission.airmass_factor">
+<span class="sig-prename descclassname"><span class="pre">zeustools.transmission.</span></span><span class="sig-name descname"><span class="pre">airmass_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elev</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.transmission.airmass_factor" title="Permalink to this definition"></a></dt>
+<dd><p>compute the airmass at a given elevation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>elev</strong> – elevation / altitude in degrees</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>airmass. multiply this by pwv before calculating atmosphere transmission.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.iv_tools">
+<span id="zeustools-iv-tools-module"></span><h2>zeustools.iv_tools module<a class="headerlink" href="#module-zeustools.iv_tools" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">IVHelper</span></span><a class="headerlink" href="#zeustools.iv_tools.IVHelper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Load in an IV curve or several IV curves and perform useful operations with them</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.get_corrected_ivs">
+<span class="sig-name descname"><span class="pre">get_corrected_ivs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_again</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.get_corrected_ivs" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all iv curves for col,row,
+currected to have normal y-intercept 0 and normal slope fixed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.get_temperature_colorbar_norm">
+<span class="sig-name descname"><span class="pre">get_temperature_colorbar_norm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.get_temperature_colorbar_norm" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.load_directory">
+<span class="sig-name descname"><span class="pre">load_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.load_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Given a directory containing IV curve data, this function will load the IV 
+data and make it ready for processing.
+For best results, organize the folder so it only contains IV
+files and the associated run, out, and bias files.
+Also, each filename should contain the bath temperature it was taken at
+in the format 110mK</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.load_file">
+<span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.load_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.IVHelper.switch_to_real_units">
+<span class="sig-name descname"><span class="pre">switch_to_real_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.IVHelper.switch_to_real_units" title="Permalink to this definition"></a></dt>
+<dd><p>changes all internal data files from DAC units to real units
+As of now, this step is irreversible, so if you want to go back
+to DAC units you’ll have to reload the directory. But really, it should be easy
+since I keep the mce data array.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">InteractiveIVPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">130</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_temp_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="zeustools.html#zeustools.plotting.ZeusInteractivePlotter" title="zeustools.plotting.ZeusInteractivePlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZeusInteractivePlotter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.bottom_flat">
+<span class="sig-name descname"><span class="pre">bottom_flat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.bottom_flat" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.bottom_plot">
+<span class="sig-name descname"><span class="pre">bottom_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.bottom_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.build_data">
+<span class="sig-name descname"><span class="pre">build_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.build_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.detectors_hist">
+<span class="sig-name descname"><span class="pre">detectors_hist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">450]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_rn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.detectors_hist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.get_min_bias_and_resistance">
+<span class="sig-name descname"><span class="pre">get_min_bias_and_resistance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.get_min_bias_and_resistance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_power">
+<span class="sig-name descname"><span class="pre">interactive_plot_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_power" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_rn">
+<span class="sig-name descname"><span class="pre">interactive_plot_rn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.interactive_plot_rn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.power_resistance_plot">
+<span class="sig-name descname"><span class="pre">power_resistance_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.power_resistance_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveIVPlotter.update_colorbar">
+<span class="sig-name descname"><span class="pre">update_colorbar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveIVPlotter.update_colorbar" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">InteractiveThermalGPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.iv_tools.InteractiveIVPlotter" title="zeustools.iv_tools.InteractiveIVPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InteractiveIVPlotter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.bottom_plot">
+<span class="sig-name descname"><span class="pre">bottom_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.bottom_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_g">
+<span class="sig-name descname"><span class="pre">interactive_plot_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_g" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_n">
+<span class="sig-name descname"><span class="pre">interactive_plot_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_n" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_tc">
+<span class="sig-name descname"><span class="pre">interactive_plot_tc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.interactive_plot_tc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.power_bath_plot">
+<span class="sig-name descname"><span class="pre">power_bath_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.power_bath_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.thermal_hist_G">
+<span class="sig-name descname"><span class="pre">thermal_hist_G</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">450]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.thermal_hist_G" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalGPlotter.thermal_hist_Tc">
+<span class="sig-name descname"><span class="pre">thermal_hist_Tc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[350,</span> <span class="pre">450]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalGPlotter.thermal_hist_Tc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">InteractiveThermalPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#zeustools.iv_tools.InteractiveIVPlotter" title="zeustools.iv_tools.InteractiveIVPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">InteractiveIVPlotter</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.bottom_plot">
+<span class="sig-name descname"><span class="pre">bottom_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.bottom_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_g">
+<span class="sig-name descname"><span class="pre">interactive_plot_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_g" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_k">
+<span class="sig-name descname"><span class="pre">interactive_plot_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_k" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_n">
+<span class="sig-name descname"><span class="pre">interactive_plot_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_n" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_tc">
+<span class="sig-name descname"><span class="pre">interactive_plot_tc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.interactive_plot_tc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.iv_tools.InteractiveThermalPlotter.power_bath_plot">
+<span class="sig-name descname"><span class="pre">power_bath_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.InteractiveThermalPlotter.power_bath_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.find_transition">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">find_transition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.find_transition" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to find the superconducting transition by fitting the normal branch and looking for deviations.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.find_transition_index">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">find_transition_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.find_transition_index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.fixed_slope_interceptor">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">fixed_slope_interceptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.fixed_slope_interceptor" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.linear_normal_fit">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">linear_normal_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.linear_normal_fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.psat_fitter">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">psat_fitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Tbath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.psat_fitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.psat_g_fitter">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">psat_g_fitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Tbath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.psat_g_fitter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.iv_tools.super_remover">
+<span class="sig-prename descclassname"><span class="pre">zeustools.iv_tools.</span></span><span class="sig-name descname"><span class="pre">super_remover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.iv_tools.super_remover" title="Permalink to this definition"></a></dt>
+<dd><p>Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – masked array containing IV curve datacube.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.dac_converters">
+<span id="zeustools-dac-converters-module"></span><h2>zeustools.dac_converters module<a class="headerlink" href="#module-zeustools.dac_converters" title="Permalink to this heading"></a></h2>
+<p>The purpose of this module is to facilitate the conversion of DAC units
+to physical units. Here, when I say “Physical Parameters” I mean volts and amps.</p>
+<p>This includes a lot of mostly hardcoded variables that describe the system. Most of this code
+comes from Carl’s calculator scripts, and has been thoroughly re-checked by CR, BP, and AV.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="zeustools.dac_converters.MCE_BIAS_R">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">MCE_BIAS_R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">467</span></em><a class="headerlink" href="#zeustools.dac_converters.MCE_BIAS_R" title="Permalink to this definition"></a></dt>
+<dd><p>most units ohms</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.bias_dac_to_current">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">bias_dac_to_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_dac_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bias_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewar_bias_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">132</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mce_bias_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">467</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.bias_dac_to_current" title="Permalink to this definition"></a></dt>
+<dd><p>Given bias dac values, return the bias current. This works in absolute because the 
+bias DAC is absolute. However it does also work in relative, i.e. for converting bias step
+size.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.correct_signs">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">correct_signs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cube</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.correct_signs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.fb_dac_to_tes_current">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">fb_dac_to_tes_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">butterworth_constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1218</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fb_dac_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_fb_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.958</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewar_fb_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_fb_inductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.fb_dac_to_tes_current" title="Permalink to this definition"></a></dt>
+<dd><p>Given feedback DAC values, return current values. This works both in absolute terms (i.e., if 
+you are passing in shifted feedback values) and in relative terms because we’re only mulitplying.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.get_shunt_array">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">get_shunt_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actpol_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.00018</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmb_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.00014</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmb_shunts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">3,</span> <span class="pre">4]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.get_shunt_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.mcefile_get_butterworth_constant">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">mcefile_get_butterworth_constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.mcefile_get_butterworth_constant" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.dac_converters.real_units">
+<span class="sig-prename descclassname"><span class="pre">zeustools.dac_converters.</span></span><span class="sig-name descname"><span class="pre">real_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whole_array</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mce_bias_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">467</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewar_bias_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">132</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmb_shunts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">3,</span> <span class="pre">4]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actpol_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.00018</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmb_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.00014</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewar_fb_R</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5350</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">butterworth_constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1218</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_fb_inductance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bias_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_fb_voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.958</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_dac_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fb_dac_bits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.dac_converters.real_units" title="Permalink to this definition"></a></dt>
+<dd><p>Given an array of biases and corresponding array of feedbacks (all in DAC units)
+calculate the actual current and voltage going through the TES. Note that to ensure consistency
+the Feedback DAC numbers should be shifted so that their zero values make sense.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bias</strong> – Bias array in DAC units</p></li>
+<li><p><strong>fb</strong> – feedback array in DAC units</p></li>
+<li><p><strong>col</strong> – Optional. the MCE column that you are calculating for.
+This lets us select the correct resistor values</p></li>
+<li><p><strong>whole_array</strong> – Optional. If True, assumes that the value of the 
+“fb” param is a whole mce data array, 
+so we can handle resistors automatically.</p></li>
+<li><p><strong>cmb_shunts</strong> – List of columns assumed to have the “CMB6” style shunt chip
+though this is probably wrong, it makes things consistent. All other columns are
+assumed to have “actpol” style shunt chips.</p></li>
+<li><p><strong>dewar_fb_R</strong> – Although this is listed as the dewar feedback resistance, it is really the MCE + dewar in one.
+At present we use MCE_R=4000, Dewar_R=1280. Unit:ohms.</p></li>
+</ul>
+</dd>
+</dl>
+<p>There are a lot of other parameters, and hopefully they’re explanitory enough. They are
+mostly intrinsic properties of the system, but until we are absolutely certain of their
+values we need to be able to tweak them a little.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(TES voltage array, TES current array) in Volts and Amps respectively.</p>
+</dd>
+</dl>
+<p>Todo: Different chips may have different parameters. We currently handle this by assuming
+the array has a uniform normal resistance of 4 mOhm.</p>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.bias_step_tools">
+<span id="zeustools-bias-step-tools-module"></span><h2>zeustools.bias_step_tools module<a class="headerlink" href="#module-zeustools.bias_step_tools" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.bias_step_chop">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">bias_step_chop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.bias_step_chop" title="Permalink to this definition"></a></dt>
+<dd><p>Given an MCE SmallDataFile for data taken in bias step mode, compute the correct on/off chop signal matching
+bias low / bias high.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mce</strong> – mce data file object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array containing square wave chop signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.bias_step_di_di">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">bias_step_di_di</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.bias_step_di_di" title="Permalink to this definition"></a></dt>
+<dd><p>Given an MCE SmallMCEFile object, compute the reistance of each pixel at the current bias point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mce</strong> – mce data file object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MCE shaped array contining dI_fb/dI_bias. target value is -0.05.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.bias_step_resistance">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">bias_step_resistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.bias_step_resistance" title="Permalink to this definition"></a></dt>
+<dd><p>Given an MCE SmallMCEFile object, compute the reistance of each pixel at the current bias point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mce</strong> – mce data file object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MCE shaped array contining resistance values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.bs_interactive_plotter_factory">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">bs_interactive_plotter_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">didi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.bs_interactive_plotter_factory" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.get_bias_array">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">get_bias_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.get_bias_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.get_step_size">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">get_step_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mce</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.get_step_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bias_step_tools.naive_data_reduction">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bias_step_tools.</span></span><span class="sig-name descname"><span class="pre">naive_data_reduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cube</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bias_step_tools.naive_data_reduction" title="Permalink to this definition"></a></dt>
+<dd><p>Seriously stupid data reduction.
+Works only on the most well-behaved signals</p>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.grating_cal">
+<span id="zeustools-grating-cal-module"></span><h2>zeustools.grating_cal module<a class="headerlink" href="#module-zeustools.grating_cal" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">zeustools.grating_cal.</span></span><span class="sig-name descname"><span class="pre">GratingCalibrator</span></span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class contains all the information needed to compute
+grating indices and wavelengths. This is mostly Carl’s code, and it
+is a duplicate of the functionality of his Excel spreadsheet.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.alpha">
+<span class="sig-name descname"><span class="pre">alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.alpha" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.cal_index">
+<span class="sig-name descname"><span class="pre">cal_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.cal_index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.cal_px">
+<span class="sig-name descname"><span class="pre">cal_px</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.cal_px" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.cal_py">
+<span class="sig-name descname"><span class="pre">cal_py</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.cal_py" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.cal_wavelength">
+<span class="sig-name descname"><span class="pre">cal_wavelength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.cal_wavelength" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.index" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.order_to_coeffs">
+<span class="sig-name descname"><span class="pre">order_to_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.order_to_coeffs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.phys_px_to_wavelength">
+<span class="sig-name descname"><span class="pre">phys_px_to_wavelength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.phys_px_to_wavelength" title="Permalink to this definition"></a></dt>
+<dd><p>Given a location on the array and a grating index, compute
+the wavelength of light that should be falling on the detector.</p>
+<p>Parameters can be numpy arrays or numbers, except for <cite>array</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> (<em>int</em>) – Spectral position on array.</p></li>
+<li><p><strong>spat</strong> (<em>int</em>) – Spatial position on the array.</p></li>
+<li><p><strong>array</strong> – Which array to use</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Grating index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>wavelength of light falling on specified detector(s)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.phys_to_coeffs">
+<span class="sig-name descname"><span class="pre">phys_to_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.phys_to_coeffs" title="Permalink to this definition"></a></dt>
+<dd><p>Given a location on the array, look up the correct
+set of coefficients for the best-fit grating model. Optionally
+return the grating order that falls onto the location you supplied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> (<em>int</em>) – Spectral Position on the array</p></li>
+<li><p><strong>array</strong> (<em>int</em>) – Array name (i.e. 400, 200, micron arrays etc)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.phys_wavelength_to_index">
+<span class="sig-name descname"><span class="pre">phys_wavelength_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.phys_wavelength_to_index" title="Permalink to this definition"></a></dt>
+<dd><p>Given a location on the array and a wavelength of light, compute
+the grating index that should be used to obtain the specified wavelength.</p>
+<p>Parameters can be numpy arrays or numbers, except for <cite>array</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spec</strong> (<em>int</em>) – Spectral position on array.</p></li>
+<li><p><strong>spat</strong> (<em>int</em>) – Spatial position on the array.</p></li>
+<li><p><strong>array</strong> – Which array to use</p></li>
+<li><p><strong>wavelength</strong> – Wavelength in microns</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Grating index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.spat_wavelength_index_to_spec">
+<span class="sig-name descname"><span class="pre">spat_wavelength_index_to_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.spat_wavelength_index_to_spec" title="Permalink to this definition"></a></dt>
+<dd><p>Given a spatial position on the array, a grating index, and a 
+wavelength, compute the spectral position that should see
+the specified wavelength.</p>
+<p>Parameters can be numpy arrays or numbers, except for <cite>array</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spat</strong> (<em>int</em>) – Spatial position on the array.</p></li>
+<li><p><strong>array</strong> – Which array to use</p></li>
+<li><p><strong>wavelength</strong> – Wavelength in microns</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – Grating index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Spectral position seeing the specified wavelength.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.wavelength_to_coeffs">
+<span class="sig-name descname"><span class="pre">wavelength_to_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.wavelength_to_coeffs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="zeustools.grating_cal.GratingCalibrator.wavelength_to_order">
+<span class="sig-name descname"><span class="pre">wavelength_to_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.GratingCalibrator.wavelength_to_order" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.grating_cal.wavelength_v">
+<span class="sig-prename descclassname"><span class="pre">zeustools.grating_cal.</span></span><span class="sig-name descname"><span class="pre">wavelength_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_velocity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.wavelength_v" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.grating_cal.wavelength_z">
+<span class="sig-prename descclassname"><span class="pre">zeustools.grating_cal.</span></span><span class="sig-name descname"><span class="pre">wavelength_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_redshift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.grating_cal.wavelength_z" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="zeustools.html" class="btn btn-neutral float-left" title="Zeustools API documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="calib.html" class="btn btn-neutral float-right" title="Calibration Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Rooney, Bo Peng, Cody Lamarche.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

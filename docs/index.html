@@ -40,8 +40,11 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="zeustools.html">zeustools package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mce_data.html">mce_data submodule</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeustools.html">Zeustools API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inst.html">Instrument Analysis Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calib.html">Calibration Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Data Analysis Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mce_data.html">Misc. Submodules</a></li>
 </ul>
 
         </div>
@@ -73,10 +76,10 @@
 <p>ZEUStools is designed to make our lives easier in terms of loading and processing ZEUS-2 data. It is organized into several different submodules.</p>
 <p>The main utility right now is the Calibration Pipeline, which is a script that loads the output of Bo’s pipeline and produces spectra and data files in physical units. It can be run as a commandline script, and requires an INI file containing settings it should use.</p>
 <p>There is also a library of general functions.</p>
-<p>The <a class="reference internal" href="zeustools.html#module-zeustools.bpio" title="zeustools.bpio"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bpio</span></code></a> submodule is designed for reading in the outputs of Bo’s data reduction pipeline.</p>
-<p>The <a class="reference internal" href="zeustools.html#module-zeustools.calibration" title="zeustools.calibration"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calibration</span></code></a> submodule contains functions for determining the real physical properties of our data.</p>
-<p>The <a class="reference internal" href="zeustools.html#module-zeustools.transmission" title="zeustools.transmission"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transmission</span></code></a> submodule contains methods for calculating the transmission of the atmosphere at APEX
-and handling the transmissions of the various filters and optics elements in the ZEUS-2 system. Notably the <a class="reference internal" href="zeustools.html#zeustools.transmission.ZeusOpticsChain" title="zeustools.transmission.ZeusOpticsChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZeusOpticsChain</span></code></a> class for computing the total throughput of all the optics in the cryostat. It is designed to be really easy to use:</p>
+<p>The <a class="reference internal" href="calib.html#module-zeustools.bpio" title="zeustools.bpio"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bpio</span></code></a> submodule is designed for reading in the outputs of Bo’s data reduction pipeline.</p>
+<p>The <a class="reference internal" href="calib.html#module-zeustools.calibration" title="zeustools.calibration"><code class="xref py py-mod docutils literal notranslate"><span class="pre">calibration</span></code></a> submodule contains functions for determining the real physical properties of our data.</p>
+<p>The <a class="reference internal" href="inst.html#module-zeustools.transmission" title="zeustools.transmission"><code class="xref py py-mod docutils literal notranslate"><span class="pre">transmission</span></code></a> submodule contains methods for calculating the transmission of the atmosphere at APEX
+and handling the transmissions of the various filters and optics elements in the ZEUS-2 system. Notably the <a class="reference internal" href="inst.html#zeustools.transmission.ZeusOpticsChain" title="zeustools.transmission.ZeusOpticsChain"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZeusOpticsChain</span></code></a> class for computing the total throughput of all the optics in the cryostat. It is designed to be really easy to use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">zeustools</span> <span class="kn">import</span> <span class="n">transmission</span>
 <span class="n">optics</span> <span class="o">=</span> <span class="n">transmission</span><span class="o">.</span><span class="n">ZeusOpticsChain</span><span class="p">()</span>
 <span class="n">wavelength</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span><span class="mi">201</span><span class="p">,</span><span class="mi">202</span><span class="p">]</span> <span class="c1"># microns</span>
@@ -88,11 +91,12 @@ and handling the transmissions of the various filters and optics elements in the
 <span class="n">atm</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span><span class="n">pwv</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="zeustools.html#module-zeustools.iv_tools" title="zeustools.iv_tools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">iv_tools</span></code></a> submodule is helpful for dealing with IV curves, for example calculating saturation power and normal resistance.</p>
+<p>The <a class="reference internal" href="inst.html#module-zeustools.iv_tools" title="zeustools.iv_tools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">iv_tools</span></code></a> submodule is helpful for dealing with IV curves, for example calculating saturation power and normal resistance.</p>
 <p>The <a class="reference internal" href="zeustools.html#module-zeustools.codystools" title="zeustools.codystools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">codystools</span></code></a> submodule contains the most useful functions designed by Cody, notably <a class="reference internal" href="zeustools.html#zeustools.codystools.createModelSnakeEntireArray" title="zeustools.codystools.createModelSnakeEntireArray"><code class="xref py py-func docutils literal notranslate"><span class="pre">createModelSnakeEntireArray()</span></code></a>, which smooths the time-stream in Fourier space.</p>
 <p>The <a class="reference internal" href="zeustools.html#module-zeustools.rooneystools" title="zeustools.rooneystools"><code class="xref py py-mod docutils literal notranslate"><span class="pre">rooneystools</span></code></a> submodule includes a myriad of functions Christopher thought were useful. Most useful in this category are the <a class="reference internal" href="zeustools.html#zeustools.rooneystools.nd_reject_outliers" title="zeustools.rooneystools.nd_reject_outliers"><code class="xref py py-func docutils literal notranslate"><span class="pre">nd_reject_outliers()</span></code></a> function, which uses median absolute deviation to reject outliers in the time stream; the <a class="reference internal" href="zeustools.html#zeustools.rooneystools.ArrayMapper" title="zeustools.rooneystools.ArrayMapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayMapper</span></code></a> class, which lets you input a physical detector position (spectral, spatial) and return that detector’s logical position (mce_row, mce_column); and the <a class="reference internal" href="zeustools.html#zeustools.rooneystools.makeFileName" title="zeustools.rooneystools.makeFileName"><code class="xref py py-func docutils literal notranslate"><span class="pre">makeFileName()</span></code></a> function, which will do all the date logic for you to return the correct filename, e.g. <code class="docutils literal notranslate"><span class="pre">20191130/saturn_191130_0010</span></code>.</p>
-<p>The <a class="reference internal" href="zeustools.html#module-zeustools.pointing" title="zeustools.pointing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pointing</span></code></a> module includes useful routines for use at APEX, including functions that process and plot raster pointing data, and automatically output the APECS calibration commands needed to properly respond to the pointing results.</p>
+<p>The <a class="reference internal" href="zeustools.html#module-zeustools.pointing" title="zeustools.pointing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pointing</span></code></a> module includes useful routines for use at APEX, including functions that process and plot raster pointing data, and automatically output the APECS calibration commands needed to properly respond to the pointing results. Hopefully these can be mothballed now that my Zeta code is making cross-scan pointing easier!</p>
 <p>The <a class="reference internal" href="mce_data.html#module-zeustools.mce_data" title="zeustools.mce_data"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mce_data</span></code></a> module is the low-level interface provided by UBC for accessing the data files generated by ZEUS-2</p>
+<p>Both the rooneystools and codystools modules are available at the base module level.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -101,22 +105,35 @@ and handling the transmissions of the various filters and optics elements in the
 <li class="toctree-l2"><a class="reference internal" href="calibpipeline.html#configuration">Configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="zeustools.html">zeustools package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.bpio">zeustools.bpio module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.calibration">zeustools.calibration module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.calibration_pipeline">zeustools.calibration_pipeline module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeustools.html">Zeustools API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.rooneystools">zeustools.rooneystools module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.codystools">zeustools.codystools module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.plotting">zeustools.plotting module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.pointing">zeustools.pointing module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.rooneystools">zeustools.rooneystools module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.transmission">zeustools.transmission module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-zeustools.iv_tools">zeustools.iv_tools module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="zeustools.html#module-contents">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mce_data.html">mce_data submodule</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mce_data.html#module-zeustools.mce_data">mce_data module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inst.html">Instrument Analysis Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inst.html#module-zeustools.transmission">zeustools.transmission module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inst.html#module-zeustools.iv_tools">zeustools.iv_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inst.html#module-zeustools.dac_converters">zeustools.dac_converters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inst.html#module-zeustools.bias_step_tools">zeustools.bias_step_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inst.html#module-zeustools.grating_cal">zeustools.grating_cal module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calib.html">Calibration Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="calib.html#module-zeustools.bpio">zeustools.bpio module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calib.html#module-zeustools.calibration">zeustools.calibration module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calib.html#module-zeustools.calibration_pipeline">zeustools.calibration_pipeline module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Data Analysis Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-zeustools.numba_reduction">zeustools.numba_reduction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#module-zeustools.reduction_tools">zeustools.reduction_tools module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mce_data.html">Misc. Submodules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mce_data.html#mce-data-module">mce_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mce_data.html#leapseconds-module">leapseconds module</a></li>
 </ul>
 </li>
 </ul>

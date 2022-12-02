@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calibration Utilities &mdash; zeustools 0.0.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data Analysis Utilities" href="analysis.html" />
+    <link rel="prev" title="Instrument Analysis Utilities" href="inst.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> zeustools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="calibpipeline.html">The ZEUS-2 Calibration Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="zeustools.html">Zeustools API documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inst.html">Instrument Analysis Utilities</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Calibration Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.bpio">zeustools.bpio module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.calibration">zeustools.calibration module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-zeustools.calibration_pipeline">zeustools.calibration_pipeline module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Data Analysis Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mce_data.html">Misc. Submodules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">zeustools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Calibration Utilities</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/calib.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="calibration-utilities">
+<h1>Calibration Utilities<a class="headerlink" href="#calibration-utilities" title="Permalink to this heading"></a></h1>
+<section id="module-zeustools.bpio">
+<span id="zeustools-bpio-module"></span><h2>zeustools.bpio module<a class="headerlink" href="#module-zeustools.bpio" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.extract_from_beamfile">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">extract_from_beamfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrnums</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_from_beamfile" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRECATED, since Bo’s script now uses different formatting
+Sometimes you want to read out the reduced data for individual 
+beams from Bo’s reduction script. This is the function that handles that.
+Given a filename, this will grab one spatial position from that beam.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> – the file name of the beamfile that you want to load</p></li>
+<li><p><strong>beam</strong> – the beam number that you want to extract</p></li>
+<li><p><strong>spat</strong> – the spatial position you want</p></li>
+<li><p><strong>arrnums</strong> – determines whether you get the data before or after the dead pixel
+subtraction, clean routine, independent component analysis, etc. Ask Bo what number you should input.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 4xn array, where return[0:4] are spatial position, signal, noise, and
+weight.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.extract_one_spatial_position">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">extract_one_spatial_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.extract_one_spatial_position" title="Permalink to this definition"></a></dt>
+<dd><p>DEPRECATED, since Bo’s script now uses different formatting
+Takes the numpy z file from Bo’s script and return a 1-d spectrum
+of a single spatial position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – this is the npz load object, loaded from Bo’s reduction script</p></li>
+<li><p><strong>spat</strong> – This is the spatial position you would like to extract.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a 4xn array, where return[0:4] are spatial position, signal, noise, and
+weight.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.bpio.load_data_and_extract">
+<span class="sig-prename descclassname"><span class="pre">zeustools.bpio.</span></span><span class="sig-name descname"><span class="pre">load_data_and_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">err_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.bpio.load_data_and_extract" title="Permalink to this definition"></a></dt>
+<dd><p>Automatically loads an csv file from Bo’s reduction script
+and returns a 1-d spectrum of a single spatial position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> – this is the filename of the .npz file from Bo’s script</p></li>
+<li><p><strong>spat</strong> – This is the spatial position you would like to extract.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple of: 1d array of spectral position, 1d array of spectrum, 
+and 1d array of noise. Both sig and noise arrays are masked
+arrays, where the mask has been set to True for nans</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.calibration">
+<span id="zeustools-calibration-module"></span><h2>zeustools.calibration module<a class="headerlink" href="#module-zeustools.calibration" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration.bb_temp_watts">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration.</span></span><span class="sig-name descname"><span class="pre">bb_temp_watts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_deltalambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_temp=&lt;Quantity</span> <span class="pre">270.</span> <span class="pre">K&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.bb_temp_watts" title="Permalink to this definition"></a></dt>
+<dd><p>Get the power in W that the detectors see when
+looking at a source. This is useful for dark IV tests and stuff</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs_wavelength</strong> – Astropy Quantity containing the wavelength observed</p></li>
+<li><p><strong>pixel_deltalambda</strong> – Astropy Quantity containing the difference in wavelength between light 
+seen by the line pixel and a pixel next to it.
+TODO: how linear is it really?</p></li>
+<li><p><strong>source_temp</strong> – astropy quantity source temperature - 77 K for LN2, ~285 K for roomtemp</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration.flat_to_wm2">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration.</span></span><span class="sig-name descname"><span class="pre">flat_to_wm2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sky_transparency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_deltalambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sky_temp=&lt;Quantity</span> <span class="pre">270.</span> <span class="pre">K&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cabin_temp=&lt;Quantity</span> <span class="pre">288.</span> <span class="pre">K&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_size=&lt;Quantity</span> <span class="pre">9.58774897e-10</span> <span class="pre">sr&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.flat_to_wm2" title="Permalink to this definition"></a></dt>
+<dd><p>Get the power in W/m^2/bin that the detectors see when
+doing a skychop. This can be multiplied by the flat-divided spectra later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sky_transparency</strong> – The line-of-sight transparency of the sky. 
+This is usually calculated by get_real_pwv,
+then querying the APEX sky model.</p></li>
+<li><p><strong>obs_wavelength</strong> – Astropy Quantity containing the lab-frame wavelength of the line</p></li>
+<li><p><strong>pixel_deltalambda</strong> – Astropy Quantity containing the difference in wavelength between light 
+seen by the line pixel and a pixel next to it.
+TODO: how linear is it really?</p></li>
+<li><p><strong>sky_temp</strong> – astropy quantity guess of sky temperature - usually around 0 Celsius</p></li>
+<li><p><strong>cabin_temp</strong> – astropy quantity temperature in cabin</p></li>
+<li><p><strong>beam_size</strong> – astropy quantity beam size</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration.get_real_pwv">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration.</span></span><span class="sig-name descname"><span class="pre">get_real_pwv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pwv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">altitude</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration.get_real_pwv" title="Permalink to this definition"></a></dt>
+<dd><p>Given the zenith PWV (reported by APEX) and altitude of source,
+returns the real amount of water between the telescope and space.</p>
+<p>Basically returns pwv/cos(zenith_angle)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pwv</strong> – zenith PWV reported by APEX</p></li>
+<li><p><strong>altitude</strong> – Altitude of source</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-zeustools.calibration_pipeline">
+<span id="zeustools-calibration-pipeline-module"></span><h2>zeustools.calibration_pipeline module<a class="headerlink" href="#module-zeustools.calibration_pipeline" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.contsub">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">contsub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_px</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.contsub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.cut">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">cut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_px</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.cut" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.flux_calibration">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">flux_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_flux_density</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.flux_calibration" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.get_drop_indices">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">get_drop_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px_to_drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.get_drop_indices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.getcsvspec">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">getcsvspec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.getcsvspec" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.plot_spec">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">plot_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saveas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_close</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.plot_spec" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.run_pipeline">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">run_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.run_pipeline" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.shift_and_add">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">shift_and_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.shift_and_add" title="Permalink to this definition"></a></dt>
+<dd><p>takes in two spectra. Shifts the second one spectrally by px_offset
+to align the line pixel between the two runs. Weights the spectra appropriately
+TODO: use np.average to clean up this mess.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="zeustools.calibration_pipeline.wavelength_calibration">
+<span class="sig-prename descclassname"><span class="pre">zeustools.calibration_pipeline.</span></span><span class="sig-name descname"><span class="pre">wavelength_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_of_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#zeustools.calibration_pipeline.wavelength_calibration" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inst.html" class="btn btn-neutral float-left" title="Instrument Analysis Utilities" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="analysis.html" class="btn btn-neutral float-right" title="Data Analysis Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Christopher Rooney, Bo Peng, Cody Lamarche.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
