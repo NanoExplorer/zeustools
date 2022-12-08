@@ -74,3 +74,17 @@ def get_real_pwv(pwv, altitude):
     zenith_angle = 90-altitude
     airmass = 1/np.cos(zenith_angle*np.pi/180)
     return pwv*airmass
+
+
+def jy_to_wm2(flux, wavelength, width):
+    conv_fact = 1e-26*units.watt/units.m**2/units.Hz/units.jansky
+    flux = conv_fact * flux * width / wavelength
+
+    return flux.to("W/(m^2)")
+
+
+def wm2_to_jy(flux, wavelength, width):
+    conv_fact = 1e-26*units.watt/units.m**2/units.Hz/units.jansky
+    flux = flux * wavelength / width / conv_fact
+
+    return flux.to("Jy")

@@ -89,6 +89,18 @@ class GratingCalibrator():
 
         self.am = zt.ArrayMapper()
 
+    def px_width_km_s(self,spec,spat,array,index):
+        c=299792.458 # km/s
+        if type(spec) is not np.array:
+            spec = np.array(spec)
+        l_edges = spec-0.5
+        r_edges = spec+0.5
+        l_edge_wav = self.phys_px_to_wavelength(l_edges,spat,array,index)
+        r_edge_wav = self.phys_px_to_wavelength(r_edges,spat,array,index)
+        widths = r_edge_wav-l_edge_wav
+        centers = self.phys_px_to_wavelength(spec,spat,array,index)
+        return widths/centers*c
+
     def phys_to_coeffs(self,spec,array,return_order=False):
         """ Given a location on the array, look up the correct
         set of coefficients for the best-fit grating model. Optionally
@@ -97,14 +109,15 @@ class GratingCalibrator():
         :param int spec: Spectral Position on the array
         :param int array: Array name (i.e. 400, 200, micron arrays etc)
         """
-        arr = zt.array_name(array)
-        if arr == 'a':
+        arr = zt.array_name_2(array)
+        if arr == 'a1':
             # 400 um array
             coeff = self.coeffs_400um
-            if spec > 20:
-                order = 4
-            else:
-                order = 5
+            order = 5
+
+        elif arr == 'a2':
+            coeff = self.coeffs_400um
+            order = 4
 
         elif arr == 'b':
             coeff = self.coeffs_200um
@@ -213,17 +226,11 @@ class GratingCalibrator():
     def wavelength_to_coeffs(self,wavelength):
         order = self.wavelength_to_order(wavelength)
         return self.order_to_coeffs(order)
-            
-
-
 
     #will calculate a wavelength at a given pixel (py,px), when given an order n,
     #grating angle alpha, and calibration coefficient array
     def cal_wavelength(self,n,alpha,py,px,coeff):
-        n = float(n)
-        py = float(py)+float(self.py_shift)
-        px = float(px)
-        alpha =float(alpha)
+        py += self.py_shift
         sina = np.sin(np.pi/180*alpha)
         px_quadratic = (coeff[6]*px**2+coeff[7]*px+coeff[8])
         wavelength =  5/n*(coeff[0]*(py+px_quadratic)*sina
@@ -232,15 +239,12 @@ class GratingCalibrator():
                         +coeff[3]
                         +coeff[4]*sina
                         +coeff[5]*sina**2) 
-        return round(wavelength,5)    
+        return wavelength  
 
     #will calculate a grating index to place specific wavelength in grating order n
     # on a pixel (py,px), given a calibration coefficient array    
     def cal_index(self,n,wavelength,py,px,coeff):
-        py = float(py)+float(self.py_shift)
-        px = float(px)
-        n = float(n)
-        wavelength = float(wavelength)
+        py += self.py_shift
         px_quadratic = (coeff[6]*px**2+coeff[7]*px+coeff[8])
         
         a= coeff[5]
@@ -252,15 +256,12 @@ class GratingCalibrator():
         
         alpha = np.arcsin((-b+np.sqrt(b**2-4*a*c))/(2*a))*180/np.pi
         # print( a,b,c,alpha)
-        cal_index = round(self.index(alpha))
-        return round(cal_index,1)
+        cal_index = self.index(alpha)
+        return cal_index
 
     #will calculate the SPATIAL position of a pixel (py) given an order, SPECTRAL position (px), 
     #wavelength and grating angle,  coefficient array      
     def cal_py(self,n,px,wavelength,alpha,coeff):
-        n = float(n)
-        wavelength = float(wavelength)
-        alpha =float(alpha)
         sina = np.sin(np.pi/180*alpha)
         px_quadratic = (coeff[6]*px**2+coeff[7]*px+coeff[8])
         a = coeff[1]
@@ -268,15 +269,12 @@ class GratingCalibrator():
         c = -(wavelength*n/5-(coeff[3]+coeff[4]*sina+coeff[5]*sina**2))
         # print(a,b,c)
         py = (((-b-np.sqrt(b**2-4*a*c))/(2*a)))-px_quadratic
-        return round(py,1)-float(self.py_shift)
+        return py-self.py_shift
 
     #will calculate the SPECTRAL position of a pixel (px) given an order, SPATIAL position (py), 
     #wavelength and grating angle,  coefficient array  
     def cal_px(self,n,py,wavelength,alpha,coeff):
-        n = float(n)
-        py = float(py)+float(self.py_shift)
-        wavelength = float(wavelength)
-        alpha =float(alpha)
+        py += self.py_shift
         sina = np.sin(np.pi/180*alpha)
         a = coeff[1]
         b = coeff[0]*sina + coeff[2]
@@ -286,7 +284,7 @@ class GratingCalibrator():
         cx = py + coeff[8] - (((-b-np.sqrt(b**2-4*a*c))/(2*a)))
         # print(a,b,c,ax,bx,cx)
         px = (-bx-np.sqrt(bx**2-4*ax*cx))/(2*ax)
-        return round(px,1)
+        return px
     
 
 

@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import sys
 from zeustools.bpio import load_data_and_extract
 from zeustools.calibration import flat_to_wm2
-from zeustools import atm_util
+from zeustools import transmission
 from zeustools import plotting
 
 
@@ -107,7 +107,7 @@ def contsub(data, line_px):
     idxs = get_drop_indices(spec_pos, line_px)
     # print(sig)
     # print(idxs)
-    continuum = np.average(sig[idxs], weights=1/err[idxs]**2)
+    continuum = np.ma.average(sig[idxs], weights=1/err[idxs]**2)
     # print(idxs)
     return (spec_pos, sig-continuum, err)
 
@@ -170,7 +170,7 @@ def run_pipeline():
     plt_bounds = (plot_min_x, plot_max_x, plot_min_y, plot_max_y)
     print(plt_bounds)
     atm_trans_filename = globalvals["atm_trans_table"]
-    transmission_calculator = atm_util.TransmissionHelper(atm_trans_filename)
+    transmission_calculator = transmission.AtmosphereTransmission(atm_trans_filename)
     transmission_calculator.observing_freq = (const.c/(lambda_line*units.micron)).to("GHz").value
 
     # Use astropy's nice units converter to get bin width in km/s

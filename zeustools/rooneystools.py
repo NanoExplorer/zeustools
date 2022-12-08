@@ -306,6 +306,45 @@ def processChop(filename):
     return(chop_on, ts_on, chop_off, ts_off)
 
 
+def array_name_2(name):
+    """"A rose by any other name would smell as sweet"
+
+    Converts various names for the 3 different physical arrays into the 
+    internal scheme used by this class (which is the same as the letter used by 
+    ``arrayX_map.dat``, much to Thomas's dismay. At least this is an easy way to convert
+    to that scheme.)
+
+    That scheme is follows:
+
+    * array "A" is the 400 um array (350/450)
+    * array "B" is the 200 um array
+    * array "C" is the 600 um array. 
+    
+    simply pass any name (e.g. ``"400"``, ``400``, ``350``, ``"200"``) and 
+    this will return the correct letter to use in ``arrayX_map.dat`` 
+
+    :param name: Human readable name for the array. Should be a string or number.
+    :return: one of 'a', 'b', or 'c'. a1 means 350 side, a2 means 450 side, a means generically
+        the 450 array, b is the 200 array and c is the 600 array.
+    """
+    name = str(name).upper()
+    if name == '400' or name == 'A':
+        name = 'a'
+    elif name == '350':
+        name = 'a1'
+    elif name == '450':
+        name = 'a2'
+    elif name == '200' or name == 'B':
+        name = 'b'
+    elif name == '600' or name == 'C':
+        name = 'c'
+    elif name == "all":
+        pass
+    else:
+        raise ValueError("invalid array name")
+    return name
+
+
 def array_name(name):
     """"A rose by any other name would smell as sweet"
 
@@ -326,18 +365,8 @@ def array_name(name):
     :param name: Human readable name for the array. Should be a string or number.
     :return: one of 'a', 'b', or 'c'.
     """
-    name = str(name).upper()
-    if name == '400' or name == '350' or name == '450' or name == 'A':
-        name = 'a'
-    elif name == '200' or name == 'B':
-        name = 'b'
-    elif name == '600' or name == 'C':
-        name = 'c'
-    elif name == "all":
-        pass
-    else:
-        raise ValueError("invalid array name")
-    return name
+    arr = array_name_2(name)
+    return arr[0]
 
 
 class ArrayMapper:
