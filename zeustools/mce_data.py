@@ -152,7 +152,25 @@ def _rangify(start, count, n, name='items'):
             (count, name, name))
         count = n - start
     return start, count
-        
+    
+
+class SignalInjection:
+    def __init__(self, amplitude=None, pixels=Ellipsis):
+        self.amp = amplitude
+        self.pixels = pixels
+
+    def __mul__(self, other):
+        if self.amp is None:
+            return SignalInjection(amplitude=self.amp, pixels=self.pixels)
+        else:
+            return SignalInjection(amplitude=self.amp*other, pixels=self.pixels)
+
+    def __repr__(self):
+        return f"SignalInjection amp={self.amp} pixels={self.pixels}"
+
+    def __neg__(self):
+        return SignalInjection(amplitude=self.amp*-1, pixels=self.pixels)
+
     
 class SmallMCEFile:
     """
@@ -524,7 +542,7 @@ class SmallMCEFile:
              do_extract=True, do_scale=True, data_mode=None,
              field=None, fields=None, row_col=False,
              raw_frames=False, cc_indices=False,
-             n_frames=None):
+             n_frames=None, inject_sig=None):
         """
         Read MCE data, and optionally extract the MCE signals.
 
@@ -550,6 +568,7 @@ class SmallMCEFile:
         :param cc_indices:  If True, count and start are interpreted as readout frame indices and
                     not sample indices.  Default is False.
 
+        :param inject_sig:  SignalInjector instance or None. 
         :return data_out: An instance of :py:class:`MCEData` containing all your data needs.
         """
         if n_frames != None:
@@ -651,10 +670,23 @@ class SmallMCEFile:
             if data_out.data_is_dict:
                 data_out.data[f] = new_data
             else:
-                data_out.data = new_data
+                if inject_sig is not None:
+                    if inject_sig.pixels is Ellipsis:
+                        data_out.data = new_data + chop * inject_sig.amp
+                        print(f"Notice! Adding {inject_sig.amp} units of artificial flux to all pixels in filename {self.filename}!")
+                        raise RuntimeError("Now you can see the stack :P")
+                    else:
+                        print(f"Notice! Adding {inject_sig.amp} data units of artificial flux to pixel(s) {inject_sig.pixels}")
+                        for pixel in inject_sig.pixels:
+                            new_data[pixel] += chop * inject_sig.amp
+                        data_out.data = new_data
+                else:
+                    data_out.data = new_data
 
         data_out.channels = self._NameChannels(row_col=row_col)
+
         return data_out
+
 
 # Let's just hope that your MCEFile is a Small One.
 MCEFile = SmallMCEFile
@@ -663,6 +695,7 @@ MCEFile = SmallMCEFile
 #
 # MCE Runfile handling
 #
+
 
 class BadRunfile(Exception):
     def __init__(self, value):
