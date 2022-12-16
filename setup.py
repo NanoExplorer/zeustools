@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="zeustools-NanoExplorer", # Replace with your own username
-    version="0.0.4",
+    version="0.0.5",
     author="Christopher Rooney",
     author_email="ctr44@cornell.edu",
     description="A compendium of tools useful for processing ZEUS-2 data",
@@ -21,6 +21,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'zeuscalibration = zeustools.calibration_pipeline:run_pipeline',
+            'modifyhk = zeustools.hkfile_overwriter:main'
         ],
     },
     python_requires='>=3.6',

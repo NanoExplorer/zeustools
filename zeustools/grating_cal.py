@@ -119,6 +119,9 @@ class GratingCalibrator():
             coeff = self.coeffs_400um
             order = 4
 
+        elif arr == 'a':
+            raise ValueError("Need specific array, 450 or 350")
+
         elif arr == 'b':
             coeff = self.coeffs_200um
             order = 9

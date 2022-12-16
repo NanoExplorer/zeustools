@@ -1,8 +1,26 @@
 import argparse
 
 
-if __name__=='__main__':
+def modifier(key, new_value, filenames,only_print=False, verbose=False):
+    for f in filenames:
+        with open(f, 'r') as the_file:
+            data = the_file.readlines()
+        for i, d in enumerate(data):
+            if key in d:
+                arr = d.split(":")
+                temp=data[i]
+                arr[1] = new_value
+                data[i] = f"{arr[0]}: {arr[1]}\n"
+                if verbose or only_print:
+                    print(f"changed from {temp.strip()} to {data[i].strip()} in file {f}")
+                break
+        if not only_print:
+            with open(f, 'w') as the_file:
+                for line in data:
+                    the_file.write(line)
 
+
+def main():
     p = argparse.ArgumentParser(
             prog="hkfile_overwriter",
             description="Overwrite certain parameters in hk files (e.g. in case grating index is missing)"
@@ -10,19 +28,12 @@ if __name__=='__main__':
     p.add_argument('key')
     p.add_argument('new_value')
     p.add_argument('filename', nargs="*")
-
+    p.add_argument('--dry-run',action="store_true")
+    p.add_argument('-v','--verbose',action="store_true")
+    
     args = p.parse_args()
+    modifier(args.key, args.new_value, args.filename, only_print = args.dry_run,verbose=args.verbose)
 
-    for f in args.filename:
-        with open(f, 'r') as the_file:
-            data = the_file.readlines()
-        for i,d in enumerate(data):
-            if args.key in d:
-                arr = d.split(":")
-                arr[1] = args.new_value
-                data[i] = f"{arr[0]}: {arr[1]}\n"
-                break
-        with open(f, 'w') as the_file:
-            for line in data:
-                the_file.write(line)
 
+if __name__ == '__main__':
+    main()

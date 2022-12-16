@@ -88,3 +88,9 @@ def wm2_to_jy(flux, wavelength, width):
     flux = flux * wavelength / width / conv_fact
 
     return flux.to("Jy")
+
+def wm2_to_jy_km_s(flux, wavelength):
+    conv_fact = 1e-26*units.watt/units.m**2/units.Hz/units.jansky
+    flux = flux * wavelength / conv_fact
+
+    return flux.to("Jy km/s")

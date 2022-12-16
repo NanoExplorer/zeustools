@@ -56,6 +56,7 @@ def shift_and_add(data1, data2, px1, px2):
     arr = data1 + data2
     m = map(np.copy, arr)
     spec, sig, noise, spec2, sig2, noise2 = m
+    #print(sig[3],noise[3])
     nan_idxs = np.isnan(sig)
     nan_idx2 = np.isnan(sig2)
 
@@ -293,7 +294,7 @@ class ReductionHelper:
     def __init__(self):
         # =========================== reduction configuration ===========================
 
-        self.obs_log_dir = "/home/christopher/Dropbox/code/zeus2/APEX_2022/obslogs"  # path to the folder containing the APEX html observation log
+        self.obs_log_dir = "../../APEX_2022/obslogs"  # path to the folder containing the APEX html observation log
         # files, leave None if you don't need/have obs logs
         self.band = 400  # choose the band you would like to use for the array map, the
         # accepted values are 200, 350, 400 and 450, leave None if you
