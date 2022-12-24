@@ -1,14 +1,19 @@
+#!/usr/bin/env python
+
 import argparse
-
-
-def modifier(key, new_value, filenames,only_print=False, verbose=False):
+def modifier(key, new_value, filenames, only_print=False, verbose=False):
     for f in filenames:
         with open(f, 'r') as the_file:
             data = the_file.readlines()
         for i, d in enumerate(data):
             if key in d:
                 arr = d.split(":")
-                temp=data[i]
+                if int(arr[1].strip()) != 0 and not only_print:
+                    resp = input("Value to replace is not zero! Continue [y/N]?: ")
+                    if resp.strip().lower() != 'y':
+                        only_print = True
+                        print("Not writing")
+                temp = data[i]
                 arr[1] = new_value
                 data[i] = f"{arr[0]}: {arr[1]}\n"
                 if verbose or only_print:
@@ -28,11 +33,11 @@ def main():
     p.add_argument('key')
     p.add_argument('new_value')
     p.add_argument('filename', nargs="*")
-    p.add_argument('--dry-run',action="store_true")
-    p.add_argument('-v','--verbose',action="store_true")
+    p.add_argument('--dry-run', action="store_true")
+    p.add_argument('-v', '--verbose', action="store_true")
     
     args = p.parse_args()
-    modifier(args.key, args.new_value, args.filename, only_print = args.dry_run,verbose=args.verbose)
+    modifier(args.key, args.new_value, args.filename, only_print = args.dry_run, verbose=args.verbose)
 
 
 if __name__ == '__main__':

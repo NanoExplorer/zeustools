@@ -19,7 +19,6 @@ matplotlib.rc('figure', figsize=(8, 6))
 matplotlib.rc('font', **font)
 
 
-
 def flux_calibration(data,
                      flat_flux_density,  # W/m^2/bin
                      ):
@@ -87,6 +86,62 @@ def shift_and_add(data1, data2, px1, px2):
     outnoise = np.sqrt(outnoise)  # now outnoise is actually standard deviation
     outsig[outnoise > 1e9] = np.nan
     return (outspec, outsig, outnoise)
+
+
+def calulate_bin_overlap(left_1, right_1, left_2, right_2):
+    """ Calculate length of overlap of bins
+
+    Args:
+        left_1, right_1 : left and right bin edge values for bin 1
+        left_2, right_2 : left and right bin edge values for bin 2
+
+    Return:
+        fraction of bin 2 covered by bin 1
+    Courtesy of Patrick McNamee
+    """
+    
+    return max(
+        min(right_1, right_2) - max(left_1, left_2),
+        0.
+    )/(right_2-left_2)
+
+
+def regridding_weighted_average(new_grid, orig_wl_data, orig_flux_data):
+    """
+    Performs a weighted average on unevenly sampled data with respect to a new grid. 
+    :param new_grid: two-dimensional numpy array of desired output bin edges
+    :param orig_wl_data: list of wavelength arrays for each observation.
+    :param orig_flux_data: list of observation array tuples for each observation
+
+    Thanks to Patrick McNamee
+    """
+    # Build data array. One element per data point.
+    array_for_avg = []
+    for wl_tuple, data_tuple in zip(orig_wl_data, orig_flux_data):
+        px_array, flux_array, error_array = data_tuple
+        wl_l_array, wl_r_array = wl_tuple
+        for wl_l, wl_r, flux, err in zip(wl_l_array, wl_r_array, flux_array, error_array):
+            data_entry = np.array([wl_l, wl_r, flux, err])
+            if np.all(np.isfinite(data_entry)) and err > 1e-10:
+                array_for_avg.append(data_entry)
+
+    array_for_avg = np.array(array_for_avg)
+
+    weights = np.zeros((new_grid.shape[0], array_for_avg.shape[0]))
+    for i in range(weights.shape[0]):
+        for j in range(weights.shape[1]):
+            weights[i, j] = calulate_bin_overlap(
+                array_for_avg[j, 0],
+                array_for_avg[j, 1],
+                new_grid[i, 0],
+                new_grid[i, 1]
+            )/array_for_avg[j, -1]**2  # w_i = l_i/\sigma^2
+    wt_sum = np.sum(weights, axis=1).reshape(weights.shape[:1] + (1,))
+    norm_wts = weights/wt_sum
+    regridded_weighted_avg = norm_wts @ array_for_avg[:, 2]
+    regridded_err = 1/np.sqrt(wt_sum)
+    return (regridded_weighted_avg, regridded_err)
+
 
 # def shift_add(data,line_px):
 # 	"""
@@ -404,9 +459,9 @@ class ReductionHelper:
         ("" if not self.do_ica else "_ica")
         # spectrum flattened by skychop
         flat_flux, flat_err, flat_pix_flag_list = flat_result[:2] + flat_result[-1:]
-        norm_flux, norm_err, pix_flag_list = zobs_flux/flat_flux, \
-        ((zobs_err/flat_flux)**2 + (zobs_flux/flat_flux * flat_err/flat_flux)**2).sqrt(), \
-        pix_flag_list + zobs_pix_flag_list
+        norm_flux = zobs_flux/flat_flux
+        norm_err = ((zobs_err/flat_flux)**2 + (zobs_flux/flat_flux * flat_err/flat_flux)**2).sqrt()
+        pix_flag_list = zobs_pix_flag_list
         atm_trans = z2pipl.get_transmission_obs_array(self.array_map, pwv=pwv, elev=elev)
         # atm_trans_raw = z2pipl.get_transmission_raw_obs_array(self.array_map, pwv=pwv, elev=elev, grat_idx=grat_idx)
         bs_flux = bs_flux.proc_along_time("nanmean")

@@ -149,6 +149,7 @@ class ZeusInteractivePlotter():
         self.chop = chop
         self.click_loc = (10,0,400)
         self.linewidth=1
+        self.bottom_plot_fmt = '-'
 
     def interactive_plot(self):
 
@@ -270,8 +271,10 @@ class ZeusInteractivePlotter():
         data_to_plot = data_to_plot - np.ma.min(data_to_plot)
         self.ax2.plot(self.ts, 
                       data_to_plot, 
+                      self.bottom_plot_fmt,
                       label=f"data({self.click_loc[0]},{self.click_loc[1]})",
-                      linewidth=self.linewidth)
+                      linewidth=self.linewidth,
+                      )
 
     def bottom_flat(self):
         flat_to_plot = self.flat[am.phys_to_mce(*self.click_loc)]
