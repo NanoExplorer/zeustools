@@ -11,6 +11,9 @@ from zeustools import transmission
 from zeustools import plotting
 from zeus2_toolbox import pipeline as z2pipl
 from zeustools import data as ztdata
+import zeustools as zt
+from zeustools import mce_data
+from glob import glob
 import importlib.resources as res
 import os
 
@@ -324,14 +327,17 @@ def run_pipeline():
     else:
         y_ax = 1
 
-    plotting.spectrum_atm_plotter(velspec[0],
-                                  velspec[1],
-                                  velspec[2],
-                                  outputfile,
-                                  transmission_calculator,
-                                  min(pwvs),
-                                  y_scaling = y_ax,
-                                  bounds = plt_bounds)
+    plotting.spectrum_atm_plotter(
+        velspec[0],
+        velspec[1],
+        velspec[2],
+        outputfile,
+        transmission_calculator,
+        min(pwvs),
+        y_scaling = y_ax,
+        bounds = plt_bounds
+    )
+
     plt.savefig(f"{outputfile}_atmosphere.png")
     # Finally, output the csv for gordon.
     with open(outputfile+".csv", 'w') as csvf:
@@ -560,5 +566,122 @@ class ReductionHelper:
         return norm_flux, norm_err
 
 
+def smart_file_finder_(folder, source_name):
+    all_files = glob(os.path.join(folder, "*"))
+    useful_files = [f for f in all_files if os.path.splitext(f)[1]=='' and os.path.isfile(f)]
+    sorted_files = sorted(
+        useful_files,
+        key=lambda f: os.path.getmtime(f)
+    )
+    reduction_chunks = []
+    current_bias_steps = []
+    current_sky_chops = []
+    current_data_files = []
+    valid = False
+    last_bias = np.array([0])
+    for f in sorted_files + ['THE_END']:
+        try:
+            if f != 'THE_END':
+                mcef = mce_data.SmallMCEFile(f)
+                bias = zt.get_bias_array(mcef)
+            if np.any(bias != last_bias) or f == "THE_END":
+                #end this chunk
+                if valid:
+                    #save this chunk
+                    chunk = (
+                        current_bias_steps,
+                        current_sky_chops,
+                        current_data_files
+                    )
+                    reduction_chunks.append(chunk)
+                current_bias_steps = []
+                current_sky_chops = []
+                current_data_files = []
+                valid = False
+                last_bias = bias
+                #print("Bias changed, reset")
+            
+            if 'bias_step' in f and 'magic' not in f:
+                current_bias_steps.append(f)
+                #print("Bias step!",f)
+            elif source_name in f:
+                current_data_files.append(f)
+                #print("data!",f)
+            elif "skychop" in f:
+                current_sky_chops.append(f)
+                #print("skychop!",f)
+            valid = len(current_bias_steps) != 0 and \
+                len(current_data_files) != 0 and \
+                len(current_sky_chops) != 0
+
+        except IndexError:
+            #print(f"skipping invalid file [indexerror] {f}")
+            pass
+        except mce_data.BadRunfile:
+            #print(f"skipping invalid file [badrunfile] {f}")
+            pass
+        except FileNotFoundError:
+            #print(f"skipping invalid file [notfound] {f}")
+            pass
+    return reduction_chunks
+            
+
+def smart_to_bo_spec(smart):
+    bias_arr = []
+    flat_arr = []
+    data_arr = []
+    folders = []
+    for b, s, d in smart:
+        bias_tuple = consecutive_files(b)
+        flat_tuple = consecutive_files(s)
+        data_tuple = consecutive_files(d)
+        folders.append(os.path.dirname(b[0]))
+        bias_arr.append({"bias_step": [bias_tuple]})
+        flat_name = os.path.basename(s[0])[0:-5]
+        flat_arr.append({flat_name: [flat_tuple]})
+        src_name = os.path.basename(d[0])[0:-5]
+        data_arr.append({src_name: [data_tuple]})
+    return bias_arr, flat_arr, data_arr, folders
+   
+
+def consecutive_files(arr):
+    first_n = None
+    last_n = None
+    for f in arr:
+        n = int(f.split("_")[-1])
+        if first_n is None:
+            first_n = n
+            last_n = n
+        elif n == last_n+1:
+            last_n = n
+        else:
+            print("aack")
+    return (first_n, last_n)
+
+
+def smart_file_finder(folder, source_name):
+    """ WARNING! Not actually that smart. Please double check all results.
+    """
+    sp = smart_file_finder_(folder, source_name)
+    return smart_to_bo_spec(sp)
+
+
+def smarter_file_finder(file_dict):
+    biases = []
+    flats = []
+    datas = []
+    folders = []
+    for path in file_dict:
+        for file_name in file_dict[path]:
+            print(path, file_name)
+            bias, flat, data, folder = smart_file_finder(path, file_name)
+            biases = biases+bias
+            flats = flats+flat
+            datas = datas+data
+            folders = folders+folder
+    return (biases, flats, datas, folders)
+
+
 if __name__ == '__main__':
     run_pipeline()
+
