@@ -355,8 +355,6 @@ class ReductionHelper:
         # accepted values are 200, 350, 400 and 450, leave None if you
         # want to use the whole array map
 
-        self.conf_path = "grating_calibration_2022_apex.ini"
-
         self.data_dir = "../../APEX_2022/20220916"  # path to the folder containing the data
         self.write_dir = "LPSJ0226"  # path to the folder to save the reduction result like figures
         # or tables, leave None if you want to use the current folder
@@ -422,35 +420,91 @@ class ReductionHelper:
         self.zoc = transmission.ZeusOpticsChain(config="2019")
 
     def reduce(self, flat_header, data_header, bs_header):
+        # Process skychops / flat files
         flat_result = z2pipl.reduce_skychop(
-            flat_header=flat_header, data_dir=self.data_dir, write_dir=self.write_dir, 
-            write_suffix="", array_map=self.array_map, obs_log=self.obs_log, pix_flag_list=None,
-            parallel=self.parallel, return_ts=False, return_pix_flag_list=True, table_save=True,
-            plot=self.plot, plot_ts=self.plot_ts, reg_interest=self.reg_interest, plot_flux=self.plot_flux,
-            plot_show=self.plot_show, plot_save=self.plot_save, analyze=self.analyze)
+            flat_header=flat_header, 
+            data_dir=self.data_dir, 
+            write_dir=self.write_dir, 
+            write_suffix="", 
+            array_map=self.array_map, 
+            obs_log=self.obs_log, 
+            pix_flag_list=None,
+            parallel=self.parallel, 
+            return_ts=False, 
+            return_pix_flag_list=True, 
+            table_save=True,
+            plot=self.plot, 
+            plot_ts=self.plot_ts, 
+            reg_interest=self.reg_interest, 
+            plot_flux=self.plot_flux,
+            plot_show=self.plot_show, 
+            plot_save=self.plot_save, analyze=self.analyze
+        )
         flat_flux, flat_err, flat_pix_flag_list = flat_result[:2] + flat_result[-1:]
-
         sign_use = self.sign if self.array_map is None else self.sign.to_obs_array(self.array_map)
+
+        # Process bias step data
         bs_result = z2pipl.reduce_bias_step(
-            data_header=bs_header, data_dir=self.data_dir, write_dir=self.write_dir, write_suffix="",
-            array_map=self.array_map, obs_log=self.obs_log, pix_flag_list=None, sign=sign_use,
-            parallel=self.parallel, do_smooth=True, do_clean=False, return_ts=False, return_pix_flag_list=True,
-            table_save=True, plot=self.plot, plot_ts=self.plot_ts, reg_interest=self.reg_interest, 
-            plot_flux=self.plot_flux, plot_show=self.plot_show, plot_save=self.plot_save, analyze=self.analyze)
+            data_header=bs_header,
+            data_dir=self.data_dir,
+            write_dir=self.write_dir,
+            write_suffix="",
+            array_map=self.array_map,
+            obs_log=self.obs_log,
+            pix_flag_list=None,
+            sign=sign_use,
+            parallel=self.parallel,
+            do_smooth=True,
+            do_clean=False,
+            return_ts=False,
+            return_pix_flag_list=True,
+            table_save=True,
+            plot=self.plot,
+            plot_ts=self.plot_ts,
+            reg_interest=self.reg_interest,
+            plot_flux=self.plot_flux,
+            plot_show=self.plot_show,
+            plot_save=self.plot_save,
+            analyze=self.analyze
+        )
         bs_flux, bs_err, bs_pix_flag_list = bs_result[:2] + bs_result[-1:]
 
+        # Process science data
         flat_flux, flat_err, pix_flag_list = 1, 0, []
         zobs_result = z2pipl.reduce_zobs(
-            data_header=data_header, data_dir=self.data_dir, write_dir=self.write_dir,
-            array_map=self.array_map, obs_log=self.obs_log, pix_flag_list=pix_flag_list,
-            flat_flux=flat_flux, flat_err=flat_err, parallel=self.parallel, stack=self.do_ica,
-            do_desnake=self.do_desnake, ref_pix=self.ref_pix, do_smooth=self.do_smooth, return_ts=True, 
-            do_ica=self.do_ica, spat_excl=self.spat_excl, return_pix_flag_list=True,
-            table_save=self.table_save, plot=self.plot, plot_ts=self.plot_ts,
-            reg_interest=self.reg_interest, plot_flux=self.plot_flux,
-            plot_show=self.plot_show, plot_save=self.plot_save, analyze=self.analyze, use_hk=True, 
-            grat_idx=None, pwv=None, elev=None, inject_sig=self.inject_signal)
+            data_header=data_header,
+            data_dir=self.data_dir,
+            write_dir=self.write_dir,
+            array_map=self.array_map,
+            obs_log=self.obs_log,
+            pix_flag_list=pix_flag_list,
+            flat_flux=flat_flux,
+            flat_err=flat_err,
+            parallel=self.parallel,
+            stack=self.do_ica,
+            do_desnake=self.do_desnake,
+            ref_pix=self.ref_pix,
+            do_smooth=self.do_smooth,
+            return_ts=True,
+            do_ica=self.do_ica,
+            spat_excl=self.spat_excl,
+            return_pix_flag_list=True,
+            table_save=self.table_save,
+            plot=self.plot,
+            plot_ts=self.plot_ts,
+            reg_interest=self.reg_interest,
+            plot_flux=self.plot_flux,
+            plot_show=self.plot_show,
+            plot_save=self.plot_save,
+            analyze=self.analyze,
+            use_hk=True,
+            grat_idx=None,
+            pwv=None,
+            elev=None,
+            inject_sig=self.inject_signal
+        )
 
+        #perform calculations...
         zobs_flux, zobs_err, zobs_pix_flag_list = zobs_result[:2] + zobs_result[-1:]
         grat_idx = z2pipl.configure_helper(obs=zobs_flux, keyword="gratingindex", supersede=True)
         pwv = z2pipl.configure_helper(obs=zobs_flux, keyword="mm PWV", supersede=True)
