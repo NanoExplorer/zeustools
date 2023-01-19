@@ -7,3 +7,4 @@ from . import numba_reduction
 from . import leapseconds
 from . import grating_cal
 from .calibration_pipeline import smart_file_finder, smarter_file_finder
+from . import hk_tools
