@@ -16,14 +16,14 @@ class AtmosphereTransmission:
 
     """
     def __init__(self):
-        with res.open_text(data,"pwv_database.csv") as file:
-            table=pd.read_csv(file)
-        self.freqs = np.array(table.iloc[:,0],dtype=float)
-        self.transmissions = np.array(table.iloc[:,1:],dtype=float)
-        self.pwvs = np.array(table.columns[1:],dtype=float)
+        with res.open_text(data, "pwv_database.csv") as file:
+            table = pd.read_csv(file)
+        self.freqs = np.array(table.iloc[:, 0], dtype=float)
+        self.transmissions = np.array(table.iloc[:, 1:], dtype=float)
+        self.pwvs = np.array(table.columns[1:], dtype=float)
         self.observing_freq = 0
 
-    def interp(self,freq,pwv):
+    def interp(self, freq, pwv):
         """
         interpolate the sky transmission at a given PWV and frequency.
         
@@ -33,31 +33,38 @@ class AtmosphereTransmission:
         # print(freq,pwv)
         # print(self.freqs)
         # print(self.pwvs)
-        return interp.interpn((self.freqs,self.pwvs),self.transmissions,(freq,pwv))
+        return interp.interpn((self.freqs, self.pwvs), self.transmissions, (freq, pwv))
 
-    def interp_internal_freq(self,pwv):
+    def interp_um(self, wav, pwv):
+        wav = wav * units.micron
+        freq = (consts.c/wav).to("GHz").value
+        return self.interp(freq, pwv)
+
+    def interp_internal_freq(self, pwv):
         """ 
         interpolate the sky transmission at a given PWV, using the frequency in the member variable `observing_freq`
         
         :param pwv: pwv in mm
         """
-        return self.interp(self.observing_freq,pwv)
+        return self.interp(self.observing_freq, pwv)
+
 
 FILTER_NAMES = {
-    "ir":"IRFilter_C15_Front Snout",
-    "k2329":"LPF_50cm-1_K2329_Slit-400Array", # Apparently this is in the Lyot stop and the front.
+    "ir": "IRFilter_C15_Front Snout",
+    "k2329": "LPF_50cm-1_K2329_Slit-400Array",  # Apparently this is in the Lyot stop and the front.
     # I'm not a huge fan of that fact. 
-    "k2338":"BPF_350um_K2338",
-    "w1586":"BPF_450um_W1586 CILCO",
-    "b688":"LPF_58cm-1_B688_Slit-200Array",
-    "k2330":"BPF_645um_K2330",
-    "b676":"BPF_200um_B676 Thumper",
-    "k2338":"BPF_350um_K2338",
-    "k2586":"S3313R9", # This is the newest 350 micron bandpass filter. 
+    "k2338": "BPF_350um_K2338",
+    "w1586": "BPF_450um_W1586 CILCO",
+    "b688": "LPF_58cm-1_B688_Slit-200Array",
+    "k2330": "BPF_645um_K2330",
+    "b676": "BPF_200um_B676 Thumper",
+    "k2338": "BPF_350um_K2338",
+    "k2586": "S3313R9",  # This is the newest 350 micron bandpass filter. 
     # It was designed to mimic the zeus-1 350 micron filter.
-    "w1018":"T0555R10", # This is the zeus-1 350 micron filter.
-    "window":"wavenumber-nepers-hdpe"
+    "w1018": "T0555R10",  # This is the zeus-1 350 micron filter.
+    "window": "wavenumber-nepers-hdpe"
 }
+
 
 class FilterTransmission:
     """

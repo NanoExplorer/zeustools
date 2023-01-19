@@ -286,33 +286,36 @@ class ZeusInteractivePlotter():
         elif len(flat_to_plot) < len(self.ts):
             ts_to_plot = self.ts[0:len(flat_to_plot)]
 
-        self.ax2.plot(ts_to_plot,flat_to_plot,label=f"flat({self.click_loc[0]},{self.click_loc[1]})")
+        self.ax2.plot(ts_to_plot, flat_to_plot, label=f"flat({self.click_loc[0]},{self.click_loc[1]})")
 
         #fig.tight_layout()
-    def onkey(self,event):
+    def onkey(self, event):
         try:
-            if event.key=='c':
-                spectral,spatial,array = get_physical_location(event.xdata,event.ydata)
-                if self.data[am.phys_to_mce(spectral,spatial,array)] is ma.masked:
-                    self.data[am.phys_to_mce(spectral,spatial,array)] = self.data.data[am.phys_to_mce(spectral,spatial,array)]
+            if event.key == 'c':
+                spectral, spatial, array = get_physical_location(event.xdata, event.ydata)
+                if self.data[am.phys_to_mce(spectral, spatial, array)] is ma.masked:
+                    self.data[am.phys_to_mce(spectral, spatial, array)] = self.data.data[am.phys_to_mce(spectral, spatial, array)]
                 else:
-                    self.data[am.phys_to_mce(spectral,spatial,array)] = ma.masked
+                    self.data[am.phys_to_mce(spectral, spatial, array)] = ma.masked
                     #this if/else is so ugly, but I don't know how to do it better
                     # Could just do .mask = !.mask? test it out later
                 self.ax.clear()
                 self.cb.remove()
                 self.redraw_top_plot()
-                if self.debug: self.text = self.ax.text(0,5, f"min:{np.nanmin(self.data.filled())},max:{np.nanmax(self.data.filled())}", va="bottom", ha="left")
+                if self.debug: 
+                    self.text = self.ax.text(0, 5, f"min:{np.nanmin(self.data.filled())},max:{np.nanmax(self.data.filled())}", va="bottom", ha="left")
                 #Here we need to remake the text object because it was destroyed 
                 #when we cleared ax.
             elif event.key == 'a':
-                self.onclick(FakeEvent(2,event.xdata,event.ydata))
-            elif event.key=='f':
-                self.onclick(FakeEvent(4,event.xdata,event.ydata))
-            if self.debug: self.text.set_text(f"Pressed {event.key}")
+                self.onclick(FakeEvent(2, event.xdata, event.ydata))
+            elif event.key == 'f':
+                self.onclick(FakeEvent(4, event.xdata, event.ydata))
+            if self.debug: 
+                self.text.set_text(f"Pressed {event.key}")
         except Exception as e:
             self.error = e
             #raise
+
     def check_for_errors(self):
         """ Untested. Prints out the most recent exception thrown in the interactive
         plot routine, since those get lost in the void otherwise. """
@@ -332,7 +335,7 @@ class ZeusInteractivePlotter():
 
 
 class MultiInteractivePlotter(ZeusInteractivePlotter):
-    def __init__(self,multi_data,multi_cube,ts=None,flat=None,chop=None):
+    def __init__(self, multi_data, multi_cube, ts=None, flat=None, chop=None):
         """ All the 'multi' arguments should be lists. This lets you
         not have to worry if one or more of your data files had different
         lengths or whatever"""
@@ -341,9 +344,9 @@ class MultiInteractivePlotter(ZeusInteractivePlotter):
         self.multi_ts = ts
         self.multi_flat = flat 
         self.multi_chop = chop
-        self.ZeusInteractivePlotter.__init__(self,multi_data[0],self.multi_cube[0])
+        self.ZeusInteractivePlotter.__init__(self, multi_data[0], self.multi_cube[0])
 
-    def set_index(self,i):
+    def set_index(self, i):
         if i < 0:
             i = len(self.multi_data)-1
         if i >= len(self.multi_data):
@@ -351,23 +354,22 @@ class MultiInteractivePlotter(ZeusInteractivePlotter):
 
         self.multi_index = i
 
-        self.data=self.multi_data[i]
-        self.data.fill_value=np.nan
-        self.cube=self.multi_cube[i]
-        self.ts=self.multi_ts[i]
-        self.flat=self.multi_flat[i]
+        self.data = self.multi_data[i]
+        self.data.fill_value = np.nan
+        self.cube = self.multi_cube[i]
+        self.ts = self.multi_ts[i]
+        self.flat = self.multi_flat[i]
 
-
-    def onkey(self,event):
+    def onkey(self, event):
         try:
-            if event.key=='left':
+            if event.key == 'left':
                 self.set_index(self.multi_index - 1)
             elif event.key == 'right':
                 self.set_index(self.multi_index+1)
             else:
-                ZeusInteractivePlotter.onkey(self,event)
+                ZeusInteractivePlotter.onkey(self, event)
         except Exception as e:
-            self.error=e
+            self.error = e
 
 
 class ClickType(Enum):
@@ -415,42 +417,3 @@ def spectrum_atm_plotter(velocity,
         axs[0].set_ylim(bounds[2:4])
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.05)
-    # savefig("ISTHATNGC4945.png",dpi=300)
-
-
-# Here, have some dead code:
-
-# def plotArray(flatfilename,datafilename):
-    
-#     chop,ts,cube=zt.load_data_raw(datafilename)
-#     flatchop,flatts,flatcube = zt.load_data_raw(flatfilename)
-#     nicets = ts-ts[0]
-#     ndcube = zt.nd_reject_outliers(cube)
-#     d=naive_data_reduction(chop,cube)/naive_data_reduction(flatchop,flatcube)
-#     spatial_offset_400 = np.zeros_like(am.arrays['a'])
-#     spatial_offset_400[:,0] = 10
-
-#     spectral_offset_200 = np.zeros_like(am.arrays['b'])
-#     spectral_offset_200[:,1] = 20
-
-#     amap = am.arrays['a'] + spatial_offset_400
-#     bmap = am.arrays['b'] + spectral_offset_200
-#     cmap = am.arrays['c']
-#     full_map = np.concatenate((amap,bmap,cmap))
-#     mce_grid = np.zeros((33,24,2),dtype=int)
-#     mce_grid[full_map[:,2],full_map[:,3]] = full_map[:,0:2]
-#     nonexistant_pixels = np.logical_and(mce_grid[:,:,1]==0, mce_grid[:,:,0]==0)
-#     # ^ lists spectral/spactial coordinate pairs that do not contain pixels
-    
-#     cleaned_data=zt.nd_reject_outliers(d.ravel(),axis=0,MAD_chop=200).reshape(33,24)
-#     # ^ attempts naive filtering of the signal
-    
-#     cleaned_data.mask = np.logical_or(cleaned_data.mask,nonexistant_pixels)
-#     maxpts = ma.array(np.max(ndcube,axis=2),mask=cleaned_data.mask)
-#     minpts = ma.array(np.min(ndcube,axis=2),mask=cleaned_data.mask)
-#     stdpts = ma.array(np.std(ndcube,axis=2),mask=cleaned_data.mask)
-#     g=figure(dpi=300)
-#     g.gca().set_aspect(1)
-#     scatter(mce_grid[:,:,1],-mce_grid[:,:,0],c=np.log(cleaned_data),s=50,marker='s')
-#     colorbar(orientation='horizontal')
-# old code? May have been incorporated into am.grid_map() NOPE HAHA

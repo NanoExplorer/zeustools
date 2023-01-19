@@ -2,7 +2,6 @@ import numpy as np
 from astropy import units
 from astropy import constants as const
 import configparser
-import matplotlib
 from matplotlib import pyplot as plt 
 import sys
 from zeustools.bpio import load_data_and_extract
@@ -17,9 +16,9 @@ from glob import glob
 import importlib.resources as res
 import os
 
-font = {'size': 18}
-matplotlib.rc('figure', figsize=(8, 6))
-matplotlib.rc('font', **font)
+# font = {'size': 18}
+# matplotlib.rc('figure', figsize=(8, 6))
+# matplotlib.rc('font', **font)
 
 
 def flux_calibration(data,
@@ -109,7 +108,7 @@ def calulate_bin_overlap(left_1, right_1, left_2, right_2):
     )/(right_2-left_2)
 
 
-def regridding_weighted_average(new_grid, orig_wl_data, orig_flux_data):
+def regridding_weighted_average(new_grid, orig_wl_data, orig_flux_data, error_data_cut=None):
     """
     Performs a weighted average on unevenly sampled data with respect to a new grid. 
     :param new_grid: two-dimensional numpy array of desired output bin edges
@@ -125,8 +124,10 @@ def regridding_weighted_average(new_grid, orig_wl_data, orig_flux_data):
         wl_l_array, wl_r_array = wl_tuple
         for wl_l, wl_r, flux, err in zip(wl_l_array, wl_r_array, flux_array, error_array):
             data_entry = np.array([wl_l, wl_r, flux, err])
+
             if np.all(np.isfinite(data_entry)) and err > 1e-10:
-                array_for_avg.append(data_entry)
+                if error_data_cut is None or err < error_data_cut:
+                    array_for_avg.append(data_entry)
 
     array_for_avg = np.array(array_for_avg)
 
@@ -521,6 +522,7 @@ class ReductionHelper:
         flat_flux, flat_err, flat_pix_flag_list = flat_result[:2] + flat_result[-1:]
         norm_flux = zobs_flux/flat_flux
         norm_err = ((zobs_err/flat_flux)**2 + (zobs_flux/flat_flux * flat_err/flat_flux)**2).sqrt()
+        
         pix_flag_list = zobs_pix_flag_list
         atm_trans = z2pipl.get_transmission_obs_array(self.array_map, pwv=pwv, elev=elev)
         # atm_trans_raw = z2pipl.get_transmission_raw_obs_array(self.array_map, pwv=pwv, elev=elev, grat_idx=grat_idx)
@@ -567,6 +569,7 @@ class ReductionHelper:
 
 
 def smart_file_finder_(folder, source_name):
+    print("START")
     all_files = glob(os.path.join(folder, "*"))
     useful_files = [f for f in all_files if os.path.splitext(f)[1]=='' and os.path.isfile(f)]
     sorted_files = sorted(
@@ -579,13 +582,25 @@ def smart_file_finder_(folder, source_name):
     current_data_files = []
     valid = False
     last_bias = np.array([0])
+    last_grating = 0
     for f in sorted_files + ['THE_END']:
         try:
             if f != 'THE_END':
                 mcef = mce_data.SmallMCEFile(f)
                 bias = zt.get_bias_array(mcef)
-            if np.any(bias != last_bias) or f == "THE_END":
+                try:
+                    grating = int(zt.hk_tools.get_value(f"{f}.hk", 'gratingindex'))
+                except FileNotFoundError:
+                    grating = last_grating
+                #print(grating)
+                if grating==0:
+                    grating = last_grating
+            if np.any(bias != last_bias) or f == "THE_END" or grating !=last_grating:
                 #end this chunk
+                # if grating != last_grating:
+                #     print("grating changed")
+                # else:
+                #     print("bias changed")
                 if valid:
                     #save this chunk
                     chunk = (
@@ -594,11 +609,13 @@ def smart_file_finder_(folder, source_name):
                         current_data_files
                     )
                     reduction_chunks.append(chunk)
+                    #print("adding valid chunk")
                 current_bias_steps = []
                 current_sky_chops = []
                 current_data_files = []
                 valid = False
                 last_bias = bias
+                last_grating = grating
                 #print("Bias changed, reset")
             
             if 'bias_step' in f and 'magic' not in f:
@@ -623,6 +640,8 @@ def smart_file_finder_(folder, source_name):
         except FileNotFoundError:
             #print(f"skipping invalid file [notfound] {f}")
             pass
+        except ValueError:
+            print(f"Bad run file {f}")
     return reduction_chunks
             
 
@@ -655,14 +674,21 @@ def consecutive_files(arr):
         elif n == last_n+1:
             last_n = n
         else:
-            print("aack")
+            print(f"{f} is not consecutive...")
     return (first_n, last_n)
 
 
-def smart_file_finder(folder, source_name):
+def smart_file_finder(folder, source_name, run_hk_check="True"):
     """ WARNING! Not actually that smart. Please double check all results.
     """
     sp = smart_file_finder_(folder, source_name)
+    if run_hk_check:
+        for _,_,datafile_list in sp:
+            for datafile in datafile_list:
+                f = os.path.join(folder, datafile)+'.hk'
+                if int(zt.hk_tools.get_value(f, 'gratingindex')) == 0:
+                    raise ValueError(f"{f} has invalid grating index")
+
     return smart_to_bo_spec(sp)
 
 
