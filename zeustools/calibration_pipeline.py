@@ -1,355 +1,174 @@
 import numpy as np
-from astropy import units
-from astropy import constants as const
-import configparser
-from matplotlib import pyplot as plt 
-import sys
-from zeustools.bpio import load_data_and_extract
-from zeustools.calibration import flat_to_wm2
+# from astropy import units
+# from astropy import constants as const
+# import configparser
+# from matplotlib import pyplot as plt 
+# import sys
+# from zeustools.bpio import load_data_and_extract
+# from zeustools.calibration import flat_to_wm2
 from zeustools import transmission
-from zeustools import plotting
+# from zeustools import plotting
 from zeus2_toolbox import pipeline as z2pipl
 from zeustools import data as ztdata
-import zeustools as zt
-from zeustools import mce_data
-from glob import glob
+# import zeustools as zt
+# from zeustools import mce_data
+# from glob import glob
 import importlib.resources as res
 import os
 
 # font = {'size': 18}
 # matplotlib.rc('figure', figsize=(8, 6))
 # matplotlib.rc('font', **font)
+# def run_pipeline():
+#     # Load in configuration values, and parse them into correct data types
+#     # TODO:are there better config file systems, and/or better ways of
+#     # organizing this?
+#     config = configparser.ConfigParser()
+#     if len(sys.argv) > 1:
+#         settings = sys.argv[1]
+#     else:
+#         settings = 'settings.ini'
+#     config.read(settings)
+#     globalvals = config["GLOBAL"]
+#     outputfile = globalvals["output_filename"]
+#     spatial_position = globalvals.getint("spat_pos")
+#     lambda_line = globalvals.getfloat("lambda_line_px")
+#     px_delta_lambda = globalvals.getfloat("px_delta_lambda")
+#     skytemp = globalvals.getfloat("sky_temp")
+#     cabintemp = globalvals.getfloat("cabin_temp")
+#     beamsize = globalvals.getfloat("beam_size_steradian")
+#     docalib = globalvals.getboolean("do_calib")
+#     unflatten = globalvals.getboolean("unflatten")
+#     docontsub = globalvals.getboolean("do_contsub")
+#     line_positions = globalvals["where_is_line_flux"]
+#     line_positions = list(map(int, line_positions.split(',')))
+#     ptcoup = globalvals.getfloat("pt_src_coupling")
+#     teleff = globalvals.getfloat("telescope_efficiency")
+#     do_indiv_plots = globalvals.getboolean("individual_reduction_plots")
+#     plot_min_x = globalvals.getfloat("plot_min_x")
+#     plot_max_x = globalvals.getfloat("plot_max_x")
+#     plot_min_y = globalvals.getfloat("plot_min_y")
+#     plot_max_y = globalvals.getfloat("plot_max_y")
 
+#     plt_bounds = (plot_min_x, plot_max_x, plot_min_y, plot_max_y)
+#     print(plt_bounds)
+#     atm_trans_filename = globalvals["atm_trans_table"]
+#     transmission_calculator = transmission.AtmosphereTransmission(atm_trans_filename)
+#     transmission_calculator.observing_freq = (const.c/(lambda_line*units.micron)).to("GHz").value
 
-def flux_calibration(data,
-                     flat_flux_density,  # W/m^2/bin
-                     ):
-    spec_pos, sig, noise = data
-    
-    scaled_signal = sig * flat_flux_density 
-    
-    scaled_err = noise * flat_flux_density
-    return (spec_pos, scaled_signal, scaled_err)
+#     # Use astropy's nice units converter to get bin width in km/s
+#     px_kms = (px_delta_lambda/lambda_line*const.c).to("km/s").value
 
+#     # Figure out what the boolean options should be. 
+#     if unflatten:
+#         docalib = False
 
-def wavelength_calibration(data,
-                           position_of_line,
-                           bin_width  # km/s
-                           ):
-    spec_pos, _, _ = data
-    velocity = (spec_pos - position_of_line) * bin_width
-    return (velocity, data[1], data[2])
+#     # Convert the list of [REDUCTION*] sections in the settings.ini file to something more useful
+#     reductions_settings = [config[name] for name in config.sections() if name != "GLOBAL"]
+#     reductions = []
+#     pwvs = []
+#     # Loop over those sections to load in and calibrate each data scan chunk
+#     for rsett in reductions_settings:
+#         # the configparser doesn't throw an exception if a thing is 
+#         # not defined it just returns none.
+#         # I dont know how I feel 
+#         # about that
 
-
-def cut(data, min_px, max_px):
-    out = []
-    for i in data:
-        out.append(i[min_px:max_px])
-    return out
-
-
-def shift_and_add(data1, data2, px1, px2):
-    """
-    takes in two spectra. Shifts the second one spectrally by px_offset
-    to align the line pixel between the two runs. Weights the spectra appropriately
-    TODO: use np.average to clean up this mess.
-    """
-    arr = data1 + data2
-    m = map(np.copy, arr)
-    spec, sig, noise, spec2, sig2, noise2 = m
-    #print(sig[3],noise[3])
-    nan_idxs = np.isnan(sig)
-    nan_idx2 = np.isnan(sig2)
-
-    sig[nan_idxs] = 0
-    sig2[nan_idx2] = 0
-    noise[nan_idxs] = 10e10
-    noise2[nan_idx2] = 10e10
-    noise[noise < 1e-6] = 10e10  # sometimes superconducting pixels show up unflagged
-    noise2[noise2 < 1e-6] = 10e10
-    spec -= px1
-    spec2 -= px2 
-    # That shifts the spectral pixel number so that the line is on position "0" 
-
-    allspecs = np.append(spec, spec2)
-    minspec = np.min(allspecs)
-    maxspec = np.max(allspecs)
-    outspec = np.arange(minspec, maxspec+1, dtype=int)
-    outsig = np.zeros_like(outspec, dtype=float)
-    outnoise = np.zeros_like(outspec, dtype=float)
-    idx = (np.isin(outspec, spec)).nonzero()[0]
-    idx2 = np.isin(outspec, spec2).nonzero()[0]
-    outsig[idx] += sig/noise**2
-    outsig[idx2] += sig2/noise2**2
-    outnoise[idx] += 1/noise**2
-    outnoise[idx2] += 1/noise2**2
-    outnoise = 1/outnoise  # This sets outnoise to 1/wt
-    outsig = outsig*outnoise  # divide by weight 
-    outnoise = np.sqrt(outnoise)  # now outnoise is actually standard deviation
-    outsig[outnoise > 1e9] = np.nan
-    return (outspec, outsig, outnoise)
-
-
-def calulate_bin_overlap(left_1, right_1, left_2, right_2):
-    """ Calculate length of overlap of bins
-
-    Args:
-        left_1, right_1 : left and right bin edge values for bin 1
-        left_2, right_2 : left and right bin edge values for bin 2
-
-    Return:
-        fraction of bin 2 covered by bin 1
-    Courtesy of Patrick McNamee
-    """
-    
-    return max(
-        min(right_1, right_2) - max(left_1, left_2),
-        0.
-    )/(right_2-left_2)
-
-
-def regridding_weighted_average(new_grid, orig_wl_data, orig_flux_data, error_data_cut=None):
-    """
-    Performs a weighted average on unevenly sampled data with respect to a new grid. 
-    :param new_grid: two-dimensional numpy array of desired output bin edges
-    :param orig_wl_data: list of wavelength arrays for each observation.
-    :param orig_flux_data: list of observation array tuples for each observation
-
-    Thanks to Patrick McNamee
-    """
-    # Build data array. One element per data point.
-    array_for_avg = []
-    for wl_tuple, data_tuple in zip(orig_wl_data, orig_flux_data):
-        px_array, flux_array, error_array = data_tuple
-        wl_l_array, wl_r_array = wl_tuple
-        for wl_l, wl_r, flux, err in zip(wl_l_array, wl_r_array, flux_array, error_array):
-            data_entry = np.array([wl_l, wl_r, flux, err])
-
-            if np.all(np.isfinite(data_entry)) and err > 1e-10:
-                if error_data_cut is None or err < error_data_cut:
-                    array_for_avg.append(data_entry)
-
-    array_for_avg = np.array(array_for_avg)
-
-    weights = np.zeros((new_grid.shape[0], array_for_avg.shape[0]))
-    for i in range(weights.shape[0]):
-        for j in range(weights.shape[1]):
-            weights[i, j] = calulate_bin_overlap(
-                array_for_avg[j, 0],
-                array_for_avg[j, 1],
-                new_grid[i, 0],
-                new_grid[i, 1]
-            )/array_for_avg[j, -1]**2  # w_i = l_i/\sigma^2
-    wt_sum = np.sum(weights, axis=1).reshape(weights.shape[:1] + (1,))
-    norm_wts = weights/wt_sum
-    regridded_weighted_avg = norm_wts @ array_for_avg[:, 2]
-    regridded_err = 1/np.sqrt(wt_sum)
-    return (regridded_weighted_avg, regridded_err)
-
-
-# def shift_add(data,line_px):
-# 	"""
-# 	takes in a bunch of spectra, then aligns them and does a weighted average
-# 	params: list of data spectra
-# 	line_px: list of the spectral positions with lines 
-#   In-progress improvement to shift_and_add
-# 	"""
-
-# 	# create an array to hold the result
-# 	specs = np.array([spec - i for (spec,_,_),i in zip(data,line_pix)])
-# 	final_spec = np.arange(np.min(specs.flatten()),np.max(specs.flatten()))
-
-
-def get_drop_indices(spec_pos, px_to_drop):
-    line_px = np.array(px_to_drop)[:, None]
-    boolarray = np.all(spec_pos != line_px, axis=0)
-    return boolarray.nonzero()[0]
-
-
-def contsub(data, line_px):
-    spec_pos, sig, err = data 
-    idxs = get_drop_indices(spec_pos, line_px)
-    # print(sig)
-    # print(idxs)
-    continuum, cont_err = np.ma.average(sig[idxs], weights=1/err[idxs]**2, returned = True)
-    # print(idxs)
-    return (spec_pos, sig-continuum, err, continuum, 1/np.sqrt(cont_err))
-
-
-def getcsvspec(label, spec):
-    stringout = label+', '
-    for i in spec:
-        stringout += str(i)+", "
-    return stringout
-
-
-def plot_spec(spec, saveas, bounds, do_close = True):
-    plt.figure(figsize=(8, 6))
-    #spec[1][spec[2]>1e-16] = np.nan
-    line = plt.step(spec[0], spec[1], where='mid')
-    lncolor = line[0].get_c()
-    plt.errorbar(spec[0], spec[1], spec[2], fmt='none', ecolor=lncolor)
-    plt.ylabel("Flux, W m$^{-2}$ bin$^{-1}$")
-    plt.xlabel("Velocity km s$^{-1}$")
-    if bounds is not None and None not in bounds:
-        plt.xlim(bounds[0:2])
-        plt.ylim(bounds[2:4])
-    plt.tight_layout()
-    plt.savefig(saveas, dpi=300)
-    if do_close:
-        plt.close()
-
-
-def run_pipeline():
-    # Load in configuration values, and parse them into correct data types
-    # TODO:are there better config file systems, and/or better ways of
-    # organizing this?
-    config = configparser.ConfigParser()
-    if len(sys.argv) > 1:
-        settings = sys.argv[1]
-    else:
-        settings = 'settings.ini'
-    config.read(settings)
-    globalvals = config["GLOBAL"]
-    outputfile = globalvals["output_filename"]
-    spatial_position = globalvals.getint("spat_pos")
-    lambda_line = globalvals.getfloat("lambda_line_px")
-    px_delta_lambda = globalvals.getfloat("px_delta_lambda")
-    skytemp = globalvals.getfloat("sky_temp")
-    cabintemp = globalvals.getfloat("cabin_temp")
-    beamsize = globalvals.getfloat("beam_size_steradian")
-    docalib = globalvals.getboolean("do_calib")
-    unflatten = globalvals.getboolean("unflatten")
-    docontsub = globalvals.getboolean("do_contsub")
-    line_positions = globalvals["where_is_line_flux"]
-    line_positions = list(map(int, line_positions.split(',')))
-    ptcoup = globalvals.getfloat("pt_src_coupling")
-    teleff = globalvals.getfloat("telescope_efficiency")
-    do_indiv_plots = globalvals.getboolean("individual_reduction_plots")
-    plot_min_x = globalvals.getfloat("plot_min_x")
-    plot_max_x = globalvals.getfloat("plot_max_x")
-    plot_min_y = globalvals.getfloat("plot_min_y")
-    plot_max_y = globalvals.getfloat("plot_max_y")
-
-    plt_bounds = (plot_min_x, plot_max_x, plot_min_y, plot_max_y)
-    print(plt_bounds)
-    atm_trans_filename = globalvals["atm_trans_table"]
-    transmission_calculator = transmission.AtmosphereTransmission(atm_trans_filename)
-    transmission_calculator.observing_freq = (const.c/(lambda_line*units.micron)).to("GHz").value
-
-    # Use astropy's nice units converter to get bin width in km/s
-    px_kms = (px_delta_lambda/lambda_line*const.c).to("km/s").value
-
-    # Figure out what the boolean options should be. 
-    if unflatten:
-        docalib = False
-
-    # Convert the list of [REDUCTION*] sections in the settings.ini file to something more useful
-    reductions_settings = [config[name] for name in config.sections() if name != "GLOBAL"]
-    reductions = []
-    pwvs = []
-    # Loop over those sections to load in and calibrate each data scan chunk
-    for rsett in reductions_settings:
-        # the configparser doesn't throw an exception if a thing is 
-        # not defined it just returns none.
-        # I dont know how I feel 
-        # about that
-
-        # Get the per-data-chunk values
-        pwv = rsett.getfloat("pwv")
-        pwvs.append(pwv)
-        alt = rsett.getfloat("alt")
-        pwv_corr = pwv / atm_util.airmass_factor(alt)
-        sky_transp = float(transmission_calculator.interp_internal_freq(pwv_corr))
+#         # Get the per-data-chunk values
+#         pwv = rsett.getfloat("pwv")
+#         pwvs.append(pwv)
+#         alt = rsett.getfloat("alt")
+#         pwv_corr = pwv / atm_util.airmass_factor(alt)
+#         sky_transp = float(transmission_calculator.interp_internal_freq(pwv_corr))
         
-        print(f"zpwv={pwv:.2f}, alt = {alt:.1f}, actual_pwv={pwv_corr:.2f}, transp = {sky_transp:.2f}")
-        spec_pos = rsett.getint("spec_pos_of_line")
-        minpx = rsett.getint("min_spec_px")
-        maxpx = rsett.getint("max_spec_px")
+#         print(f"zpwv={pwv:.2f}, alt = {alt:.1f}, actual_pwv={pwv_corr:.2f}, transp = {sky_transp:.2f}")
+#         spec_pos = rsett.getint("spec_pos_of_line")
+#         minpx = rsett.getint("min_spec_px")
+#         maxpx = rsett.getint("max_spec_px")
 
-        # load this data chunk, and chop off pixels we don't like
+#         # load this data chunk, and chop off pixels we don't like
 
-        data = load_data_and_extract(rsett["path"], spatial_position)
-        data = cut(data, minpx, maxpx)
+#         data = load_data_and_extract(rsett["path"], spatial_position)
+#         data = cut(data, minpx, maxpx)
 
-        if docalib:
-            # Figure out how many w/m^2/bin the skychop was worth
-            flat_flux_value = flat_to_wm2(
-                sky_transp,
-                lambda_line*units.micron,
-                px_delta_lambda*units.micron,
-                sky_temp=skytemp*units.K,
-                cabin_temp=cabintemp*units.K,
-                beam_size=beamsize*units.steradian).value
-            # add telescope and sky stuff to calibration value
-            flat_flux_value = flat_flux_value/sky_transp/ptcoup/teleff
-            # Apply that scaling to the data
-            data = flux_calibration(data, flat_flux_value)
-        if do_indiv_plots:
-            plot_spec((data[0]-spec_pos, data[1], data[2]), 
-                      f"{outputfile}_{rsett.name}.png", 
-                      plt_bounds)
-        reductions.append((data, spec_pos))
+#         if docalib:
+#             # Figure out how many w/m^2/bin the skychop was worth
+#             flat_flux_value = flat_to_wm2(
+#                 sky_transp,
+#                 lambda_line*units.micron,
+#                 px_delta_lambda*units.micron,
+#                 sky_temp=skytemp*units.K,
+#                 cabin_temp=cabintemp*units.K,
+#                 beam_size=beamsize*units.steradian).value
+#             # add telescope and sky stuff to calibration value
+#             flat_flux_value = flat_flux_value/sky_transp/ptcoup/teleff
+#             # Apply that scaling to the data
+#             data = flux_calibration(data, flat_flux_value)
+#         if do_indiv_plots:
+#             plot_spec((data[0]-spec_pos, data[1], data[2]), 
+#                       f"{outputfile}_{rsett.name}.png", 
+#                       plt_bounds)
+#         reductions.append((data, spec_pos))
 
-    # If we only have one reduction, shifting-and-adding can't happen
-    if len(reductions) > 1:
-        for i in range(len(reductions)-1):
-            data, spec_pos = reductions[i]
-            data2, specpos2 = reductions[i+1]
-            reductions[i+1] = (shift_and_add(data, data2, spec_pos, specpos2), 0)
-            # this is kind of ugly because it's 1 am and gordon wants this yesterday
-            # TODO: cleaner code. play around with "reduce" function and stuff
-    else:
-        # Move the spectrum so that the line is on pixel
-        # due to the fact I'm using tuples I have to rebuild the tuple...
-        spec, data, err, wt = reductions[-1][0]
-        line_px = reductions[-1][1]
+#     # If we only have one reduction, shifting-and-adding can't happen
+#     if len(reductions) > 1:
+#         for i in range(len(reductions)-1):
+#             data, spec_pos = reductions[i]
+#             data2, specpos2 = reductions[i+1]
+#             reductions[i+1] = (shift_and_add(data, data2, spec_pos, specpos2), 0)
+#             # this is kind of ugly because it's 1 am and gordon wants this yesterday
+#             # TODO: cleaner code. play around with "reduce" function and stuff
+#     else:
+#         # Move the spectrum so that the line is on pixel
+#         # due to the fact I'm using tuples I have to rebuild the tuple...
+#         spec, data, err, wt = reductions[-1][0]
+#         line_px = reductions[-1][1]
 
-        reductions[-1] = ((spec-line_px, data, err, wt), 0)
+#         reductions[-1] = ((spec-line_px, data, err, wt), 0)
 
-    # Now that we have a co-added spectrum, we should subtract the continuum
-    addedspec = reductions[-1][0]
+#     # Now that we have a co-added spectrum, we should subtract the continuum
+#     addedspec = reductions[-1][0]
 
-    if docontsub:
-        addedspec = contsub(addedspec, line_positions)
+#     if docontsub:
+#         addedspec = contsub(addedspec, line_positions)
         
-        # I told the user to make line_positions relative to the spectral pixel of the line.
-        # When we shifted and added, we shifted the line to be at "spectral position" 0
-        # So if the line started on pixel 7 (and 8) the user should've given us
-        # "the line is at pixel 7" and "flux can be found on pixels 0 and 1."
-        # Now that the line is at 0, the correct places to find flux is 0 and 1.
-        # This almost makes sense to 1 AM me. TODO: clean up the explanation and make sure it's true
-    velspec = wavelength_calibration(addedspec, 0, px_kms)
+#         # I told the user to make line_positions relative to the spectral pixel of the line.
+#         # When we shifted and added, we shifted the line to be at "spectral position" 0
+#         # So if the line started on pixel 7 (and 8) the user should've given us
+#         # "the line is at pixel 7" and "flux can be found on pixels 0 and 1."
+#         # Now that the line is at 0, the correct places to find flux is 0 and 1.
+#         # This almost makes sense to 1 AM me. TODO: clean up the explanation and make sure it's true
+#     velspec = wavelength_calibration(addedspec, 0, px_kms)
 
-    # plot_spec(velspec, f"{outputfile}.png", plt_bounds)
-    # That plot is pretty redundant now that we have the atm plotter
-    if docalib:
-        y_ax = 1e-18
-    else:
-        y_ax = 1
+#     # plot_spec(velspec, f"{outputfile}.png", plt_bounds)
+#     # That plot is pretty redundant now that we have the atm plotter
+#     if docalib:
+#         y_ax = 1e-18
+#     else:
+#         y_ax = 1
 
-    plotting.spectrum_atm_plotter(
-        velspec[0],
-        velspec[1],
-        velspec[2],
-        outputfile,
-        transmission_calculator,
-        min(pwvs),
-        y_scaling = y_ax,
-        bounds = plt_bounds
-    )
+#     plotting.spectrum_atm_plotter(
+#         velspec[0],
+#         velspec[1],
+#         velspec[2],
+#         outputfile,
+#         transmission_calculator,
+#         min(pwvs),
+#         y_scaling = y_ax,
+#         bounds = plt_bounds
+#     )
 
-    plt.savefig(f"{outputfile}_atmosphere.png")
-    # Finally, output the csv for gordon.
-    with open(outputfile+".csv", 'w') as csvf:
-        if docalib:
-            labely = "signal W m^-2 bin^-1"
-        else:
-            labely = "raw data (fraction of flat)"
-        labelx = "velocity relative to galaxy redshift km/s"
-        csvf.write(getcsvspec(labely, velspec[1])+'\n')
-        csvf.write(getcsvspec(labelx, velspec[0])+'\n')
-        csvf.write(getcsvspec("error in signal same units as signal", velspec[2])+'\n')
+#     plt.savefig(f"{outputfile}_atmosphere.png")
+#     # Finally, output the csv for gordon.
+#     with open(outputfile+".csv", 'w') as csvf:
+#         if docalib:
+#             labely = "signal W m^-2 bin^-1"
+#         else:
+#             labely = "raw data (fraction of flat)"
+#         labelx = "velocity relative to galaxy redshift km/s"
+#         csvf.write(getcsvspec(labely, velspec[1])+'\n')
+#         csvf.write(getcsvspec(labelx, velspec[0])+'\n')
+#         csvf.write(getcsvspec("error in signal same units as signal", velspec[2])+'\n')
 
 
 class ReductionHelper:
@@ -395,7 +214,7 @@ class ReductionHelper:
         self.analyze = True  # flag whether to perform pixel performance analyze based on rms
         # and power spectrum
         self.do_desnake = False  # flag whether to perform desnaking
-        self.ref_pix = [2,10]  # [spat_pos, spec_idx] of the reference pixel used to select
+        self.ref_pix = [2, 10]  # [spat_pos, spec_idx] of the reference pixel used to select
         # other good pixels to build the snake model, e.g. [1, 11] means
         # the pixel at spatial position 1 and spectral index 11 will be
         # used as the reference, only matters if DO_DESNAKE=True
@@ -567,147 +386,5 @@ class ReductionHelper:
         #     norm_flux, norm_err, pix_flag_list=pix_flag_list)
         return norm_flux, norm_err
 
-
-def smart_file_finder_(folder, source_name):
-    print("START")
-    all_files = glob(os.path.join(folder, "*"))
-    useful_files = [f for f in all_files if os.path.splitext(f)[1]=='' and os.path.isfile(f)]
-    sorted_files = sorted(
-        useful_files,
-        key=lambda f: os.path.getmtime(f)
-    )
-    reduction_chunks = []
-    current_bias_steps = []
-    current_sky_chops = []
-    current_data_files = []
-    valid = False
-    last_bias = np.array([0])
-    last_grating = 0
-    for f in sorted_files + ['THE_END']:
-        try:
-            if f != 'THE_END':
-                mcef = mce_data.SmallMCEFile(f)
-                bias = zt.get_bias_array(mcef)
-                try:
-                    grating = int(zt.hk_tools.get_value(f"{f}.hk", 'gratingindex'))
-                except FileNotFoundError:
-                    grating = last_grating
-                #print(grating)
-                if grating==0:
-                    grating = last_grating
-            if np.any(bias != last_bias) or f == "THE_END" or grating !=last_grating:
-                #end this chunk
-                # if grating != last_grating:
-                #     print("grating changed")
-                # else:
-                #     print("bias changed")
-                if valid:
-                    #save this chunk
-                    chunk = (
-                        current_bias_steps,
-                        current_sky_chops,
-                        current_data_files
-                    )
-                    reduction_chunks.append(chunk)
-                    #print("adding valid chunk")
-                current_bias_steps = []
-                current_sky_chops = []
-                current_data_files = []
-                valid = False
-                last_bias = bias
-                last_grating = grating
-                #print("Bias changed, reset")
-            
-            if 'bias_step' in f and 'magic' not in f:
-                current_bias_steps.append(f)
-                #print("Bias step!",f)
-            elif source_name in f:
-                current_data_files.append(f)
-                #print("data!",f)
-            elif "skychop" in f:
-                current_sky_chops.append(f)
-                #print("skychop!",f)
-            valid = len(current_bias_steps) != 0 and \
-                len(current_data_files) != 0 and \
-                len(current_sky_chops) != 0
-
-        except IndexError:
-            #print(f"skipping invalid file [indexerror] {f}")
-            pass
-        except mce_data.BadRunfile:
-            #print(f"skipping invalid file [badrunfile] {f}")
-            pass
-        except FileNotFoundError:
-            #print(f"skipping invalid file [notfound] {f}")
-            pass
-        except ValueError:
-            print(f"Bad run file {f}")
-    return reduction_chunks
-            
-
-def smart_to_bo_spec(smart):
-    bias_arr = []
-    flat_arr = []
-    data_arr = []
-    folders = []
-    for b, s, d in smart:
-        bias_tuple = consecutive_files(b)
-        flat_tuple = consecutive_files(s)
-        data_tuple = consecutive_files(d)
-        folders.append(os.path.dirname(b[0]))
-        bias_arr.append({"bias_step": [bias_tuple]})
-        flat_name = os.path.basename(s[0])[0:-5]
-        flat_arr.append({flat_name: [flat_tuple]})
-        src_name = os.path.basename(d[0])[0:-5]
-        data_arr.append({src_name: [data_tuple]})
-    return bias_arr, flat_arr, data_arr, folders
-   
-
-def consecutive_files(arr):
-    first_n = None
-    last_n = None
-    for f in arr:
-        n = int(f.split("_")[-1])
-        if first_n is None:
-            first_n = n
-            last_n = n
-        elif n == last_n+1:
-            last_n = n
-        else:
-            print(f"{f} is not consecutive...")
-    return (first_n, last_n)
-
-
-def smart_file_finder(folder, source_name, run_hk_check="True"):
-    """ WARNING! Not actually that smart. Please double check all results.
-    """
-    sp = smart_file_finder_(folder, source_name)
-    if run_hk_check:
-        for _,_,datafile_list in sp:
-            for datafile in datafile_list:
-                f = os.path.join(folder, datafile)+'.hk'
-                if int(zt.hk_tools.get_value(f, 'gratingindex')) == 0:
-                    raise ValueError(f"{f} has invalid grating index")
-
-    return smart_to_bo_spec(sp)
-
-
-def smarter_file_finder(file_dict):
-    biases = []
-    flats = []
-    datas = []
-    folders = []
-    for path in file_dict:
-        for file_name in file_dict[path]:
-            print(path, file_name)
-            bias, flat, data, folder = smart_file_finder(path, file_name)
-            biases = biases+bias
-            flats = flats+flat
-            datas = datas+data
-            folders = folders+folder
-    return (biases, flats, datas, folders)
-
-
-if __name__ == '__main__':
-    run_pipeline()
-
+# if __name__ == '__main__':
+#     run_pipeline()
