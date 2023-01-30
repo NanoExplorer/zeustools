@@ -101,3 +101,15 @@ venv.bak/
 .mypy_cache/
 
 docsrc/_build
+
+# Sublime text config 
+*.sublime-project
+*.sublime-workspace
+pyrightconfig.json
+.flake8
+
+#vscode config
+.vscode/
+
+#old unused code
+zeustools/deprecated/

@@ -541,7 +541,7 @@ class SmallMCEFile:
     def Read(self, count=None, start=0, dets=None,
              do_extract=True, do_scale=True, data_mode=None,
              field=None, fields=None, row_col=False,
-             raw_frames=False, cc_indices=False,
+             raw_frames=False, #cc_indices=False,
              n_frames=None, inject_sig=None):
         """
         Read MCE data, and optionally extract the MCE signals.
@@ -573,7 +573,7 @@ class SmallMCEFile:
         """
         if n_frames != None:
             print('Warning: Use of n_frames in Read() is deprecated, please use '\
-                'the "count=" argument.')
+                + 'the "count=" argument.')
             count = n_frames
         # When raw_frames is passed, count and start are passed directly to ReadRaw.
         if raw_frames:
@@ -587,15 +587,16 @@ class SmallMCEFile:
         if data_mode != None:
             self.data_mode = data_mode
 
-        if cc_indices:
-            start *= pack_factor
-            if count != None:
-                count *= pack_factor
+        # if cc_indices:
+        #     start *= pack_factor
+        #     if count != None:
+        #         count *= pack_factor
 
         # Decode start and count arguments
         start, count = _rangify(start, count, self.n_frames, 'samples')
 
         # Convert sample indices to readout frame indices
+        pack_factor = 0
         if self.raw_data:
             # Raw data is contiguous and uninterrupted
             cc_start = start * self.n_cols // self.size_ro

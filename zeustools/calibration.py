@@ -28,7 +28,7 @@ def flat_to_wm2(sky_transparency,
     bt = units.brightness_temperature(frequency)
     opacity = 1-sky_transparency
     temp_delta = cabin_temp-(sky_temp*opacity)
-    brightness_temp = (temp_delta).to("Jy/steradian",equivalencies=bt)
+    brightness_temp = (temp_delta).to("Jy/steradian", equivalencies=bt)
     spectral_stuff = units.spectral_density(obs_wavelength) 
     calib_flux_density = (brightness_temp*beam_size).to("W / (m^2 Hz)",equivalencies=spectral_stuff)
     bin_width = (const.c/obs_wavelength - const.c/(obs_wavelength+pixel_deltalambda)).to("Hz")
