@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-
 import argparse
+
+
 def modifier(key, new_value, filenames, only_print=False, verbose=False):
     for f in filenames:
         with open(f, 'r') as the_file:

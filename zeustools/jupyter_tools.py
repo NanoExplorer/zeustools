@@ -5,9 +5,10 @@ import numpy as np
 import zeustools as zt
 import astropy.units as u
 import astropy.constants as c
-from zeustools.calibration_pipeline import regridding_weighted_average
+from zeustools.reduction_tools import regridding_weighted_average
 import matplotlib
 import num2tex
+from zeustools import calibration
 
 atm = zt.transmission.AtmosphereTransmission()
 gc = zt.grating_cal.GratingCalibrator()
@@ -92,12 +93,12 @@ def spec_to_wm2(data, w_km_s):
     wl, flux, err = data[0:3]
     centers = wl
     widths = w_km_s
-    flux_wm2 = zt.calibration.jy_to_wm2(flux*u.jansky,
-                                        centers*u.micron,
-                                        widths*u.km/u.s).value
-    err_wm2 = zt.calibration.jy_to_wm2(err*u.jansky,
-                                       centers*u.micron,
-                                       widths*u.km/u.s).value
+    flux_wm2 = calibration.jy_to_wm2(flux*u.jansky,
+                                     centers*u.micron,
+                                     widths*u.km/u.s).value
+    err_wm2 = calibration.jy_to_wm2(err*u.jansky,
+                                    centers*u.micron,
+                                    widths*u.km/u.s).value
     return (wl, flux_wm2, err_wm2)
 
 
@@ -113,10 +114,10 @@ def line_estimator(data, line_wavs, bins):
     
     line_flux, line_err = line_calc(wm2, line_px_idx)
     obs_wav = data[0][line_px_idx[0]]
-    line_jykms = zt.calibration.wm2_to_jy_km_s(line_flux*u.W/u.m**2,
-                                               obs_wav*u.micron)
-    err_jykms = zt.calibration.wm2_to_jy_km_s(line_err*u.W/u.m**2,
-                                              obs_wav*u.micron)
+    line_jykms = calibration.wm2_to_jy_km_s(line_flux*u.W/u.m**2,
+                                            obs_wav*u.micron)
+    err_jykms = calibration.wm2_to_jy_km_s(line_err*u.W/u.m**2,
+                                           obs_wav*u.micron)
     return line_flux, line_err, line_jykms, err_jykms
 
 
