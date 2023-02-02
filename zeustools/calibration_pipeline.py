@@ -1,21 +1,80 @@
 import numpy as np
-# from astropy import units
-# from astropy import constants as const
-# import configparser
-# from matplotlib import pyplot as plt 
-# import sys
-# from zeustools.bpio import load_data_and_extract
-# from zeustools.calibration import flat_to_wm2
 from zeustools import transmission
-# from zeustools import plotting
 from zeus2_toolbox import pipeline as z2pipl
 from zeustools import data as ztdata
-# import zeustools as zt
-# from zeustools import mce_data
-# from glob import glob
+import zeustools as zt
 import importlib.resources as res
 import os
+import pandas as pd
 
+
+def baseline_subtractor(
+    flux_pd,    
+    err_pd,
+    flat_pd
+):
+    """ MODIFIES flux_pd so that the baseline is subtracted out of all the 350 $\\mu$m data 
+    Note:ONLY 350 microns! 
+    Note: This function is JANKY
+    """ 
+    for i in range(len(flux_pd)):  # Go through all the rows
+        flux_arr = np.array(flux_pd.iloc[i, 4:], dtype=float)  #I'm not a huge fan of pandas indexing.
+        err_arr = np.array(err_pd.iloc[i, 4:], dtype=float)  # I'm always using iloc for everything
+        spatial_pos = flux_pd.spatial_position[i]  # But yeah, we extract the ith row and make it into 
+        # a numpy array because I can deal with those.
+
+        flat_arr = np.array(flat_pd[flat_pd.spatial_position == spatial_pos].iloc[:, 4:], dtype=float)[0]
+        # Do the same for the flat
+        #print(flat_arr)
+        for array in (0, 1):  # Process 350 and 450 array separately
+            x = np.arange(20*array, 20*array+20)  # Spatial positions for whichever array we're on 
+            y = flux_arr[x]/flat_arr[x] 
+            e = err_arr[x]/flat_arr[x]
+            nans, f = zt.nan_helper(y)
+            #nans = np.logical_or(nans,e<1e-8)
+            if np.all(nans):
+                continue
+            # Linear fit, excluding nans
+            res = np.polyfit(x[~nans], y[~nans], 1, w=1/e[~nans]**2)
+            for x1, j in enumerate(x):
+                # Write the data back to the pandas frames. 
+                flux_pd.at[i, f"spectral_index={j}"] = y[x1]-res[0]*j-res[1]
+                err_pd.at[i, f"spectral_index={j}"] = e[x1]
+            
+
+def make_subtracted_beampair_file(
+    flux_file: str, 
+    err_file: str,
+    flat_file: str,
+    replace="beam_pairs",
+    replace_with="subtd_beam_pairs",
+    replace_with_2="subtd_spec"
+):
+    flux_pd = pd.read_csv(flux_file)  # Read flux error and flat tables
+    err_pd = pd.read_csv(err_file)
+    flat_pd = pd.read_csv(flat_file)
+    baseline_subtractor(flux_pd, err_pd, flat_pd)  # Subtract
+    flux_pd.to_csv(flux_file.replace(replace, replace_with))
+    # Write all the individual subtracted beampairs
+    
+    result_pd = flux_pd.iloc[:0, :].copy()
+    res_err_pd = flux_pd.iloc[:0, :].copy()
+    for i in range(9):  #for every spatial position average all the beam pairs
+        spatial_df = flux_pd[flux_pd.spatial_position == i]  # extract row from df
+        spatial_flux = np.ma.array(spatial_df.iloc[:, 4:])  # put it into a numpy array
+        spatial_err = np.ma.array(err_pd[flux_pd.spatial_position == i].iloc[:, 4:])
+        spatial_flux.mask = np.isnan(spatial_flux)  # filter nans
+        result, weight = np.ma.average(spatial_flux, axis=0, weights=1/spatial_err**2, returned=True)
+        # Average!
+        
+        result_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(result)
+        res_err_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(1/np.sqrt(weight))
+        # Write new pandas tables. This is apparently a bad way to do that, but shrug
+        
+    result_pd.to_csv(flux_file.replace(replace, replace_with_2))
+    res_err_pd.to_csv(err_file.replace(replace, replace_with_2))
+    return res_err_pd
+        
 
 class ReductionHelper:
     def __init__(self):
