@@ -35,7 +35,12 @@ def load_data_and_extract(fname, spat, err_file=None):
         and 1d array of noise. Both sig and noise arrays are masked
         arrays, where the mask has been set to True for nans
     """
-    signal = ma.array(pandas.read_csv(fname).iloc[spat,4:],dtype=float)
+    try:
+        signal = ma.array(pandas.read_csv(fname).iloc[spat, 4:], dtype=float)
+    except ValueError:
+        print(pandas.read_csv(fname))
+        print(fname)
+        raise
     err_file = err_file or fname.replace("flux","err")
     noise = ma.array(pandas.read_csv(err_file).iloc[spat,4:],dtype=float)
     nan_idx = np.logical_or(np.isnan(signal),np.isnan(noise))

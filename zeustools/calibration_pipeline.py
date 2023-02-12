@@ -35,7 +35,11 @@ def baseline_subtractor(
             if np.all(nans):
                 continue
             # Linear fit, excluding nans
-            res = np.polyfit(x[~nans], y[~nans], 1, w=1/e[~nans]**2)
+            try:
+                res = np.polyfit(x[~nans], y[~nans], 1, w=1/e[~nans]**2)
+            except np.linalg.LinAlgError:
+                print(x,y,e)
+                return
             for x1, j in enumerate(x):
                 # Write the data back to the pandas frames. 
                 flux_pd.at[i, f"spectral_index={j}"] = y[x1]-res[0]*j-res[1]
@@ -66,13 +70,14 @@ def make_subtracted_beampair_file(
         spatial_flux.mask = np.isnan(spatial_flux)  # filter nans
         result, weight = np.ma.average(spatial_flux, axis=0, weights=1/spatial_err**2, returned=True)
         # Average!
-        
+        result = result.filled(np.nan)
+        weight = weight.filled(np.nan)
         result_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(result)
         res_err_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(1/np.sqrt(weight))
         # Write new pandas tables. This is apparently a bad way to do that, but shrug
         
-    result_pd.to_csv(flux_file.replace(replace, replace_with_2))
-    res_err_pd.to_csv(err_file.replace(replace, replace_with_2))
+    result_pd.to_csv(flux_file.replace(replace, replace_with_2), index=False)
+    res_err_pd.to_csv(err_file.replace(replace, replace_with_2), index=False)
     return res_err_pd
         
 
@@ -149,6 +154,33 @@ class ReductionHelper:
         self.Rn = z2pipl.ObsArray.read_table("thermal/Rn.csv").to_obs()
         self.g_bath = self.g * 1E3 * .13**(self.n.data_-1) / (self.Tc*1E-3)**(self.n.data_-1)
         self.zoc = transmission.ZeusOpticsChain(config="2019")
+
+    def make_file_name(self, specification: dict, kind = "") -> str:
+        """ Given a 'header' style specification dictionary,
+        return the beginning of a filename that corresponds to it.
+        ie, {"skychop":[(0,20)]}, 'flux' -> "skychop_0000-0020_flux.csv"
+        """
+        filename = ''
+        lownums = []
+        highnums = []
+        for key in specification:
+            for tup in specification[key]:
+                lownums.append(tup[0])
+                highnums.append(tup[1])
+            filename = key
+
+        num_tuple = (min(lownums), max(highnums))
+        if kind != '':
+            kind = "_" + kind + '.csv'
+        file_spec = f"{filename}_{num_tuple[0]:04}-{num_tuple[1]:04}{kind}"
+        return os.path.join(self.write_dir, file_spec)
+
+    def make_file_name_suffix(self, specification: dict, kind: str) -> str:
+        return f"{self.make_file_name(specification)}{self.get_file_suffix()}_{kind}.csv"
+
+    def get_file_suffix(self):
+        return ("" if not self.do_desnake else "_desnake") + ("" if not self.do_smooth else "_smooth") + \
+        ("" if not self.do_ica else "_ica")
 
     def reduce(self, flat_header, data_header, bs_header):
         # Process skychops / flat files
@@ -240,8 +272,7 @@ class ReductionHelper:
         grat_idx = z2pipl.configure_helper(obs=zobs_flux, keyword="gratingindex", supersede=True)
         pwv = z2pipl.configure_helper(obs=zobs_flux, keyword="mm PWV", supersede=True)
         elev = z2pipl.configure_helper(obs=zobs_flux, keyword="Elevation", supersede=True)
-        suffix = ("" if not self.do_desnake else "_desnake") + ("" if not self.do_smooth else "_smooth") + \
-        ("" if not self.do_ica else "_ica")
+
         # spectrum flattened by skychop
         flat_flux, flat_err, flat_pix_flag_list = flat_result[:2] + flat_result[-1:]
         norm_flux = zobs_flux/flat_flux
@@ -283,6 +314,7 @@ class ReductionHelper:
         norm_flux = zobs_i * zobs_v / -sign_use / s_r / filt_trans / tele_eff / atm_trans / d_freq / 1E9 / a_eff / 1E-26 
         norm_err = zobs_v * ((zobs_i_err / s_r)**2 + (zobs_i * (s_r_err / s_r))**2).sqrt() / filt_trans / tele_eff / atm_trans / d_freq / 1E9 / a_eff / 1E-26
         pix_flag_list = bs_pix_flag_list + zobs_pix_flag_list
+        suffix = self.get_file_suffix()
 
         norm_flux.to_table().write(os.path.join(self.write_dir, z2pipl.build_header(data_header)+suffix+"_spec_corr.csv"), overwrite=True)
         norm_err.to_table().write(os.path.join(self.write_dir, z2pipl.build_header(data_header)+suffix+"_spec_err_corr.csv"), overwrite=True)

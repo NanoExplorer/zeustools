@@ -8,11 +8,13 @@ from matplotlib import pyplot as plt
 from zeustools import data
 import importlib.resources as res
 
+
 def gaussian(x, sigma, mu, a):
     """I never understood why numpy or scipy don't have their own gaussian function.
     """
     return a*np.exp(-1/2*((x-mu)/(sigma))**2)
     # e^-a(x+b)^2 -> e^(1/2((x-mu)/sigma)**2) -> e^( 1/(2*sigma^2) (x-mu)^2) their a = my 1/(2sigma^2)
+
 
 def gaussian_integral(sigma, mu, a):
     """Same parameter order as my "gaussian" function, but no x input. Returns integral from -infinity to infinity of gaussian(x,sigma,mu,a) dx
@@ -554,13 +556,19 @@ def nan_helper(y):
         >>> # linear interpolation of NaNs
         >>> nans, x= nan_helper(y)
         >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+
+    WARNING: this used to do nans, now it does infs too. 
+
+    old version: return np.isnan(y), lambda z: z.nonzero()[0]
     """
 
-    return np.isnan(y), lambda z: z.nonzero()[0]
+    return ~np.isfinite(y), lambda z: z.nonzero()[0]
+
 
 def nan_interp(y):
-    nans, x= nan_helper(y)
-    y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+    nans, x = nan_helper(y)
+    y[nans] = np.interp(x(nans), x(~nans), y[~nans])
+
 
 def cube_nan_interpolator(cube):
     #despite its name, this function will also interp over masked values

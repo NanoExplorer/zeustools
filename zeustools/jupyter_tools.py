@@ -166,6 +166,8 @@ def data_handler(
     :errbar_limit: cutoff, largest error bar to be displayed in plots. Does not affect calculations except for the errbar analysis calculation
     :error_data_cut: cutoff, largest error bar for data to be included in calculations!
     """
+    if len(flux_files) == 0 or len(err_files) == 0:
+        raise ValueError("File lists must not be empty")
     if line_wl_range[0] < 400:
         band = 350
         spectral_array = np.arange(20)

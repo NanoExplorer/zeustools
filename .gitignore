@@ -113,3 +113,6 @@ pyrightconfig.json
 
 #old unused code
 zeustools/deprecated/
+
+#ugh mac files
+.DS_STORE
