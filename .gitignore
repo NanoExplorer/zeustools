@@ -115,4 +115,4 @@ pyrightconfig.json
 zeustools/deprecated/
 
 #ugh mac files
-.DS_STORE
+.DS_Store
