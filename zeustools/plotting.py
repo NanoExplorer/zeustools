@@ -178,7 +178,6 @@ class ZeusInteractivePlotter():
         self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.fig.canvas.mpl_connect('key_press_event', self.onkey)
 
-
     def redraw_top_plot(self):
         # Draw the array in the top panel, and store some objects
         # in member variables
@@ -207,7 +206,7 @@ class ZeusInteractivePlotter():
             spectral, spatial, array = px_for_btm_plot
             data_to_plot = self.cube[am.phys_to_mce(*px_for_btm_plot)]
             data_to_plot = data_to_plot - ma.min(data_to_plot)
-            self.ax2.plot(self.ts,data_to_plot,label=f"data({spectral},{spatial})")
+            self.ax2.plot(self.ts, data_to_plot, label=f"data({spectral},{spatial})")
 
             if btm_plot_type == ClickType.TS_FLAT_ONLY and self.flat is not None:
                 flat_to_plot = self.flat[am.phys_to_mce(*px_for_btm_plot)]
@@ -218,8 +217,10 @@ class ZeusInteractivePlotter():
                     flat_to_plot = flat_to_plot[0:len(self.ts)]
                 elif len(flat_to_plot) < len(self.ts):
                     ts_to_plot = self.ts[0:len(flat_to_plot)]
+                else:
+                    ts_to_plot = self.ts
 
-                self.ax2.plot(ts_to_plot,flat_to_plot,label=f"flat({spectral},{spatial}")
+                self.ax2.plot(ts_to_plot, flat_to_plot, label=f"flat({spectral},{spatial}")
             self.ax2.legend()
 
     def run_signal_correlator(self):
@@ -250,7 +251,8 @@ class ZeusInteractivePlotter():
                                                              event.ydata)
             if button == 1 or button == 3:
                 self.ax2.clear()
-                if self.debug: self.text.set_text(f"clicked{event.button}")
+                if self.debug: 
+                    self.text.set_text(f"clicked{event.button}")
                 # These are the only times an actual click occured
             self.click_loc = (spectral, spatial, array)
             self.bottom_plot()
@@ -285,6 +287,8 @@ class ZeusInteractivePlotter():
             flat_to_plot = flat_to_plot[0:len(self.ts)]
         elif len(flat_to_plot) < len(self.ts):
             ts_to_plot = self.ts[0:len(flat_to_plot)]
+        else:
+            ts_to_plot = self.ts
 
         self.ax2.plot(ts_to_plot, flat_to_plot, label=f"flat({self.click_loc[0]},{self.click_loc[1]})")
 
