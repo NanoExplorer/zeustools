@@ -18,7 +18,7 @@ num2tex.configure(exp_format='cdot', option_configure_help_text=False)
 num2tex = num2tex.num2tex
 
 
-def plot_spec(spec, errbar_limit=1, **kwargs):
+def plot_spec(spec, errbar_limit=1, flux_unit="Jy", **kwargs):
     #plt.figure(figsize=(8, 6))
     #spec[1][spec[2]>1e-16] = np.nan
 
@@ -35,7 +35,7 @@ def plot_spec(spec, errbar_limit=1, **kwargs):
                  fmt='none', 
                  ecolor=lncolor, 
                  alpha=line[0].get_alpha())
-    plt.ylabel("Flux, Jy")
+    plt.ylabel(f"Flux, {flux_unit}")
     plt.tight_layout()
 
 
@@ -151,7 +151,8 @@ def data_handler(
     errbar_limit=1,
     error_data_cut=None,
     plot_details=True,
-    save_final_fig=True
+    save_final_fig=True,
+    flux_unit="Jy"
 ):
     """Run an automatic process pipeline style reduction on data that has been
     reduced with bo's pipeline.
@@ -195,21 +196,23 @@ def data_handler(
     else:
         for i, (px, flux, error) in enumerate(flux_data):
             flux_data[i] = (px[:20], flux[:20], error[:20])
-    # AVERAGE ALL DATA TO NEW GRID
+
     if plot_indiv:
         displaymd("### Spectra of individual observations")
         plt.figure()
         i = 0
         for spat, idx, flux in zip(spatial_pos, grating_idx, flux_data):
             orig_wl_centers = gc.phys_px_to_wavelength(spectral_array, spat, band, idx)
-            plot_spec((orig_wl_centers, flux[1]+i, flux[2]), errbar_limit=errbar_limit)
+            # The plus i produces the offsets needed to inspect near-zero data
+            plot_spec((orig_wl_centers, flux[1]+i, flux[2]), errbar_limit=errbar_limit,flux_unit=flux_unit)
             plt.title(f"{name} Individual Obs. Spectra")
             plt.xlabel("Wavelength [$\\mu$m]")
             plt.axhline(y=0, color='k', linewidth=0.5)
             plt.tight_layout()
             i += 1
         plt.show()
-        
+
+    # AVERAGE ALL DATA TO NEW GRID
     regridded_flux, regridded_err = regridding_weighted_average(bins_new, 
                                                                 orig_wl_edges, 
                                                                 flux_data, 
@@ -222,6 +225,7 @@ def data_handler(
                regridded_flux,
                regridded_err[:, 0]),
               errbar_limit=errbar_limit,
+              flux_unit=flux_unit,
               label="Raw spectrum")
 
     #plt.axvline(obs_wav)
@@ -246,7 +250,7 @@ def data_handler(
     
     # print continuum flux
     continuum, cont_err = subbed_data[3:5]  # continuum flux Jy and error
-    displaymd(f"Continuum flux: ${continuum:.3f} \\pm {cont_err:.3f}$ Jy")
+    displaymd(f"Continuum flux: ${continuum:.3f} \\pm {cont_err:.3f}$ {flux_unit}")
     
     # Make the fancy/advanced figure!!!
     plt.figure(figsize=(8, 8))
@@ -264,7 +268,8 @@ def data_handler(
     plot_spec(linear_sub_data,
               errbar_limit=errbar_limit,
               label="Continuum-subtracted",
-              color="C0")
+              color="C0",
+              flux_unit=flux_unit)
     if plot_details:
         plt.plot(new_data[0], 
                  new_data[0]*linear_sub_data[3][0]+linear_sub_data[3][1],
@@ -307,4 +312,5 @@ def data_handler(
     displaymd("### Errorbar information")
     displaymd(f"Average error bar from final spectrum = {average_err_bar:.2f}")
     displaymd(f"Standard deviation of final spectrum baseline = {baseline_computed_err:.2f}")
+    plt.sca(ax1)
     return line_flux, line_err
