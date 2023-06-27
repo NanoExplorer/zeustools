@@ -41,13 +41,13 @@ def load_data_and_extract(fname, spat, err_file=None):
         print(pandas.read_csv(fname))
         print(fname)
         raise
-    err_file = err_file or fname.replace("flux","err")
-    noise = ma.array(pandas.read_csv(err_file).iloc[spat,4:],dtype=float)
-    nan_idx = np.logical_or(np.isnan(signal),np.isnan(noise))
+    err_file = err_file or fname.replace("flux", "err")
+    noise = ma.array(pandas.read_csv(err_file).iloc[spat, 4:], dtype=float)
+    nan_idx = np.logical_or(np.isnan(signal), np.isnan(noise))
     signal[nan_idx] = ma.masked
     noise[nan_idx] = ma.masked
     spectral_position = np.arange(len(signal))
-    return spectral_position,signal,noise
+    return spectral_position, signal, noise
 
 
 def extract_from_beamfile(fname, beam, spat, arrnums):
