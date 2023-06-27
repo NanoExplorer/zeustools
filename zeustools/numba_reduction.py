@@ -159,7 +159,7 @@ def offset_data_reduction(chop, cube, lophase = 1):
     #print(chunks[-1].shape,chunks[-2].shape, chunks[-3].shape,chunks[-4].shape,chunks[-5].shape)
     reduced_chunks = reduce_chunks(chunks)
     #print(reduced_chunks[1, 1])
-    time_series,_ = offset_subtract_chunks(reduced_chunks, phases, lophase=lophase)
+    time_series, _ = offset_subtract_chunks(reduced_chunks, phases, lophase=lophase)
     #print(time_series[1,1])
     s = time_series.shape
     if s[2] % 2 != 0:
@@ -246,7 +246,7 @@ def calculate_chunk_weights(chunks):
     chunk_n = np.ones(len(chunks))
     for i, c in enumerate(chunks):
         chunk_n[i] = float(c.shape[2])
-    return chunk_n/std**2 /4
+    return chunk_n/std**2 / 4
     # equivalent to 1/(sigma^2) where sigma = std/sqrt(n) the 4 is for 400 hz sample/100 hz thermal
     # the 4 is here, because we have less independent samples than chunk_n
     
@@ -274,3 +274,106 @@ def subtract_all_model_snake(cube, snake):
             slopes[i, j] = m
             intercepts[i, j] = b
     return subtracted_cube, slopes, intercepts
+
+
+def weighted_data_reduction(chop, cube, lophase = 1, exclude_last_phases = 2):
+    """ Given chop data and data cube, reduce data and return a 
+    flux value, weight, and standard deviation for each chop pair
+    in lists
+    """
+    # lophase = 1 appears to be correct for calibration data like Uranus
+    # Exclude_last_phases corrects for the fact that *sometimes* it seems the last phase or so of data has drastically reduced signal 
+    # compared to the rest of the stream.
+    cube = zt.dac_converters.correct_signs(cube)
+    chunks, phases = offset_chunk_data(chop, cube)
+    #print(chunks[-1].shape,chunks[-2].shape, chunks[-3].shape,chunks[-4].shape,chunks[-5].shape)
+    c_wts = calculate_chunk_weights(chunks)
+    reduced_chunks = reduce_chunks(chunks)
+    #print(reduced_chunks[1, 1])
+    time_series, sub_wts = offset_subtract_chunks(
+        reduced_chunks, 
+        phases, 
+        lophase=lophase,
+        weights=c_wts
+    )
+    #print(time_series[1,1])
+    s = time_series.shape
+    time_series = time_series[:, :, :s[2]-exclude_last_phases]
+    sub_wts = sub_wts[:, :, :s[2]-exclude_last_phases]
+    s = time_series.shape
+    if s[2] % 2 != 0:  # Ensure we have an even number of half-chop phases for the next step
+        time_series = time_series[:, :, :s[2]-1]
+        sub_wts = sub_wts[:, :, :s[2]-1]
+    #print(s)
+    newshape = (s[0], s[1], s[2]//2, 2)
+    #print(newshape)
+    sub_std_wts = 1/np.std(time_series, axis=2)**2
+    for_avg = time_series.reshape(newshape)
+    w_for_avg = sub_wts.reshape(newshape)
+    #print(for_avg[1, 1])
+    final_data, final_wts = np.average(
+        for_avg, 
+        axis=3, 
+        weights=w_for_avg, 
+        returned=True
+    )
+    return final_data, final_wts, sub_std_wts*2  # multiply by two because we just averaged the half-chop phases
+
+
+class ReductionStepResult:
+    def __init__(self, data, err_stdev, err_hash, err_spec):
+        self.data = data
+        self.err_stdev = err_stdev
+        self.err_hash = err_hash
+        self.err_spec = err_spec
+
+
+class Reducer:
+    """ This class is designed to provide access to
+    reduction routines and the various intermediate data
+    products if required 
+
+    Intermediate data products that we want:
+        spectrum for each beam pair 
+        spectrum for each beam?
+        time-based standard deviation
+        spectrum-based standard deviation
+        hash/sqrt(n) error estimation
+
+    desired api:
+        reducer.load_raw_data( list of raw data files )
+        reducer.make_beams( median/mean/etc, baseline subtraction option )
+        reducer.make_beam_pairs( mean/median, baseline subtraction option )
+        reducer.add_beam_pairs(mean/median, baseline subtraction option )
+        reducer.shift_and_add_obs( ? )
+
+    each step should populate the parameters 
+    """
+    def __init__(self):
+        self.orig_data = None
+        self.beams = None
+        self.beampairs = None
+        self.observations = None
+        self.final_result = None
+
+    def load_data_from_dict_lists(
+        self,
+        data_list,
+        flat_list,
+        folder_list,
+        spatial_pos,
+        spectral_pos  # or grating index and line wavelength?
+    ):
+        """ Set up reduction from the lists of dictionaries
+        that I used to run my "helper object" for Bo's pipeline
+        """
+        pass
+
+    def reduce_nods(self):
+        pass
+
+    def reduce(self):
+        """ This function reduces all of the data as specified
+        by setting the reduction params """
+        pass
+
