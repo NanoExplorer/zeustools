@@ -11,7 +11,8 @@ import pandas as pd
 def baseline_subtractor(
     flux_pd,    
     err_pd,
-    flat_pd
+    flat_pd,
+    ignore_px = []
 ):
     """ MODIFIES flux_pd so that the baseline is subtracted out of all the 350 $\\mu$m data 
     Note:ONLY 350 microns! 
@@ -29,22 +30,29 @@ def baseline_subtractor(
         for array in (0, 1):  # Process 350 and 450 array separately
             x = np.arange(20*array, 20*array+20)  # Spatial positions for whichever array we're on 
             y = flux_arr[x]/flat_arr[x] 
-            e = err_arr[x]/flat_arr[x]
+            e = np.abs(err_arr[x]/flat_arr[x])
             nans, f = zt.nan_helper(y)
-            #nans = np.logical_or(nans,e<1e-8)
+            nans = np.logical_or(nans, e < 1e-8)
+
+            for i_px in ignore_px:
+                nans[i_px] = True  
+
             if np.all(nans):
-                continue
-            # Linear fit, excluding nans
-            try:
-                res = np.polyfit(x[~nans], y[~nans], 1, w=1/e[~nans]**2)
-            except np.linalg.LinAlgError:
-                print(x,y,e)
-                return
+                res = 0
+            else:
+                # Linear fit, excluding nans
+                try:
+                    #res = np.polyfit(x[~nans], y[~nans], 0, w=1/e[~nans]**2)
+                    res = np.average(y[~nans], weights=1/e[~nans]**2)
+                except np.linalg.LinAlgError:
+                    print("Linear algebra error at x,y,e:", x, y, e)
+                    return
             for x1, j in enumerate(x):
                 # Write the data back to the pandas frames. 
-                flux_pd.at[i, f"spectral_index={j}"] = y[x1]-res[0]*j-res[1]
-                err_pd.at[i, f"spectral_index={j}"] = e[x1]
-            
+                flux_pd.at[i, f"spectral_index={j}"] = (y[x1]-res)*1000
+                err_pd.at[i, f"spectral_index={j}"] = (e[x1])*1000
+    return flux_pd, err_pd
+
 
 def make_subtracted_beampair_file(
     flux_file: str, 
@@ -52,32 +60,43 @@ def make_subtracted_beampair_file(
     flat_file: str,
     replace="beam_pairs",
     replace_with="subtd_beam_pairs",
-    replace_with_2="subtd_spec"
+    replace_with_2="subtd_spec",
+    replace_with_std="subtd_spec_std",
+    line_px = []
 ):
-    flux_pd = pd.read_csv(flux_file)  # Read flux error and flat tables
+    flux_pd = pd.read_csv(flux_file)  # Read flux, error, and flat tables
     err_pd = pd.read_csv(err_file)
     flat_pd = pd.read_csv(flat_file)
-    baseline_subtractor(flux_pd, err_pd, flat_pd)  # Subtract
-    flux_pd.to_csv(flux_file.replace(replace, replace_with))
+    flux_pd, err_pd = baseline_subtractor(flux_pd, err_pd, flat_pd, ignore_px=line_px)  # Subtract
+    flux_pd.to_csv(flux_file.replace(replace, replace_with), index=False)
     # Write all the individual subtracted beampairs
     
     result_pd = flux_pd.iloc[:0, :].copy()
     res_err_pd = flux_pd.iloc[:0, :].copy()
+    std_err_pd = flux_pd.iloc[:0, :].copy()
     for i in range(9):  #for every spatial position average all the beam pairs
         spatial_df = flux_pd[flux_pd.spatial_position == i]  # extract row from df
         spatial_flux = np.ma.array(spatial_df.iloc[:, 4:])  # put it into a numpy array
         spatial_err = np.ma.array(err_pd[flux_pd.spatial_position == i].iloc[:, 4:])
-        spatial_flux.mask = np.isnan(spatial_flux)  # filter nans
+        spatial_err[spatial_err < 0.08] = np.ma.masked
+
+        spatial_flux[np.isnan(spatial_flux)] = np.ma.masked  # filter nans
+        spatial_err[np.isnan(spatial_err)] = np.ma.masked
+        #print(np.ma.min(spatial_err), np.ma.median(spatial_err))
         result, weight = np.ma.average(spatial_flux, axis=0, weights=1/spatial_err**2, returned=True)
+        std = np.ma.std(spatial_flux,axis=0)/np.sqrt(spatial_flux.count(axis=0))
         # Average!
         result = result.filled(np.nan)
         weight = weight.filled(np.nan)
+        std = std.filled(np.nan)
         result_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(result)
         res_err_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(1/np.sqrt(weight))
+        std_err_pd.loc[i] = list(spatial_df.iloc[0, :4])+list(std)
         # Write new pandas tables. This is apparently a bad way to do that, but shrug
         
     result_pd.to_csv(flux_file.replace(replace, replace_with_2), index=False)
     res_err_pd.to_csv(err_file.replace(replace, replace_with_2), index=False)
+    std_err_pd.to_csv(err_file.replace(replace, replace_with_std), index=False)
     return res_err_pd
         
 
