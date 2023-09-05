@@ -267,18 +267,5 @@ class ZeusOpticsChain:
                 except ValueError:
                     transmission.append(np.nan)
 
-
             table.append([filter_name]+transmission)
         return table
-
-
-def airmass_factor(elev):
-    """ compute the airmass at a given elevation.
-    
-    :param elev: elevation / altitude in degrees
-
-    :return: airmass. multiply this by pwv before calculating atmosphere transmission.
-    """
-    elev = elev*np.pi/180
-    return(np.sin(elev))
-
