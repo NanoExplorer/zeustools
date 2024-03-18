@@ -83,6 +83,45 @@ def chunk_data_1d(chop, ts):
 
 
 @njit
+def offset_chunk_data_1d(chop, ts):
+    """
+    Collect each data set associated with a single chop/wobble phase
+    into a more manageable format.
+    
+    :param chop: numpy array of chop phase for each data point
+    :param ts: 1-d time series
+    :return: lists of floats instead of the arrays returned by :func:`chunk_data`
+    """
+    
+    lastchop = chop[0]
+    start_idx = 0
+    if len(chop) != len(ts):
+        raise RuntimeError("invalid shapes")
+        
+    chunks = numba.typed.List()
+    phases = numba.typed.List()
+    last_chop_size = 0
+    for i in range(len(chop)):
+        if lastchop != chop[i] or i == len(chop)-1: 
+            # when switching phases or ending data file
+            # bundle data together:
+            half_chop_size = (i-start_idx)//2
+            half_chop_idx = i - half_chop_size
+            if half_chop_size < last_chop_size-1:
+                break
+            chunks.append(ts[start_idx:half_chop_idx])
+            chunks.append(ts[half_chop_idx:i])
+            phases.append(lastchop)
+            phases.append(lastchop)
+            # set starting point for new chunk:
+            start_idx = i 
+
+            lastchop = chop[i]
+            last_chop_size = half_chop_size
+            
+    return (chunks, phases)
+
+@njit
 def offset_chunk_data(chop, cube):
     """
     Instead of chunking entire phases, chunk half-phases.
@@ -156,20 +195,20 @@ def offset_data_reduction(chop, cube, lophase = 1):
     # lophase = 1 appears to be correct for calibration data like Uranus
     cube = zt.dac_converters.correct_signs(cube)
     chunks, phases = offset_chunk_data(chop, cube) 
-    #print(chunks[-1].shape,chunks[-2].shape, chunks[-3].shape,chunks[-4].shape,chunks[-5].shape)
+    # print(chunks[-1].shape,chunks[-2].shape, chunks[-3].shape,chunks[-4].shape,chunks[-5].shape)
     reduced_chunks = reduce_chunks(chunks)
-    #print(reduced_chunks[1, 1])
+    # print(reduced_chunks[1, 1])
     time_series, _ = offset_subtract_chunks(reduced_chunks, phases, lophase=lophase)
-    #print(time_series[1,1])
+    # print(time_series[1,1])
     s = time_series.shape
     if s[2] % 2 != 0:
         time_series = time_series[:, :, :s[2]-1]
-    #print(s)
+    # print(s)
     newshape = (s[0], s[1], s[2]//2, 2)
-    #print(newshape)
+    # print(newshape)
     
     for_avg = time_series.reshape(newshape)
-    #print(for_avg[1, 1])
+    # print(for_avg[1, 1])
     final_data = np.mean(for_avg, axis=3)
     return final_data
 
