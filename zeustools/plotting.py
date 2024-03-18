@@ -132,7 +132,9 @@ class ZeusInteractivePlotter():
         if ts is not None and len(ts)<cube.shape[2]:
             cube = cube[:,:,:len(ts)]
         self.cube = cube
-        self.cube.fill_value= np.nan
+        if self.cube is not None:
+            self.cube.fill_value= np.nan
+            # Happens when using the iv plotters
         if ts is not None and len(ts) > cube.shape[2]:
             ts = ts[:cube.shape[2]]
         self.ts = ts
@@ -171,7 +173,8 @@ class ZeusInteractivePlotter():
         # for some reason when inside a callback for matplotlib.
 
         # Make a fake time series if needed
-        if self.ts is None:
+        if self.ts is None and self.cube is not None:
+            # with iv plotters cube is none and this errors
             self.ts = np.arange(self.cube.shape[2])
 
         # Set up keybinds
@@ -263,7 +266,7 @@ class ZeusInteractivePlotter():
 
             self.ax2.legend()
 
-            self.plt.draw()
+            #self.fig.canvas.draw_idle()
         except Exception as e:
             self.error = e
             # raise
@@ -303,8 +306,8 @@ class ZeusInteractivePlotter():
                     self.data[am.phys_to_mce(spectral, spatial, array)] = ma.masked
                     #this if/else is so ugly, but I don't know how to do it better
                     # Could just do .mask = !.mask? test it out later
+                self.cb.remove() #Looks like clearing the axis might prevent the colorbar from removing correctly
                 self.ax.clear()
-                self.cb.remove()
                 self.redraw_top_plot()
                 if self.debug: 
                     self.text = self.ax.text(0, 5, f"min:{np.nanmin(self.data.filled())},max:{np.nanmax(self.data.filled())}", va="bottom", ha="left")

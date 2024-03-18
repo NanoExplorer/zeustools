@@ -289,10 +289,10 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
 
         super().__init__(self.rn_data,
                          None,
-                         ts=1,  # ugly hack
+                         # ts=1,  # ugly hack
                          # prevents parent class
                          # from attempting to auto
-                         # generate ts 
+                         # generate ts / now broken/fixed
                          flat=1  # basically same
                          # tricks the onclick method
                          # into letting us display the "flat"
@@ -365,7 +365,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         return(min_b,min_r)
     
     def interactive_plot_power(self, array='all'):
-        array = zt.array_name(array)
+        array = zt.array_name_2(array)[0]
         data = np.ma.copy(self.power_data)
         if array == "a":
             data[:, 12:] = np.ma.masked
@@ -524,7 +524,7 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
 
     def _interactive_plot_array(self,data,array):
         data = np.ma.copy(data)
-        array = zt.array_name(array)
+        array = zt.array_name_2(array)[0]
         if array == "a":
             data[:, 12:] = np.ma.masked
         elif array == "b":
@@ -607,7 +607,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
 
     def _interactive_plot_array(self,data,array):
         data = np.ma.copy(data)
-        array = zt.array_name(array)
+        array = zt.array_name_2(array)[0]
         if array == "a":
             data[:, 12:] = np.ma.masked
         elif array == "b":

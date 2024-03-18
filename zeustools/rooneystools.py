@@ -340,8 +340,8 @@ def array_name_2(name):
         name = 'b'
     elif name == '600' or name == 'C':
         name = 'c'
-    elif name == "all":
-        pass
+    elif name == "ALL":
+        name = "*"  # I have no idea whether this is a good idea
     else:
         raise ValueError("invalid array name")
     return name
@@ -366,8 +366,12 @@ def array_name(name):
 
     :param name: Human readable name for the array. Should be a string or number.
     :return: one of 'a', 'b', or 'c'.
+    :raises: ValueError if you pass 'all' in because this is supposed to 
+             just deal with file names. 
     """
     arr = array_name_2(name)
+    if arr=='*':
+        raise ValueError("array 'all' not allowed: use array_name_2 function instead")
     return arr[0]
 
 
