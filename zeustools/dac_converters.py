@@ -154,9 +154,7 @@ def fb_dac_to_tes_current(fb,
     # again, last factor of 2 is because voltage is bipolar
     fb_current = fb_raw_voltage / dewar_fb_R
     tes_current = fb_current / rel_fb_inductance
-    with res.open_text(data, "column_sign.dat") as file:
-        table = np.loadtxt(file)
-    tes_current = tes_current * table[:, 1]
+    tes_current = correct_signs(tes_current)
     return tes_current
 
 
