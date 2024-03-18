@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import numpy as np
 from zeustools import mce_data
 from zeustools import leapseconds
-from zhklib import database
+#from zhklib import database
 from glob import glob
 import os
 from matplotlib import pyplot as plt
