@@ -599,7 +599,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
                         T_bath[good_data],  # noqa: E128
                         P_sat[good_data],
                         p0=[3.1, 0.3e-12, 172.5],
-                        bounds=([3, 5e-14, 150], [3.5, 2e-12, 220]),
+                        bounds=([3, 5e-14, 150], [4, 2e-12, 220]),
                         sigma=np.full_like(P_sat[good_data], 1e-12),
                         maxfev=8000)
                     #print(popt)
