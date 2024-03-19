@@ -7,9 +7,10 @@ from scipy import stats
 from scipy import optimize
 from zeustools import plotting as zt_plotting
 import zeustools as zt
-from zeustools.dac_converters import real_units
+import zeustools.dac_converters as dacc
 
 am = zt.ArrayMapper()  
+
 
 def super_remover(data):
     """ Attempt to remove unlocked data from IV curves by finding the first jump of larger than 1e7 
@@ -86,14 +87,14 @@ def linear_normal_fit(bias, data):
 
 
 def fixed_slope_interceptor(bias, data, slope):
-    end_idx,_ = find_transition_index(bias, data)
+    end_idx, _ = find_transition_index(bias, data)
     valid_bias = bias[0:end_idx]
     valid_data = data[0:end_idx]
     
     de_sloped = valid_data - valid_bias*slope
 #     plot(valid_bias,valid_data)
 #     plot(valid_bias,valid_bias*slope)
-    return(np.average(de_sloped))
+    return (np.average(de_sloped))
 
 
 class IVHelper:
@@ -129,6 +130,8 @@ class IVHelper:
                 i = file.find("mK")
             elif "mk" in file:
                 i = file.find("mk")
+            else:
+                raise ValueError("Could not determine temperature from file name, no temperature override provided")
             self.temperatures.append(file[i-3:i+2])
             self.temperatures_int.append(int(file[i-3:i]))
         else:
@@ -146,7 +149,8 @@ class IVHelper:
         mce_data_cleaned = super_remover(mce_data_masked)
         # This removes a lot of junk, but doesn't always get it all
 
-        self.data.append(mce_data_cleaned)
+        self.data.append(-dacc.correct_signs(mce_data_cleaned))
+        # Minus sign was determined empirically!!!!
         bias = np.loadtxt(file+".bias", dtype=int, skiprows=1)
         tile_arg = list(mce_data_cleaned.shape)
         tile_arg[2] = 1  # this is probably going to be [33,24,1] which is
@@ -191,10 +195,11 @@ class IVHelper:
             # Clear cache, b/c if any IVs have been calculated, they're in wrong units now
             self.cache = {}
             self.is_real_units = True
-            for i in range(len(self.bias)):
-                self.bias[i], self.data[i] = real_units(self.bias[i], 
-                                                        self.data[i], 
-                                                        whole_array=True)
+            # for i in range(len(self.bias)):
+            #     self.bias[i], self.data[i] = real_units(self.bias[i], 
+            #                                             self.data[i], 
+            #                                             whole_array=True)
+            # cant do this until intercepts are zeroed
 
     def get_temperature_colorbar_norm(self):
         norm = matplotlib.colors.Normalize(vmin=min(self.temperatures_int),
@@ -203,69 +208,84 @@ class IVHelper:
 
     def get_corrected_ivs(self, col, row, clean_again=True):
         """Returns all iv curves for col,row,
-        currected to have normal y-intercept 0 and normal slope fixed """
-        if (col, row) in self.cache:
+        currected to have normal y-intercept=0 """
+        try:
             # print("CACHE HIT")
             return self.cache[(col, row)]
-        else:
-            # print("CALCULATING")
-            all_slopes = []
-            good_data = []
-            for i in range(len(self.data)):
-                # print(f"PROCESSING DATA {i}")
-                one_px = self.data[i][row, col]
+        except KeyError:
+            pass
+        # print("CALCULATING")
+        all_slopes = []
+        good_data = []
+        for i in range(len(self.data)):
+            # print(f"PROCESSING DATA {i}")
+            one_px = self.data[i][row, col]
 
-                # make sure there is at least some data here
-                if not one_px.mask.all():
+            # make sure there is at least some data here
+            if one_px.mask.all():
+                continue
 
-                    params, trans_idx = linear_normal_fit(self.bias[i][row, col], 
-                                                          one_px)
-                    if clean_again:
-                        self.data[i][row, col, trans_idx:] = np.ma.masked
-                        # Be aware, although this will mask a ton of squid unlocks
-                        # it will also mask a few real superconducting branches
-                        # however, I don't think that's too big a deal.
-                        # also remember the bad data will be the last data points
-                        # even though they're to the left in the plot
-                    # note! if we're in real units, slope will be in mhos (ohms^-1).
-                    # print(params.slope)
-                    abslope = np.abs(params.slope)
-                    # print(f"DATA {i} SLOPE IS {abslope:.3e}")
-                    if not self.is_real_units and abslope > 4500 and abslope < 7000:
-                        all_slopes.append(params.slope)
-                        good_data.append(i)
-                    elif self.is_real_units and abslope > 100 and abslope < 700:
-                        all_slopes.append(params.slope)
-                        good_data.append(i)
-                    else:
-                        # print(f"Rejecting IV curve with 'normal slope' {params.slope:.2e}")
-                        pass
-            avg_slope = np.ma.average(all_slopes)
-            # print(f"average slope! {avg_slope:.2e}")
-            new_data = []
-            new_bias = []
-            new_temp = []
+            params, trans_idx = linear_normal_fit(self.bias[i][row, col], 
+                                                  one_px)
+            if clean_again:
+                self.data[i][row, col, trans_idx:] = np.ma.masked
+                # Be aware, although this will mask a ton of squid unlocks
+                # it will also mask a few real superconducting branches
+                # however, I don't think that's too big a deal.
+                # also remember the bad data will be the last data points
+                # even though they're to the left in the plot
+            # print(params.slope)
+            abslope = np.abs(params.slope)
+            # print(f"DATA {i} SLOPE IS {abslope:.3e}")
+            if 4500 < abslope < 7000:
+                all_slopes.append(params.slope)
+                good_data.append(i)
+            # elif self.is_real_units and abslope > 100 and abslope < 700:
+            #     all_slopes.append(params.slope)
+            #     good_data.append(i)
+            # real units dont work that way anymore
+            # else:
+            #     # print(f"Rejecting IV curve with 'normal slope' {params.slope:.2e}")
+            #     pass
 
-            for i in good_data:
-                one_px = self.data[i][row, col]
-                new_intercept = fixed_slope_interceptor(self.bias[i][row, col], one_px, avg_slope)
-                # print(new_intercept)
-                if avg_slope < 0:
-                    new_data.append(-(one_px - new_intercept))
-                else:
-                    new_data.append(one_px - new_intercept)
+        avg_slope = np.ma.average(all_slopes)
+        # print(f"average slope! {avg_slope:.2e}")
+        new_data = []
+        new_bias = []
+        new_temp = []
+
+        for i in good_data:
+            one_px = self.data[i][row, col]
+            new_intercept = fixed_slope_interceptor(self.bias[i][row, col], one_px, avg_slope)
+            # print(new_intercept)
+            # if avg_slope < 0:
+            #     new_data.append(-(one_px - new_intercept))
+            # else:
+            real_fb = one_px - new_intercept
+            if self.is_real_units:
+                voltage, current = dacc.real_units(self.bias[i][row, col], real_fb, col=col)
+                new_data.append(current)
+                new_bias.append(voltage)
+            else:
+                new_data.append(real_fb)
                 new_bias.append(self.bias[i][row, col])
-                new_temp.append(self.temperatures_int[i])
-            self.cache[(col, row)] = (new_bias, 
-                                      new_data, 
-                                      new_temp, 
-                                      avg_slope)
-        return(new_bias, new_data, new_temp, avg_slope)
+            new_temp.append(self.temperatures_int[i])
+        if self.is_real_units:
+            avg_slope = dacc.dac_normal_slope_to_ohms(avg_slope, col)
+        self.cache[(col, row)] = (new_bias, 
+                                  new_data, 
+                                  new_temp, 
+                                  avg_slope)
+        return (new_bias, new_data, new_temp, avg_slope)
 
 
 class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
-    def __init__(self, directory,
-                 power_temp=130, file=False, file_temp_override=None,real_units=True):
+    def __init__(self, 
+                 directory,
+                 power_temp=130, 
+                 file=False, 
+                 file_temp_override=None,
+                 real_units=True):
         # If Plot_power = True, the 2-d array plot/colorbar
         # will show the saturation powers at the temperature = power_temp
         # Otherwise (plot_power=False) it will show normal resistance
@@ -276,7 +296,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             self.ivhelper.load_directory(directory)
         else:
             self.ivhelper = IVHelper()
-            self.ivhelper.load_file(directory,temp=file_temp_override)
+            self.ivhelper.load_file(directory, temp=file_temp_override)
         if real_units:
             self.ivhelper.switch_to_real_units()
 
@@ -315,18 +335,18 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         shape = self.ivhelper.data[0].shape
         slopes = np.ones((shape[0], shape[1]))
         all_temps = self.ivhelper.temperatures_int
-        powers = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
-        powers.fill_value=np.nan
+        powers = np.ma.masked_all((shape[0], shape[1], len(all_temps)))
+        powers.fill_value = np.nan
 
         for i in range(shape[0]):
             for j in range(shape[1]):
                 bias, data, temps, slope = self.ivhelper.get_corrected_ivs(j, i)
                 slopes[i, j] = slope
-                for k,temp in enumerate(temps):
+                for k, temp in enumerate(temps):
                     try:
                         t_idx = all_temps.index(temp)
                         power = bias[k] * data[k]
-                        power[power<0] = np.ma.masked
+                        power[power < 0] = np.ma.masked
                         powers[i, j, t_idx] = np.ma.min(power)
                     except ValueError:
                         # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
@@ -338,31 +358,31 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
 
         powers[powers < 0] = np.ma.masked
         self.powers = powers
-        self.power_data = powers[:,:,all_temps.index(self.power_temp)]
+        self.power_data = powers[:, :, all_temps.index(self.power_temp)]
         self.rn_data = data        
 
     def get_min_bias_and_resistance(self):
         shape = self.ivhelper.data[0].shape
         all_temps = self.ivhelper.temperatures_int
-        min_r = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
-        min_r.fill_value=np.nan
-        min_b = np.ma.masked_all((shape[0], shape[1],len(all_temps)))
-        min_b.fill_value=np.nan
+        min_r = np.ma.masked_all((shape[0], shape[1], len(all_temps)))
+        min_r.fill_value = np.nan
+        min_b = np.ma.masked_all((shape[0], shape[1], len(all_temps)))
+        min_b.fill_value = np.nan
 
         for i in range(shape[0]):
             for j in range(shape[1]):
-                bias,data,temps,slope=self.ivhelper.get_corrected_ivs(j,i)
-                for k,temp in enumerate(temps):
+                bias, data, temps, slope = self.ivhelper.get_corrected_ivs(j, i)
+                for k, temp in enumerate(temps):
                     try:
-                        t_idx=all_temps.index(temp)
+                        t_idx = all_temps.index(temp)
                         power = bias[k] * data[k]
-                        power[power<0] = np.ma.masked
+                        power[power < 0] = np.ma.masked
                         idx = np.argmin(power)
-                        min_b[i,j,t_idx] = bias[k][idx]
-                        min_r[i,j,t_idx] = bias[k][idx]/data[k][idx]
+                        min_b[i, j, t_idx] = bias[k][idx]
+                        min_r[i, j, t_idx] = bias[k][idx]/data[k][idx]
                     except ValueError:
                         pass
-        return(min_b,min_r)
+        return (min_b, min_r)
     
     def interactive_plot_power(self, array='all'):
         array = zt.array_name_2(array)[0]
@@ -389,9 +409,9 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
     # override
     def bottom_plot(self):
         row, col = am.phys_to_mce(*self.click_loc)
-        self.power_resistance_plot(row,col,self.ax2)
+        self.power_resistance_plot(row, col, self.ax2)
 
-    def power_resistance_plot(self,row,col,ax):
+    def power_resistance_plot(self, row, col, ax):
         bias, data, temp, slope = self.ivhelper.get_corrected_ivs(col, row)
         cmap = plt.cm.plasma
         norm = self.ivhelper.get_temperature_colorbar_norm()
@@ -417,8 +437,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             ax.set_ylabel("det bias / squid fb")
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 
-        self.update_colorbar(sm,ax)
-
+        self.update_colorbar(sm, ax)
 
     # override
     def bottom_flat(self):
@@ -433,7 +452,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             else:
                 self.ax2.plot(bias[i].data, data[i].data, c=cmap(norm(temp[i])))
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-        self.update_colorbar(sm,ax=self.ax2)
+        self.update_colorbar(sm, ax=self.ax2)
         if self.ivhelper.is_real_units:
             self.ax2.set_xlim(0, 3e-7)
             self.ax2.set_ylim(0, 7e-5)
@@ -443,9 +462,15 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             self.ax2.set_xlabel("bias")
             self.ax2.set_ylabel("sq feedback")           
 
-    def detectors_hist(self,title,bins=30,arrays=[350,450],plot_rn=False,data_override=None,xlabel="none"):
+    def detectors_hist(self, 
+                       title,
+                       bins=30,
+                       arrays=[350, 450],
+                       plot_rn=False,
+                       data_override=None,
+                       xlabel="none"):
         plt.figure()
-        ax=plt.gca()
+        ax = plt.gca()
         if data_override is not None:
             dat_pw = data_override.filled()
             ax.set_xlabel(xlabel)
@@ -510,19 +535,19 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         self._interactive_plot_array(self.K*1e12,array)
         self.cb.set_label("K [pW/mK$^n$]")
 
-    def interactive_plot_tc(self,array="all"):
+    def interactive_plot_tc(self, array="all"):
         self._interactive_plot_array(self.Tc,array)
         self.cb.set_label("Tc [mK]")
 
-    def interactive_plot_n(self,array="all"):
+    def interactive_plot_n(self, array="all"):
         self._interactive_plot_array(self.n,array)
         self.cb.set_label("n")
 
-    def interactive_plot_g(self,array="all"):
-        self._interactive_plot_array(self.n*self.K*(self.Tc)**(self.n-1)*1e12,array)
+    def interactive_plot_g(self, array="all"):
+        self._interactive_plot_array(self.n*self.K*(self.Tc)**(self.n-1)*1e12, array)
         self.cb.set_label("G [pW/mK]")
 
-    def _interactive_plot_array(self,data,array):
+    def _interactive_plot_array(self, data, array):
         data = np.ma.copy(data)
         array = zt.array_name_2(array)[0]
         if array == "a":
@@ -534,17 +559,18 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
 
     def bottom_plot(self):
         row, col = am.phys_to_mce(*self.click_loc)
-        self.power_bath_plot(row,col,self.ax2)
+        self.power_bath_plot(row, col, self.ax2)
 
-    def power_bath_plot(self,row,col,ax):
+    def power_bath_plot(self, row, col, ax):
         T_bath = self.ivhelper.temperatures_int
-        power = self.powers[row,col]
-        n =self.n.data[row,col]
-        k =self.K.data[row,col]
-        t =self.Tc.data[row,col]
-        ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(T_bath.sorted(),psat_fitter(T_bath,n,k,t)*1e12,
-            label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
+        power = self.powers[row, col]
+        n = self.n.data[row, col]
+        k = self.K.data[row, col]
+        t = self.Tc.data[row, col]
+        ax.plot(T_bath, power*1e12, '.', label="data")
+        ax.plot(T_bath.sorted(),
+                psat_fitter(T_bath, n, k, t)*1e12,
+                label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
         ax.set_ylabel("P$_{sat}$ [pW]")
@@ -555,57 +581,57 @@ def psat_fitter(Tbath,n,K,T_c):
 
 
 class InteractiveThermalGPlotter(InteractiveIVPlotter):
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        self.G = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.Tc = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.n = np.ma.masked_all((self.powers.shape[0],self.powers.shape[1]))
-        self.G.fill_value=np.nan
-        self.Tc.fill_value=np.nan
-        self.n.fill_value=np.nan
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.G = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.Tc = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.n = np.ma.masked_all((self.powers.shape[0], self.powers.shape[1]))
+        self.G.fill_value = np.nan
+        self.Tc.fill_value = np.nan
+        self.n.fill_value = np.nan
         T_bath = np.array(self.ivhelper.temperatures_int)
         for i in range(self.powers.shape[0]):
             for j in range(self.powers.shape[1]):
                 try:
-                    P_sat = self.powers[i,j]
+                    P_sat = self.powers[i, j]
                     good_data = np.logical_not(P_sat.mask)
-                    popt,pcov=optimize.curve_fit(psat_g_fitter,
-                        T_bath[good_data],
+                    popt, pcov = optimize.curve_fit(psat_g_fitter,
+                        T_bath[good_data],  # noqa: E128
                         P_sat[good_data],
-                        p0=[3.1,0.3e-12,172.5],
-                        bounds=([3,5e-14,150],[3.5,2e-12,220]),
-                        sigma=np.full_like(P_sat[good_data],1e-12),
+                        p0=[3.1, 0.3e-12, 172.5],
+                        bounds=([3, 5e-14, 150], [3.5, 2e-12, 220]),
+                        sigma=np.full_like(P_sat[good_data], 1e-12),
                         maxfev=8000)
                     #print(popt)
-                    self.G[i,j]=popt[1]
-                    self.Tc[i,j]=popt[2]
-                    self.n[i,j]=popt[0]
+                    self.G[i, j] = popt[1]
+                    self.Tc[i, j] = popt[2]
+                    self.n[i, j] = popt[0]
                 except RuntimeError:
                     pass
                 except TypeError:
                     pass
                 except ValueError:
                     pass
-        test_1=self.n<1.5
-        test_2=self.Tc < 100
+        test_1 = self.n < 1.5
+        test_2 = self.Tc < 100
         tests = np.logical_or(test_1,test_2)
-        self.G[tests]=np.ma.masked
-        self.Tc[tests]=np.ma.masked
-        self.n[tests]=np.ma.masked
+        self.G[tests] = np.ma.masked
+        self.Tc[tests] = np.ma.masked
+        self.n[tests] = np.ma.masked
 
-    def interactive_plot_tc(self,array="all"):
-        self._interactive_plot_array(self.Tc,array)
+    def interactive_plot_tc(self, array="all"):
+        self._interactive_plot_array(self.Tc, array)
         self.cb.set_label("Tc [mK]")
 
-    def interactive_plot_n(self,array="all"):
-        self._interactive_plot_array(self.n,array)
+    def interactive_plot_n(self, array="all"):
+        self._interactive_plot_array(self.n, array)
         self.cb.set_label("n")
 
-    def interactive_plot_g(self,array="all"):
-        self._interactive_plot_array(self.G*1e12,array)
+    def interactive_plot_g(self, array="all"):
+        self._interactive_plot_array(self.G*1e12, array)
         self.cb.set_label("G [pW/mK]")
 
-    def _interactive_plot_array(self,data,array):
+    def _interactive_plot_array(self, data, array):
         data = np.ma.copy(data)
         array = zt.array_name_2(array)[0]
         if array == "a":
@@ -617,17 +643,18 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
 
     def bottom_plot(self):
         row, col = am.phys_to_mce(*self.click_loc)
-        self.power_bath_plot(row,col,self.ax2)
+        self.power_bath_plot(row, col, self.ax2)
 
-    def power_bath_plot(self,row,col,ax):
+    def power_bath_plot(self, row, col, ax):
         T_bath = self.ivhelper.temperatures_int
-        power = self.powers[row,col]
-        n =self.n.data[row,col]
-        g =self.G.data[row,col]
-        t =self.Tc.data[row,col]
-        ax.plot(T_bath,power*1e12,'.',label="data")
-        ax.plot(sorted(T_bath),psat_g_fitter(sorted(T_bath),n,g,t)*1e12,
-            label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
+        power = self.powers[row, col]
+        n = self.n.data[row, col]
+        g = self.G.data[row, col]
+        t = self.Tc.data[row, col]
+        ax.plot(T_bath, power*1e12, '.', label="data")
+        ax.plot(sorted(T_bath), 
+                psat_g_fitter(sorted(T_bath),n,g,t)*1e12,
+                label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
         ax.set_ylabel("P$_{sat}$ [pW]")
@@ -654,7 +681,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
 def psat_g_fitter(Tbath,n,g,T_c):
     return g*(T_c**n-Tbath**n)/n/T_c**(n-1)
 
+
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
-
 

@@ -61,11 +61,12 @@ def real_units(bias, fb, col=0, whole_array=False,
                 fb_dac_bits = FB_DAC_BITS
                ):
     """ Given an array of biases and corresponding array of feedbacks (all in DAC units)
-    calculate the actual current and voltage going through the TES. Note that to ensure consistency
-    the Feedback DAC numbers should be shifted so that their zero values make sense.
+    calculate the actual current and voltage going through the TES. 
+    IMPORTANT: To ensure consistency the Feedback DAC numbers 
+    MUST be shifted so that their zero values make sense.
 
     :param bias: Bias array in DAC units
-    :param fb: feedback array in DAC units
+    :param fb: feedback array in DAC units SHIFTED TO MAKE SENSE PLEASE
     :param col: Optional. the MCE column that you are calculating for.
         This lets us select the correct resistor values
 
@@ -115,7 +116,7 @@ def real_units(bias, fb, col=0, whole_array=False,
     else:
         tes_voltage = shunt_current * shunt_R
     
-    return(tes_voltage, tes_current)
+    return (tes_voltage, tes_current)
 
 
 def get_shunt_array(actpol_R = ACTPOL_R,
@@ -154,15 +155,39 @@ def fb_dac_to_tes_current(fb,
     # again, last factor of 2 is because voltage is bipolar
     fb_current = fb_raw_voltage / dewar_fb_R
     tes_current = fb_current / rel_fb_inductance
-    tes_current = correct_signs(tes_current)
     return tes_current
 
 
+def bias_dac_to_volts_naive(bias_dac, shunt_r):
+    """ Use with care. As stated in the name, this is a naive function
+    that assumes tes_r >> shunt_r """
+    bias_i = bias_dac_to_current(bias_dac)
+    bias_v = bias_i * shunt_r
+    return bias_v
+
+
+def dac_normal_slope_to_ohms(normal_slope, col):
+    """ Given feedback/bias DAC slope of the normal branch,
+    return the normal resistance in ohms.
+    Note this only uses the hardcoded values for dewar parameters. It's purely
+    a convenience function.
+     """
+    # ohm = volt/amp = (normal slope * amps/fb_dac * bias_dac/volts)**-1
+    # normal slope = fb_dac/bias_dac
+    if col in CMB_SHUNTS:
+        shunt_r = CMB_R
+    else:
+        shunt_r = ACTPOL_R
+    # on normal branch tes current is negligable
+    mhos = normal_slope * fb_dac_to_tes_current(1) / bias_dac_to_volts_naive(1, shunt_r)
+    return mhos ** -1
+
+
 def correct_signs(cube):
-    with res.open_text(data,"column_sign.dat") as signfile:
+    with res.open_text(data, "column_sign.dat") as signfile:
         signtable = np.loadtxt(signfile)
         #print(signtable)
-    return cube * signtable[:,1][None,:,None]
+    return cube * signtable[:, 1][None, :, None]
 
 
 def mcefile_get_butterworth_constant(mce):
