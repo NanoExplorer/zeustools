@@ -110,7 +110,7 @@ class IVHelper:
         self.bias = []  # List of bias arrays
         self.cache = {}
 
-    def __add__(self,other):
+    def __add__(self, other):
         result = IVHelper()
         assert self.is_real_units == other.is_real_units
         result.filenames = self.filenames + other.filenames
@@ -481,13 +481,36 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
             dat_pw = self.power_data.filled()*1e12
             ax.set_xlabel("power (pW)")
         if 200 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,12:19].flatten(),bins=bins,alpha=0.8,label="200 $\mu$m",color="C0")
+            n, bins, p = plt.hist(
+                dat_pw[:, 12:19].flatten(),
+                bins=bins,
+                alpha=0.8,
+                label="200 $\\mu$m",
+                color="C0"
+            )
         if 350 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,:5].flatten(),bins=bins,label="350 $\mu$m",color="C2")
+            n, bins, p = plt.hist(
+                dat_pw[:, :5].flatten(),
+                bins=bins,
+                label="350 $\\mu$m",
+                color="C2"
+            )
         if 450 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,5:12].flatten(),bins=bins,alpha=0.8,label="450 $\mu$m",color="C1")
+            n, bins, p = plt.hist(
+                dat_pw[:, 5:12].flatten(),
+                bins=bins,
+                alpha=0.8,
+                label="450 $\\mu$m",
+                color="C1"
+            )
         if 600 in arrays:
-            n,bins,p=plt.hist(dat_pw[:,19:21].flatten(),bins=bins,alpha=0.8,label="600 $\mu$m",color="C3")
+            n, bins, p = plt.hist(
+                dat_pw[:, 19:21].flatten(),
+                bins=bins,
+                alpha=0.8,
+                label="600 $\\mu$m",
+                color="C3"
+            )
 
         plt.title(title)
 
@@ -509,38 +532,41 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         for i in range(self.powers.shape[0]):
             for j in range(self.powers.shape[1]):
                 try:
-                    P_sat = self.powers[i,j]
+                    P_sat = self.powers[i, j]
                     good_data = np.logical_not(P_sat.mask)
-                    popt,pcov=optimize.curve_fit(psat_fitter,
-                        T_bath[good_data],
+                    popt, pcov = optimize.curve_fit(
+                        psat_fitter,
+                        T_bath[good_data],  
                         P_sat[good_data],
-                        p0=[3.1,4.3e-18,172.5],maxfev=8000)
-                    self.K[i,j]=popt[1]
-                    self.Tc[i,j]=popt[2]
-                    self.n[i,j]=popt[0]
+                        p0=[3.1, 4.3e-18, 172.5], 
+                        maxfev=8000
+                    )
+                    self.K[i, j] = popt[1]
+                    self.Tc[i, j] = popt[2]
+                    self.n[i, j] = popt[0]
                 except RuntimeError:
                     pass
                 except TypeError:
                     pass
                 except ValueError:
                     pass
-        test_1=self.n<1.5
-        test_2=self.Tc < 100
-        tests = np.logical_or(test_1,test_2)
-        self.K[tests]=np.ma.masked
-        self.Tc[tests]=np.ma.masked
-        self.n[tests]=np.ma.masked
+        test_1 = self.n < 1.5
+        test_2 = self.Tc < 100
+        tests = np.logical_or(test_1, test_2)
+        self.K[tests] = np.ma.masked
+        self.Tc[tests] = np.ma.masked
+        self.n[tests] = np.ma.masked
 
     def interactive_plot_k(self, array='all'):
-        self._interactive_plot_array(self.K*1e12,array)
+        self._interactive_plot_array(self.K*1e12, array)
         self.cb.set_label("K [pW/mK$^n$]")
 
     def interactive_plot_tc(self, array="all"):
-        self._interactive_plot_array(self.Tc,array)
+        self._interactive_plot_array(self.Tc, array)
         self.cb.set_label("Tc [mK]")
 
     def interactive_plot_n(self, array="all"):
-        self._interactive_plot_array(self.n,array)
+        self._interactive_plot_array(self.n, array)
         self.cb.set_label("n")
 
     def interactive_plot_g(self, array="all"):
@@ -567,7 +593,7 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         n = self.n.data[row, col]
         k = self.K.data[row, col]
         t = self.Tc.data[row, col]
-        ax.plot(T_bath, power*1e12, '.', label="data")
+        ax.plot(T_bath, power*1e12, '.', label="Data")
         ax.plot(T_bath.sorted(),
                 psat_fitter(T_bath, n, k, t)*1e12,
                 label=f"K={k*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
@@ -576,7 +602,7 @@ class InteractiveThermalPlotter(InteractiveIVPlotter):
         ax.set_ylabel("P$_{sat}$ [pW]")
 
 
-def psat_fitter(Tbath,n,K,T_c):
+def psat_fitter(Tbath, n, K, T_c):
     return K*(T_c**n-Tbath**n)
 
 
@@ -614,7 +640,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
                     pass
         test_1 = self.n < 1.5
         test_2 = self.Tc < 100
-        tests = np.logical_or(test_1,test_2)
+        tests = np.logical_or(test_1, test_2)
         self.G[tests] = np.ma.masked
         self.Tc[tests] = np.ma.masked
         self.n[tests] = np.ma.masked
@@ -653,35 +679,33 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
         t = self.Tc.data[row, col]
         ax.plot(T_bath, power*1e12, '.', label="data")
         ax.plot(sorted(T_bath), 
-                psat_g_fitter(sorted(T_bath),n,g,t)*1e12,
+                psat_g_fitter(sorted(T_bath), n, g, t) * 1e12,
                 label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
         ax.legend()
         ax.set_xlabel("T$_{bath}$ [mK]")
         ax.set_ylabel("P$_{sat}$ [pW]")
         if col < 12:
-            ax.set_ylim(0,5)
+            ax.set_ylim(0, 5)
         else:
-            ax.set_ylim(0,15)
+            ax.set_ylim(0, 15)
 
-    def thermal_hist_G(self,title,arrays=[350,450],bins=30):
+    def thermal_hist_G(self, title, arrays=[350, 450], bins=30):
         return self.detectors_hist(title,
-            bins=bins,
-            arrays=arrays,
-            data_override=self.G*1e12,
-            xlabel="G [pW/mK]")
+                                   bins=bins,
+                                   arrays=arrays,
+                                   data_override=self.G*1e12,
+                                   xlabel="G [pW/mK]")
 
-    def thermal_hist_Tc(self,title,arrays=[350,450],bins=30):
+    def thermal_hist_Tc(self, title, arrays=[350, 450], bins=30):
         return self.detectors_hist(title,
-            bins=bins,
-            arrays=arrays,
-            data_override=self.Tc,
-            xlabel="Tc [mK]")
+                                   arrays=arrays,
+                                   data_override=self.Tc,
+                                   xlabel="Tc [mK]")
 
 
-def psat_g_fitter(Tbath,n,g,T_c):
-    return g*(T_c**n-Tbath**n)/n/T_c**(n-1)
+def psat_g_fitter(Tbath, n, g, T_c):
+    return g * (T_c**n - Tbath**n)/n / T_c**(n-1)
 
 
 if __name__ == "__main__":
     iv_plotter = InteractiveIVPlotter("data/")
-
