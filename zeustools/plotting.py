@@ -164,7 +164,8 @@ class ZeusInteractivePlotter():
         self.redraw_top_plot()
 
         # "Intelligently" optimize the layout
-        self.fig.tight_layout()
+        if not plt.rcParams['figure.constrained_layout.use']:
+            self.fig.tight_layout()
 
         # Set up the text messaging system
         if self.debug:

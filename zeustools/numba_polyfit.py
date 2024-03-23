@@ -33,7 +33,7 @@ def _coeff_mat(x, deg):
     return mat_, scale_vect
     
 
-@nb.jit(cache=True)
+@nb.njit(cache=True)
 def _fit_x(a, b, scales):
     # linalg solves ax = b
     det_ = np.linalg.lstsq(a, b)[0]
@@ -43,7 +43,7 @@ def _fit_x(a, b, scales):
     return det_
 
 
-@nb.jit(cache=True)
+@nb.njit(cache=True)
 def fit_poly(x, y, deg):
     a, scales_ = _coeff_mat(x, deg)
     p = _fit_x(a, y, scales_)
