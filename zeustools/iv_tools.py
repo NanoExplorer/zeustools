@@ -468,9 +468,37 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                        arrays=[350, 450],
                        plot_rn=False,
                        data_override=None,
-                       xlabel="none"):
-        plt.figure()
-        ax = plt.gca()
+                       xlabel="none",
+                       ax = None):
+        """
+        Plots a histogram of detectors based on a parameter. Default paramater is 
+        saturation power, but can be overridden by passing `plot_rn=True` or by passing
+        custom data to `data_override`. 
+        :param title: Title of plot. If `None`, plot will remain untitled.
+        :param bins: Bins parameter to pass to matplotlib's hist function.
+            As such, this can be either an integer (number of bins) or an array of bin edges.
+            If it is an integer, the bins used for each array will be different!
+            In the past, if this was an integer, the first array plotted would set the bins
+            and each subsequent array would use the same bin edges. This could lead to missing
+            pixels if the first array plotted had a smaller range than subsequent ones.
+        :param arrays: A list specifying the detector arrays to be included on the plot.
+            Should be a list containing any combination of `200`, `350`, `450`, or `600`.
+        :param plot_rn: A Boolean indicating that the normal resistance should be plotted
+            instead of saturation power. Has no effect if `data_override` is also passed.
+        :param data_override: An mce-style array containing the parameter you'd like to plot
+            for each pixel. This overrides the plot_rn parameter and expects you to set the 
+            `xlabel` parameter too
+        :param xlabel: The x-axis label to use. Only used if `data_override` is not `None`.
+        :param ax: Which axis, if any, to use for plotting the histogram. If `None`, we create
+            a new figure automatically.
+
+        :return: the bins used by whichever plot was made last. Warning: use with caution
+            as this does not necessarily represent the bins used for every detector array!
+
+        """
+        if ax is None:
+            plt.figure()
+            ax = plt.gca()
         if data_override is not None:
             dat_pw = data_override.filled()
             ax.set_xlabel(xlabel)
@@ -480,8 +508,9 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         else:
             dat_pw = self.power_data.filled()*1e12
             ax.set_xlabel("power (pW)")
+
         if 200 in arrays:
-            n, bins, p = plt.hist(
+            n, bins_new, p = ax.hist(
                 dat_pw[:, 12:19].flatten(),
                 bins=bins,
                 alpha=0.8,
@@ -489,14 +518,14 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                 color="C0"
             )
         if 350 in arrays:
-            n, bins, p = plt.hist(
+            n, bins_new, p = ax.hist(
                 dat_pw[:, :5].flatten(),
                 bins=bins,
                 label="350 $\\mu$m",
                 color="C2"
             )
         if 450 in arrays:
-            n, bins, p = plt.hist(
+            n, bins_new, p = ax.hist(
                 dat_pw[:, 5:12].flatten(),
                 bins=bins,
                 alpha=0.8,
@@ -504,19 +533,22 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                 color="C1"
             )
         if 600 in arrays:
-            n, bins, p = plt.hist(
+            n, bins_new, p = ax.hist(
                 dat_pw[:, 19:21].flatten(),
                 bins=bins,
                 alpha=0.8,
                 label="600 $\\mu$m",
                 color="C3"
             )
+        if title is not None:
+            ax.set_title(title)
+        if plt.rcParams['text.usetex']:
+            ax.set_ylabel("\\# detectors")
+        else:
+            ax.set_ylabel("# detectors")
 
-        plt.title(title)
-
-        ax.set_ylabel("# detectors")
         ax.legend()
-        return bins
+        return bins_new
 
 
 class InteractiveThermalPlotter(InteractiveIVPlotter):
@@ -677,7 +709,7 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
         n = self.n.data[row, col]
         g = self.G.data[row, col]
         t = self.Tc.data[row, col]
-        ax.plot(T_bath, power*1e12, '.', label="data")
+        ax.plot(T_bath, power*1e12, '.', label="Data")
         ax.plot(sorted(T_bath), 
                 psat_g_fitter(sorted(T_bath), n, g, t) * 1e12,
                 label=f"G={g*1e12:.2e} [pW/mK]\nT$_c$={t:.0f} [mK]\nn={n:.2f}")
@@ -689,18 +721,25 @@ class InteractiveThermalGPlotter(InteractiveIVPlotter):
         else:
             ax.set_ylim(0, 15)
 
-    def thermal_hist_G(self, title, arrays=[350, 450], bins=30):
-        return self.detectors_hist(title,
-                                   bins=bins,
-                                   arrays=arrays,
-                                   data_override=self.G*1e12,
-                                   xlabel="G [pW/mK]")
+    def thermal_hist_G(self, title, arrays=[350, 450], bins=30, ax=None):
+        return self.detectors_hist(
+            title,
+            bins=bins,
+            arrays=arrays,
+            data_override=self.G*1e12,
+            xlabel="G [pW/mK]",
+            ax=ax
+        )
 
-    def thermal_hist_Tc(self, title, arrays=[350, 450], bins=30):
-        return self.detectors_hist(title,
-                                   arrays=arrays,
-                                   data_override=self.Tc,
-                                   xlabel="Tc [mK]")
+    def thermal_hist_Tc(self, title, arrays=[350, 450], bins=30, ax=None):
+        return self.detectors_hist(
+            title,
+            bins=bins,
+            arrays=arrays,
+            data_override=self.Tc,
+            xlabel="Tc [mK]",
+            ax=ax
+        )
 
 
 def psat_g_fitter(Tbath, n, g, T_c):
