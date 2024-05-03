@@ -208,7 +208,10 @@ class IVHelper:
 
     def get_corrected_ivs(self, col, row, clean_again=True):
         """Returns all iv curves for col,row,
-        currected to have normal y-intercept=0 """
+        currected to have normal y-intercept=0 
+        Note that if the real_units member variable is true 
+        the last value of the returned tuple is an actual resistance in ohms
+        instead of a slope in mhos like it used to be."""
         try:
             # print("CACHE HIT")
             return self.cache[(col, row)]
@@ -352,8 +355,8 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
                         # print(f"power_temp={self.power_temp} was not found for px col,row={j},{i}")
                         pass
 
-        data = 1/slopes
-        data = np.ma.array(np.abs(data))
+        # data = 1/slopes
+        data = np.ma.array(slopes)
         data[data > 0.007] = np.ma.masked
 
         powers[powers < 0] = np.ma.masked
@@ -411,7 +414,7 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         row, col = am.phys_to_mce(*self.click_loc)
         self.power_resistance_plot(row, col, self.ax2)
 
-    def power_resistance_plot(self, row, col, ax):
+    def power_resistance_plot(self, row, col, ax, cbar_inset = None):
         bias, data, temp, slope = self.ivhelper.get_corrected_ivs(col, row)
         cmap = plt.cm.plasma
         norm = self.ivhelper.get_temperature_colorbar_norm()
@@ -435,9 +438,17 @@ class InteractiveIVPlotter(zt_plotting.ZeusInteractivePlotter):
         else:
             ax.set_xlabel("squid fb * det bias")
             ax.set_ylabel("det bias / squid fb")
-        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 
-        self.update_colorbar(sm, ax)
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        if cbar_inset is not None:
+            print("ping")
+            plt.gcf().colorbar(
+                sm, 
+                cax=cbar_inset, 
+                label="Temperature [mK]", 
+                orientation="horizontal")
+        else:
+            self.update_colorbar(sm, ax)
 
     # override
     def bottom_flat(self):
