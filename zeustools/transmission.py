@@ -170,6 +170,15 @@ class ZeusOpticsChain:
         installed on the 350 micron array.
     """
     def __init__(self,config="2021"):
+        if config=="2022":
+            self.filters = {
+                "common":["window","zitex","scatter","ir","k2329"],
+                "350":["k2329","k2586"],
+                "450":["k2329","w1586"],
+                "200":["b688","b676"],
+                "600":["b688","k2330"]
+            }
+            self.grating="dull"
         if config=="2021":
             self.filters = {
                 "common":["window","zitex","scatter","ir","k2329"],
