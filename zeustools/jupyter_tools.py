@@ -205,6 +205,7 @@ def data_handler(
             orig_wl_centers = gc.phys_px_to_wavelength(spectral_array, spat, band, idx)
             # The plus i produces the offsets needed to inspect near-zero data
             plot_spec((orig_wl_centers, flux[1]+i, flux[2]), errbar_limit=errbar_limit,flux_unit=flux_unit)
+            plt.axhline(i,color='k',linewidth=0.3)
             plt.title(f"{name} Individual Obs. Spectra")
             plt.xlabel("Wavelength [$\\mu$m]")
             plt.axhline(y=0, color='k', linewidth=0.5)
