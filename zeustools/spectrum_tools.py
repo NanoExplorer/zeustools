@@ -14,3 +14,15 @@ def fftnoise(f):
 
 def pwr(i):
     return (i*i.conj()).real
+
+def average_using_log_bins(data_x,data_y,min_freq,max_freq,npts):
+    bins_plus_centers = np.logspace(
+        log10(min_freq),
+        log10(max_freq),
+        npts*2+1)
+    bins = bins_plus_centers[::2]
+    centers = bins_plus_centers[1::2]
+    test,test_edge = np.histogram(data_x,bins=bins,weights=data_y)
+    count,_ = np.histogram(data_x,bins=bins)
+    avg = test/count
+    return centers,avg 
