@@ -12,6 +12,15 @@ def fftnoise(f):
     f[-1:-1-Np:-1] = np.conj(f[1:Np+1])
     return np.fft.ifft(f).real*np.sqrt(len(f))
 
+def rfftnoise(f):
+    # https://stackoverflow.com/questions/33933842/how-to-generate-noise-in-frequency-range-with-numpy
+    f = np.array(f,dtype='complex')
+    Np = len(f)
+    phases = rng.normal(scale=np.sqrt(np.pi/2),size=Np) # variance = pi/2 since standard deviation is sqrt(pi/2)
+    phases - np.cos(phases) + 1j * np.sin(phases)
+    f *= phases
+    return np.fft.irfft(f,norm="ortho")
+
 def pwr(i):
     return (i*i.conj()).real
 
